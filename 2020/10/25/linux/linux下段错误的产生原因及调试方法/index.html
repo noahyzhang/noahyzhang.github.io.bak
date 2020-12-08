@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>linux下段错误的产生原因及调试方法 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" 段错误 core ">
+  <meta name="description" content="linux下段错误的产生原因及调试方法 | Zhangxiaoyi&#39;s Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
+<meta property="og:type" content="website">
+<meta property="og:title" content="about">
+<meta property="og:url" content="http://example.com/about/index.html">
+<meta property="og:site_name" content="Zhangxiaoyi&#39;s Blog">
+<meta property="og:description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-10-06T05:28:23.000Z">
+<meta property="article:modified_time" content="2020-10-06T07:52:54.234Z">
+<meta property="article:author" content="Zhangxiaoyi">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/avatar2.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/avatar2.jpg" />
+</a>
+<div class="author">
+    <span>Zhangxiaoyi</span>
+</div>
+
+<div class="icon">
+    
+        
+    
+        
+        <a title="github" href="https://github.com/noahyzhang" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-github"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+        <a title="csdn" href="https://blog.csdn.net/qq_40421919" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-csdn"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+        <a title="email" href="mailto:1251108673@qq.com" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-email"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+        <a title="qq" href="http://wpa.qq.com/msgrd?v=3&uin=1251108673&site=qq&menu=yes" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-qq"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active" data-rel="All">All<small>(28)</small></div></li>
+    
+        
+            
+            <li><div data-rel="读书">读书<small>(1)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="生活">生活<small>(3)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="linux">linux<small>(12)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="编程语言">编程语言<small>(1)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="数据库">数据库<small>(2)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="组件学习">组件学习<small>(6)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="其他">其他<small>(3)</small></div>
+                
+            </li>
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    
+    </div>
+    <div><a class="about  site_url"  href="/about">About</a></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="28">
+<input type="hidden" id="yelog_site_word_count" value="50.4k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        Links
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://www.zhangxiaoyiya.cn/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">All</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" />
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>c++</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>c++链接</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>curl</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>gcc</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>gdb linux</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>git</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>json protobuf</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>linux</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>linux 日志</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>makefile</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>mysql</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>mysqldump</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>syslog日志服务</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tcpdump</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>个人成长</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>代理</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>共享内存</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>内存管理</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>守护进程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>段错误 core</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>进程丢失</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        <a  class="All linux "
+           href="/2020/12/03/linux/Linux%E4%B9%8Bsyslog%E6%97%A5%E5%BF%97%E6%9C%8D%E5%8A%A1%E8%AF%A6%E8%A7%A3/"
+           data-tag="syslog日志服务"
+           data-author="" >
+            <span class="post-title" title="Linux之syslog日志服务详解">Linux之syslog日志服务详解</span>
+            <span class="post-date" title="2020-12-03 19:11:41">2020/12/03</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/02/linux/Linux%E4%B8%8B%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%90%AF%E5%8A%A8%E6%96%B9%E6%B3%95/"
+           data-tag="守护进程"
+           data-author="" >
+            <span class="post-title" title="Linux下守护进程的启动方法">Linux下守护进程的启动方法</span>
+            <span class="post-date" title="2020-12-02 16:19:17">2020/12/02</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/11/07/linux/tcpdump%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="tcpdump"
+           data-author="" >
+            <span class="post-title" title="tcpdump的使用">tcpdump的使用</span>
+            <span class="post-date" title="2020-11-07 14:11:41">2020/11/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/11/01/%E6%95%B0%E6%8D%AE%E5%BA%93/mysqldump%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="mysqldump"
+           data-author="" >
+            <span class="post-title" title="mysqldump的使用">mysqldump的使用</span>
+            <span class="post-date" title="2020-11-01 19:19:17">2020/11/01</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/11/01/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/curl%E5%91%BD%E4%BB%A4%E4%B8%8E%E5%85%B6API%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="curl"
+           data-author="" >
+            <span class="post-title" title="curl命令与其API的使用">curl命令与其API的使用</span>
+            <span class="post-date" title="2020-11-01 18:19:17">2020/11/01</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%8E%92%E6%9F%A5%E8%BF%9B%E7%A8%8B%E7%BB%88%E6%AD%A2%E7%9A%84%E5%8E%9F%E5%9B%A0/"
+           data-tag="进程丢失"
+           data-author="" >
+            <span class="post-title" title="排查进程终止的原因">排查进程终止的原因</span>
+            <span class="post-date" title="2020-10-25 19:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%9F%A5%E7%9C%8B%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E8%A2%AB%E5%93%AA%E4%BA%9B%E8%BF%9B%E7%A8%8Bnattch/"
+           data-tag="共享内存"
+           data-author="" >
+            <span class="post-title" title="查看共享内存被哪些进程nattch">查看共享内存被哪些进程nattch</span>
+            <span class="post-date" title="2020-10-25 19:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/linux%E4%B8%8B%E6%AE%B5%E9%94%99%E8%AF%AF%E7%9A%84%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95/"
+           data-tag="段错误 core"
+           data-author="" >
+            <span class="post-title" title="linux下段错误的产生原因及调试方法">linux下段错误的产生原因及调试方法</span>
+            <span class="post-date" title="2020-10-25 17:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%9F%A5%E7%9C%8B%E6%89%A7%E8%A1%8C%E6%9F%90%E4%B8%AA%E8%BF%9B%E7%A8%8B%E4%B8%AD%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8--strace%E5%91%BD%E4%BB%A4/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="查看执行某个进程中系统调用--strace命令">查看执行某个进程中系统调用--strace命令</span>
+            <span class="post-date" title="2020-10-25 15:31:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/Linux%E4%B9%8Bproc%E4%B8%8Bkcore%E6%96%87%E4%BB%B6%E8%A7%A3%E9%87%8A/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="/proc/kcore文件解释">/proc/kcore文件解释</span>
+            <span class="post-date" title="2020-10-25 15:11:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/linux%E7%B3%BB%E7%BB%9F%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90/"
+           data-tag="linux 日志"
+           data-author="" >
+            <span class="post-title" title="linux 系统日志分析">linux 系统日志分析</span>
+            <span class="post-date" title="2020-10-25 14:11:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/22/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96(json%E5%92%8Cprotobuf)/"
+           data-tag="json protobuf"
+           data-author="" >
+            <span class="post-title" title="序列化和反序列化(json/protobuf)">序列化和反序列化(json/protobuf)</span>
+            <span class="post-date" title="2020-10-22 20:19:17">2020/10/22</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/gcc%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="gcc"
+           data-author="" >
+            <span class="post-title" title="gcc的使用">gcc的使用</span>
+            <span class="post-date" title="2020-10-18 19:54:54">2020/10/18</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/gdb%20%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/"
+           data-tag="gdb linux"
+           data-author="" >
+            <span class="post-title" title="gdb调试工具">gdb调试工具</span>
+            <span class="post-date" title="2020-10-18 15:45:45">2020/10/18</span>
+        </a>
+        
+        <a  class="All 其他 "
+           href="/2020/10/18/%E5%85%B6%E4%BB%96/std--bad_alloc%E7%9A%84%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="同时启动多个程序，出现“std::bad_alloc”的问题">同时启动多个程序，出现“std::bad_alloc”的问题</span>
+            <span class="post-date" title="2020-10-18 11:11:11">2020/10/18</span>
+        </a>
+        
+        <a  class="All 其他 "
+           href="/2020/10/16/%E5%85%B6%E4%BB%96/%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%96%87%E4%BB%B6%E6%89%A7%E8%A1%8Cload%E4%B8%8D%E5%88%B0%E5%85%B1%E4%BA%AB%E5%BA%93%E9%97%AE%E9%A2%98/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="二进制文件执行加载不到共享库问题">二进制文件执行加载不到共享库问题</span>
+            <span class="post-date" title="2020-10-16 11:41:41">2020/10/16</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/09/linux/%E6%9F%A5%E7%9C%8Blinux%20%E7%A1%AC%E4%BB%B6%E8%B5%84%E6%BA%90%E6%96%B9%E6%B3%95/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="查看linux硬件资源方法">查看linux硬件资源方法</span>
+            <span class="post-date" title="2020-10-09 13:11:24">2020/10/09</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/06/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/git%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/"
+           data-tag="git"
+           data-author="" >
+            <span class="post-title" title="git学习记录">git学习记录</span>
+            <span class="post-date" title="2020-10-06 16:22:14">2020/10/06</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/06/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/makefile%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/"
+           data-tag="makefile"
+           data-author="" >
+            <span class="post-title" title="makefile学习记录">makefile学习记录</span>
+            <span class="post-date" title="2020-10-06 16:22:14">2020/10/06</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/06/linux/cc++%E9%94%99%E8%AF%AF%E4%B9%8B%20Undefined%20reference%20%E6%9C%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E9%97%AE%E9%A2%98/"
+           data-tag="c++链接"
+           data-author="" >
+            <span class="post-title" title="c和c++链接未定义的问题">c和c++链接未定义的问题</span>
+            <span class="post-date" title="2020-10-06 16:19:17">2020/10/06</span>
+        </a>
+        
+        <a  class="All 编程语言 "
+           href="/2020/10/06/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/c++%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/"
+           data-tag="c++"
+           data-author="" >
+            <span class="post-title" title="c++初始化的问题记录">c++初始化的问题记录</span>
+            <span class="post-date" title="2020-10-06 16:19:17">2020/10/06</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/10/06/%E6%95%B0%E6%8D%AE%E5%BA%93/show-slave-status-G%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="show slave status\G参数介绍">show slave status\G参数介绍</span>
+            <span class="post-date" title="2020-10-06 16:14:06">2020/10/06</span>
+        </a>
+        
+        <a  class="All 生活 "
+           href="/2020/10/06/%E7%94%9F%E6%B4%BB/2020-10-06-%E3%80%8A%E4%BA%BA%E7%94%9F%E3%80%8B%E8%AE%B0%E5%BD%95/"
+           data-tag="个人成长"
+           data-author="" >
+            <span class="post-title" title="《人生》记录">《人生》记录</span>
+            <span class="post-date" title="2020-10-06 16:12:42">2020/10/06</span>
+        </a>
+        
+        <a  class="All 生活 "
+           href="/2020/10/06/%E7%94%9F%E6%B4%BB/2020-10-08%E6%97%A5%E8%AE%B0/"
+           data-tag="个人成长"
+           data-author="" >
+            <span class="post-title" title="2020.10.8日志">2020.10.8日志</span>
+            <span class="post-date" title="2020-10-06 16:12:42">2020/10/06</span>
+        </a>
+        
+        <a  class="All 生活 "
+           href="/2020/10/06/%E7%94%9F%E6%B4%BB/%E5%85%B3%E4%BA%8E%E6%88%90%E7%86%9F/"
+           data-tag="个人成长"
+           data-author="" >
+            <span class="post-title" title="关于成熟">关于成熟</span>
+            <span class="post-date" title="2020-10-06 16:12:42">2020/10/06</span>
+        </a>
+        
+        <a  class="All 读书 "
+           href="/2020/10/06/%E8%AF%BB%E4%B9%A6/2020-10-06-%E6%98%8E%E6%9C%9D%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF%E6%84%9F%E6%83%B3/"
+           data-tag="个人成长"
+           data-author="" >
+            <span class="post-title" title="明朝那些事儿感想">明朝那些事儿感想</span>
+            <span class="post-date" title="2020-10-06 16:12:42">2020/10/06</span>
+        </a>
+        
+        <a  class="All 其他 "
+           href="/2020/10/06/%E5%85%B6%E4%BB%96/%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86%E4%B8%8E%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"
+           data-tag="代理"
+           data-author="" >
+            <span class="post-title" title="正向代理与反向代理">正向代理与反向代理</span>
+            <span class="post-date" title="2020-10-06 16:11:29">2020/10/06</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/06/linux/%E9%80%9A%E8%BF%87free%E5%91%BD%E4%BB%A4%E7%90%86%E8%A7%A3linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/"
+           data-tag="内存管理"
+           data-author="" >
+            <span class="post-title" title="通过free命令理解linux内存管理">通过free命令理解linux内存管理</span>
+            <span class="post-date" title="2020-10-06 16:09:52">2020/10/06</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-linux/linux下段错误的产生原因及调试方法" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">linux下段错误的产生原因及调试方法</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="linux">linux</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color4">段错误 core</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            Created At : <time class="date" title='Updated At: 2020-10-25 20:08:27'>2020-10-25 17:11</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>Count:2.8k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            Views 👀 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+        <span class="top-comment" title="跳转至评论区">
+            <a href="#comments">
+                Comment:<span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </a>
+        </span>
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%AE%B5%E9%94%99%E8%AF%AF%E4%BB%8B%E7%BB%8D"><span class="toc-text">1. 段错误介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BA%A7%E7%94%9F%E6%AE%B5%E9%94%99%E8%AF%AF"><span class="toc-text">2. 为什么产生段错误</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-%E8%AE%BF%E9%97%AE%E4%B8%8D%E5%AD%98%E5%9C%A8%E7%9A%84%E5%86%85%E5%AD%98%E5%9C%B0%E5%9D%80"><span class="toc-text">2.1 访问不存在的内存地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-%E8%AE%BF%E9%97%AE%E4%B8%8D%E5%85%81%E8%AE%B8%E8%AE%BF%E9%97%AE%E7%9A%84%E5%9C%B0%E5%9D%80"><span class="toc-text">2.2 访问不允许访问的地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-%E5%86%99%E5%8F%AA%E8%AF%BB%E7%9A%84%E5%86%85%E5%AD%98%E5%9C%B0%E5%9D%80"><span class="toc-text">2.3 写只读的内存地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-%E6%A0%88%E6%BA%A2%E5%87%BA"><span class="toc-text">2.4 栈溢出</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%9F%A5%E7%9C%8B%E6%AE%B5%E9%94%99%E8%AF%AF%E4%BF%A1%E6%81%AF"><span class="toc-text">3. 查看段错误信息</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-dmesg"><span class="toc-text">3.1 dmesg</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-%E5%88%86%E6%9E%90%E4%BA%A7%E7%94%9F%E7%9A%84-core-%E6%96%87%E4%BB%B6"><span class="toc-text">3.2 分析产生的 core 文件</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#3-2-1-%E6%9F%A5%E7%9C%8Bcore%E6%96%87%E4%BB%B6%E5%A4%A7%E5%B0%8F%EF%BC%9Aulimit-a-%E6%88%96%E8%80%85-ulimit-c%E3%80%82"><span class="toc-text">3.2.1 查看core文件大小：ulimit -a 或者 ulimit -c。</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-2-2-%E8%AE%BE%E7%BD%AEcore%E6%96%87%E4%BB%B6%E7%9A%84%E5%90%8D%E7%A7%B0%E5%92%8C%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84"><span class="toc-text">3.2.2 设置core文件的名称和文件路径</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-%E4%BD%BF%E7%94%A8-objdump-%E6%9F%A5%E7%9C%8B%E6%B1%87%E7%BC%96%E4%BB%A3%E7%A0%81"><span class="toc-text">3.3 使用 objdump 查看汇编代码</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-1-%E4%BD%BF%E7%94%A8dmesg-%E5%91%BD%E4%BB%A4%EF%BC%8C%E6%89%BE%E5%88%B0%E5%8F%91%E7%94%9F%E6%AE%B5%E9%94%99%E8%AF%AF%E7%9A%84%E5%9C%B0%E5%9D%80"><span class="toc-text">3.3.1 使用dmesg 命令，找到发生段错误的地址</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-2-%E4%BD%BF%E7%94%A8-objdump-%E7%94%9F%E6%88%90%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%9A%84%E7%9B%B8%E5%85%B3%E4%BF%A1%E6%81%AF%EF%BC%8C%E9%87%8D%E5%AE%9A%E5%90%91%E5%88%B0%E6%96%87%E4%BB%B6%E4%B8%AD%EF%BC%9A"><span class="toc-text">3.3.2 使用 objdump 生成二进制的相关信息，重定向到文件中：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-3-%E5%9C%A8-test-dump-%E6%96%87%E4%BB%B6%E4%B8%AD%E6%9F%A5%E6%89%BE%E5%8F%91%E7%94%9F%E6%AE%B5%E9%94%99%E8%AF%AF%E7%9A%84%E5%9C%B0%E5%9D%80"><span class="toc-text">3.3.3 在 test_dump 文件中查找发生段错误的地址</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-%E4%BD%BF%E7%94%A8-catchsegv-%E8%8E%B7%E5%8F%96%E6%AE%B5%E9%94%99%E8%AF%AF%E8%AF%A6%E7%BB%86%E4%BF%A1%E6%81%AF"><span class="toc-text">3.4 使用 catchsegv 获取段错误详细信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-%E5%85%B6%E4%BB%96%E5%85%B3%E4%BA%8E%E6%AE%B5%E9%94%99%E8%AF%AF%E7%9A%84%E5%B7%A5%E5%85%B7"><span class="toc-text">3.5 其他关于段错误的工具</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#3-5-1-ldd%E5%91%BD%E4%BB%A4"><span class="toc-text">3.5.1 ldd命令</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-5-2-%E6%97%A5%E5%BF%97"><span class="toc-text">3.5.2 日志</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%A7%84%E9%81%BF%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98"><span class="toc-text">4. 规避一些问题</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>linux下 c/c++ 编程最常见的就是错误就是段错误了，本文来分析一下段错误为什么产生？产生的原因以及如何处理。</p>
+<h2 id="1-段错误介绍"><a href="#1-段错误介绍" class="headerlink" title="1. 段错误介绍"></a>1. 段错误介绍</h2><pre><code>A segmentation fault (often shortened to segfault) is a particular error condition that can occur during the operation of computer software. In short, a segmentation fault occurs when a program attempts to access a memory location that it is not allowed to access, or attempts to access a memory location in a way that is not allowed (e.g., attempts to write to a read-only location, or to overwrite part of the operating system). Systems based on processors like the Motorola 68000 tend to refer to these events as Address or Bus errors.
+
+Segmentation is one approach to memory management and protection in the operating system. It has been superseded by paging for most purposes, but much of the terminology of segmentation is still used, &quot;segmentation fault&quot; being an example. Some operating systems still have segmentation at some logical level although paging is used as the main memory management policy.
+
+On Unix-like operating systems, a process that accesses invalid memory receives the SIGSEGV signal. On Microsoft Windows, a process that accesses invalid memory receives the STATUS_ACCESS_VIOLATION exception.</code></pre>
+<p>分段错误(通常简称段错误)是计算机软件运行过程中可能出现的一种特殊的错误情况。简而言之,出现段错误当一个程序试图访问不允许访问的内存位置,或试图访问一个内存位置的方式是不允许的(例如,试图写一个只读的位置,或覆盖操作系统的一部分)。基于像摩托罗拉68000处理器的系统往往将这些事件称为地址或总线错误。</p>
+<p>分段是操作系统中内存管理和保护的一种方法。在大多数情况下，它已经被分页所取代，但是分段的许多术语仍然被使用，“分段故障”就是一个例子。尽管分页被用作主要的内存管理策略，但一些操作系统在某些逻辑级别上仍然有分段。</p>
+<p>在类unix操作系统上，访问无效内存的进程接收SIGSEGV信号。在Microsoft Windows上，访问无效内存的进程会收到status_access_违例异常。</p>
+<h2 id="2-为什么产生段错误"><a href="#2-为什么产生段错误" class="headerlink" title="2. 为什么产生段错误"></a>2. 为什么产生段错误</h2><h4 id="2-1-访问不存在的内存地址"><a href="#2-1-访问不存在的内存地址" class="headerlink" title="2.1 访问不存在的内存地址"></a>2.1 访问不存在的内存地址</h4><pre><code class="c++">int* ptr = NULL;
+*ptr = 1;</code></pre>
+<h4 id="2-2-访问不允许访问的地址"><a href="#2-2-访问不允许访问的地址" class="headerlink" title="2.2 访问不允许访问的地址"></a>2.2 访问不允许访问的地址</h4><pre><code class="c++">int* ptr = (int*)0;
+*ptr = 1;</code></pre>
+<h4 id="2-3-写只读的内存地址"><a href="#2-3-写只读的内存地址" class="headerlink" title="2.3 写只读的内存地址"></a>2.3 写只读的内存地址</h4><pre><code class="c++">char* ptr = &quot;test&quot;;
+strcpy(ptr,&quot;TEST&quot;);</code></pre>
+<h4 id="2-4-栈溢出"><a href="#2-4-栈溢出" class="headerlink" title="2.4 栈溢出"></a>2.4 栈溢出</h4><p>一般多出现于递归函数，或使用栈空间过量。</p>
+<p>还有很多其他原因</p>
+<h2 id="3-查看段错误信息"><a href="#3-查看段错误信息" class="headerlink" title="3. 查看段错误信息"></a>3. 查看段错误信息</h2><h4 id="3-1-dmesg"><a href="#3-1-dmesg" class="headerlink" title="3.1 dmesg"></a>3.1 dmesg</h4><p>这个命令用来检查和控制内核的环形缓冲区，其实就是在检查 /var/log/demsg 日志。默认操作就是显示所有来自于内核缓冲区空间的消息。而段错误来自于内核的报错，因此也会写入到这个日志中。</p>
+<pre><code class="shell">执行 demsg 之后
+结果：
+[7612059.013222] test[10997]: segfault at 4005a0 ip 00000000004004fd sp 00007ffdc00a0370 error 7 in test[400000+1000]
+[7612082.776055] test[11162]: segfault at 4005a0 ip 00000000004004fd sp 00007fffbe060180 error 7 in test[400000+1000]</code></pre>
+<p>可以看到断错误发生的二进制文件名称、引起段错误发生的内存地址、指令指针地址、堆栈指针地址、错误代码、错误原因等等信息。</p>
+<h4 id="3-2-分析产生的-core-文件"><a href="#3-2-分析产生的-core-文件" class="headerlink" title="3.2 分析产生的 core 文件"></a>3.2 分析产生的 core 文件</h4><p>使用 gcc/g++ 在编译的时候加上 -g 选项，使生成的二进制文件中加入可以用于 gdb 调试的信息。</p>
+<p>linux 生成 core 文件，需要打开生成 core 文件的选项</p>
+<h5 id="3-2-1-查看core文件大小：ulimit-a-或者-ulimit-c。"><a href="#3-2-1-查看core文件大小：ulimit-a-或者-ulimit-c。" class="headerlink" title="3.2.1 查看core文件大小：ulimit -a 或者 ulimit -c。"></a>3.2.1 查看core文件大小：ulimit -a 或者 ulimit -c。</h5><ol>
+<li><p>core file size</p>
+<p>unlimited: core 文件的大小不受限制</p>
+<p>0: 程序出错时不会产生core文件</p>
+<p>1024: 代表1024k，core文件超过该大小就不能生成了</p>
+</li>
+<li><p>设置core文件大小：ulimit -c filesize</p>
+</li>
+<li><p>程序奔溃的时候生成的core文件大小即为程序运行时占用的内存大小，如果发生堆栈溢出，则会占用更大的内存</p>
+</li>
+</ol>
+<h5 id="3-2-2-设置core文件的名称和文件路径"><a href="#3-2-2-设置core文件的名称和文件路径" class="headerlink" title="3.2.2 设置core文件的名称和文件路径"></a>3.2.2 设置core文件的名称和文件路径</h5><p>​    默认生成路径：在可执行文件运行命令的同一路径下</p>
+<p>​    默认生成名字：默认名字为core，新的core文件会覆盖旧的core文件</p>
+<ol>
+<li><p>设置pid作为文件扩展名</p>
+<p>echo “1” &gt; /proc/sys/kernel/core_uses_pid</p>
+<p>或者 sysctl -w kernel.core_uses_pid=1 kernel.core_uses_pid=1</p>
+<p>其中：0代表不使用pid作为扩展名，1代表使用</p>
+</li>
+<li><p>控制core文件保存位置和文件名格式</p>
+<p>修改文件命名：echo “/corefile/core-%e-%p-%t” &gt; /proc/sys/kernel/core_pattern</p>
+<p>或者：sysctl -w kernel.core_pattern=/corefile/core.%e.%p.%s.%E</p>
+<p>上面命令将core文件统一生成到 /corefile 目录下。</p>
+<pre><code class="shell">参数列表
+
+%p - insert pid into filename 添加pid(进程id)
+
+%u - insert current uid into filename 添加当前uid(用户id)
+
+%g - insert current gid into filename 添加当前gid(用户组id)
+
+%s - insert signal that caused the coredump into the filename 添加导致产生core的信号
+
+%t - insert UNIX time that the coredump occurred into filename 添加core文件生成时的unix时间
+
+%h - insert hostname where the coredump happened into filename 添加主机名
+
+%e - insert coredumping executable name into filename 添加导致产生core的命令名</code></pre>
+</li>
+</ol>
+<p>接下里可以使用 gdb 来调试生成的 core 文件。</p>
+<h4 id="3-3-使用-objdump-查看汇编代码"><a href="#3-3-使用-objdump-查看汇编代码" class="headerlink" title="3.3 使用 objdump 查看汇编代码"></a>3.3 使用 objdump 查看汇编代码</h4><h5 id="3-3-1-使用dmesg-命令，找到发生段错误的地址"><a href="#3-3-1-使用dmesg-命令，找到发生段错误的地址" class="headerlink" title="3.3.1 使用dmesg 命令，找到发生段错误的地址"></a>3.3.1 使用dmesg 命令，找到发生段错误的地址</h5><pre><code>[7612082.776055] test[11162]: segfault at 4005a0 ip 00000000004004fd sp 00007fffbe060180 error 7 in test[400000+1000]</code></pre>
+<p>可知发生段错误的地址：4005a0，相对于的指令指针地址：00000000004004fd。</p>
+<h5 id="3-3-2-使用-objdump-生成二进制的相关信息，重定向到文件中："><a href="#3-3-2-使用-objdump-生成二进制的相关信息，重定向到文件中：" class="headerlink" title="3.3.2 使用 objdump 生成二进制的相关信息，重定向到文件中："></a>3.3.2 使用 objdump 生成二进制的相关信息，重定向到文件中：</h5><pre><code>objdump -d ./test &gt; test_dump</code></pre>
+<p>生成的 test_dump 文件中包含了二进制文件 test 的汇编代码</p>
+<h5 id="3-3-3-在-test-dump-文件中查找发生段错误的地址"><a href="#3-3-3-在-test-dump-文件中查找发生段错误的地址" class="headerlink" title="3.3.3 在 test_dump 文件中查找发生段错误的地址"></a>3.3.3 在 test_dump 文件中查找发生段错误的地址</h5><pre><code class="shell">1 00000000004004c0 &lt;frame_dummy&gt;:
+102   4004c0:   48 83 3d 58 09 20 00    cmpq   $0x0,0x200958(%rip)        # 600e20 &lt;__JCR_END__&gt;
+103   4004c7:   00
+104   4004c8:   74 1e                   je     4004e8 &lt;frame_dummy+0x28&gt;
+105   4004ca:   b8 00 00 00 00          mov    $0x0,%eax
+106   4004cf:   48 85 c0                test   %rax,%rax
+107   4004d2:   74 14                   je     4004e8 &lt;frame_dummy+0x28&gt;
+108   4004d4:   55                      push   %rbp
+109   4004d5:   bf 20 0e 60 00          mov    $0x600e20,%edi
+110   4004da:   48 89 e5                mov    %rsp,%rbp
+111   4004dd:   ff d0                   callq  *%rax
+112   4004df:   5d                      pop    %rbp
+113   4004e0:   e9 7b ff ff ff          jmpq   400460 &lt;register_tm_clones&gt;
+114   4004e5:   0f 1f 00                nopl   (%rax)
+115   4004e8:   e9 73 ff ff ff          jmpq   400460 &lt;register_tm_clones&gt;
+116 
+117 00000000004004ed &lt;main&gt;:
+118   4004ed:   55                      push   %rbp
+119   4004ee:   48 89 e5                mov    %rsp,%rbp
+120   4004f1:   48 c7 45 f8 a0 05 40    movq   $0x4005a0,-0x8(%rbp)
+121   4004f8:   00
+122   4004f9:   48 8b 45 f8             mov    -0x8(%rbp),%rax
+123   4004fd:   c7 00 54 45 53 54       movl   $0x54534554,(%rax)
+124   400503:   c6 40 04 00             movb   $0x0,0x4(%rax)
+125   400507:   5d                      pop    %rbp
+126   400508:   c3                      retq
+127   400509:   0f 1f 80 00 00 00 00    nopl   0x0(%rax)</code></pre>
+<p>我截取了一段信息，可以看到段错误发生在 main 函数中这一句，<code>movl $0x54534554,(%rax)</code>  我们对应到相对的源码中，也就定位到段错误了。</p>
+<p>注意：如果使用了 gcc 的编译优化选项参数 (-O1, -O2, -O3) 的话，生成的汇编指令将会被优化，汇编代码就会有些不同。</p>
+<h4 id="3-4-使用-catchsegv-获取段错误详细信息"><a href="#3-4-使用-catchsegv-获取段错误详细信息" class="headerlink" title="3.4 使用 catchsegv 获取段错误详细信息"></a>3.4 使用 catchsegv 获取段错误详细信息</h4><p>这个命令专门用来处理段错误，他会打印出段错误的堆栈信息。</p>
+<pre><code>*** Segmentation fault
+Register dump:
+
+ RAX: 00000000004005a0   RBX: 0000000000000000   RCX: 0000000000400510
+ RDX: 00007ffd4612de18   RSI: 00007ffd4612de08   RDI: 0000000000000001
+ RBP: 00007ffd4612dd20   R8 : 00007fafea5bee80   R9 : 0000000000000000
+ R10: 00007ffd4612d860   R11: 00007fafea217480   R12: 0000000000400400
+ R13: 00007ffd4612de00   R14: 0000000000000000   R15: 0000000000000000
+ RSP: 00007ffd4612dd20
+
+ RIP: 00000000004004fd   EFLAGS: 00010246
+
+ CS: 0033   FS: 0000   GS: 0000
+
+ Trap: 0000000e   Error: 00000007   OldMask: 00000000   CR2: 004005a0
+
+ FPUCW: 0000037f   FPUSW: 00000000   TAG: 00000000
+ RIP: 00000000   RDP: 00000000
+
+ ST(0) 0000 0000000000000000   ST(1) 0000 0000000000000000
+ ST(2) 0000 0000000000000000   ST(3) 0000 0000000000000000
+ ST(4) 0000 0000000000000000   ST(5) 0000 0000000000000000
+ ST(6) 0000 0000000000000000   ST(7) 0000 0000000000000000
+ mxcsr: 1f80
+ XMM0:  00000000000000000000000000000000 XMM1:  00000000000000000000000000000000
+ XMM2:  00000000000000000000000000000000 XMM3:  00000000000000000000000000000000
+ XMM4:  00000000000000000000000000000000 XMM5:  00000000000000000000000000000000
+ XMM6:  00000000000000000000000000000000 XMM7:  00000000000000000000000000000000
+ XMM8:  00000000000000000000000000000000 XMM9:  00000000000000000000000000000000
+ XMM10: 00000000000000000000000000000000 XMM11: 00000000000000000000000000000000
+ XMM12: 00000000000000000000000000000000 XMM13: 00000000000000000000000000000000
+ XMM14: 00000000000000000000000000000000 XMM15: 00000000000000000000000000000000
+
+Backtrace:
+/data/home/noahyzhang/test_linux/core/test.c:13(main)[0x4004fd]
+/lib64/libc.so.6(__libc_start_main+0xf5)[0x7fafea217575]
+??:?(_start)[0x400429]
+
+Memory map:
+
+00400000-00401000 r-xp 00000000 fc:11 1839082 /data/home/noahyzhang/test_linux/core/test
+00600000-00601000 r--p 00000000 fc:11 1839082 /data/home/noahyzhang/test_linux/core/test
+00601000-00602000 rw-p 00001000 fc:11 1839082 /data/home/noahyzhang/test_linux/core/test
+02554000-02579000 rw-p 00000000 00:00 0 [heap]
+7fafe9ddb000-7fafe9df0000 r-xp 00000000 fc:01 5194 /usr/lib64/libgcc_s-4.8.5-20150702.so.1
+7fafe9df0000-7fafe9fef000 ---p 00015000 fc:01 5194 /usr/lib64/libgcc_s-4.8.5-20150702.so.1
+7fafe9fef000-7fafe9ff0000 r--p 00014000 fc:01 5194 /usr/lib64/libgcc_s-4.8.5-20150702.so.1
+7fafe9ff0000-7fafe9ff1000 rw-p 00015000 fc:01 5194 /usr/lib64/libgcc_s-4.8.5-20150702.so.1
+7fafe9ff1000-7fafe9ff3000 r-xp 00000000 fc:01 25105 /usr/lib64/libdl-2.17.so
+7fafe9ff3000-7fafea1f3000 ---p 00002000 fc:01 25105 /usr/lib64/libdl-2.17.so
+7fafea1f3000-7fafea1f4000 r--p 00002000 fc:01 25105 /usr/lib64/libdl-2.17.so
+7fafea1f4000-7fafea1f5000 rw-p 00003000 fc:01 25105 /usr/lib64/libdl-2.17.so
+7fafea1f5000-7fafea3ba000 r-xp 00000000 fc:01 24989 /usr/lib64/libc-2.17.so
+7fafea3ba000-7fafea5b9000 ---p 001c5000 fc:01 24989 /usr/lib64/libc-2.17.so
+7fafea5b9000-7fafea5bd000 r--p 001c4000 fc:01 24989 /usr/lib64/libc-2.17.so
+7fafea5bd000-7fafea5bf000 rw-p 001c8000 fc:01 24989 /usr/lib64/libc-2.17.so
+7fafea5bf000-7fafea5c4000 rw-p 00000000 00:00 0
+7fafea5c4000-7fafea5c8000 r-xp 00000000 fc:01 24881 /usr/lib64/libSegFault.so
+7fafea5c8000-7fafea7c7000 ---p 00004000 fc:01 24881 /usr/lib64/libSegFault.so
+7fafea7c7000-7fafea7c8000 r--p 00003000 fc:01 24881 /usr/lib64/libSegFault.so
+7fafea7c8000-7fafea7c9000 rw-p 00004000 fc:01 24881 /usr/lib64/libSegFault.so
+7fafea7c9000-7fafea7eb000 r-xp 00000000 fc:01 4899 /usr/lib64/ld-2.17.so
+7fafea8ca000-7fafea8cc000 rw-p 00000000 00:00 0
+7fafea8e1000-7fafea8e4000 r-xp 00000000 fc:01 25620 /usr/lib64/libonion_security.so.1.0.19
+7fafea8e4000-7fafea9e4000 ---p 00003000 fc:01 25620 /usr/lib64/libonion_security.so.1.0.19
+7fafea9e4000-7fafea9e5000 rw-p 00003000 fc:01 25620 /usr/lib64/libonion_security.so.1.0.19
+7fafea9e5000-7fafea9e9000 rw-p 00000000 00:00 0
+7fafea9e9000-7fafea9ea000 rw-p 00000000 00:00 0
+7fafea9ea000-7fafea9eb000 r--p 00021000 fc:01 4899 /usr/lib64/ld-2.17.so
+7fafea9eb000-7fafea9ec000 rw-p 00022000 fc:01 4899 /usr/lib64/ld-2.17.so
+7fafea9ec000-7fafea9ed000 rw-p 00000000 00:00 0
+7ffd4610e000-7ffd4612f000 rw-p 00000000 00:00 0 [stack]
+7ffd4618e000-7ffd46190000 r-xp 00000000 00:00 0 [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0 [vsyscall]</code></pre>
+<p>我们可以在 Backtrace 中看到 <code> /data/home/noahyzhang/test_linux/core/test.c:13(main)[0x4004fd]</code>，发现提示错误发生在 test.c 的13行。并且给出了指针指令地址。</p>
+<h4 id="3-5-其他关于段错误的工具"><a href="#3-5-其他关于段错误的工具" class="headerlink" title="3.5 其他关于段错误的工具"></a>3.5 其他关于段错误的工具</h4><h5 id="3-5-1-ldd命令"><a href="#3-5-1-ldd命令" class="headerlink" title="3.5.1 ldd命令"></a>3.5.1 ldd命令</h5><p>ldd 命令可以查看二进制程序的共享库依赖，结果包括库的名称、起始地址等，这样就可以确定段错误到底是发生在自己写的程序中还是出现在共享库中。</p>
+<pre><code>ldd ./test
+        linux-vdso.so.1 =&gt;  (0x00007fff7a5f4000)
+        /$LIB/libonion.so =&gt; /lib64/libonion.so (0x00007ff00455c000)
+        libc.so.6 =&gt; /lib64/libc.so.6 (0x00007ff004074000)
+        libdl.so.2 =&gt; /lib64/libdl.so.2 (0x00007ff003e70000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007ff004443000)</code></pre>
+<h5 id="3-5-2-日志"><a href="#3-5-2-日志" class="headerlink" title="3.5.2 日志"></a>3.5.2 日志</h5><p>其实我们在写代码的时候，加上适当的日志是非常有必要的，这种查看错误的办法是最简单高效的。</p>
+<p>为了减少代码编译后的二进制文件大小，我们可以使用条件编译指令 <code>#ifdef DEBUG 、#endif </code>等把 print 打印函数包起来。这样在程序编译的时候，加上 -DEBUG 参数就可以查看调试信息，不加就不会显示调试信息。这样做可以快速定位问题，也能避免二进制文件大的问题。</p>
+<h2 id="4-规避一些问题"><a href="#4-规避一些问题" class="headerlink" title="4. 规避一些问题"></a>4. 规避一些问题</h2><ol>
+<li><p>出现段错误时，首先应该想到段错误的定义，从它出发考虑引发错误的原因。</p>
+</li>
+<li><p>在使用指针时，定义了指针后记得初始化指针，在使用的时候记得判断是否为NULL。</p>
+</li>
+<li><p>在使用数组时，注意数组是否被初始化，数组下标是否越界，数组元素是否存在等。</p>
+</li>
+<li><p>在访问变量时，注意变量所占地址空间是否已经被程序释放掉。</p>
+</li>
+<li><p>在处理变量时，注意变量的格式控制是否合理等。</p>
+</li>
+<li><p>尽量不要写递归函数，会占用大量的栈空间。</p>
+</li>
+</ol>
+
+      
+       
+    </div>
+</article>
+
+
+<p>
+    <a  class="dashang" onclick="dashangToggle()">💰</a>
+</p>
+
+
+
+
+    <div id="comments"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+<script type="text/javascript">
+    $.getScript('/js/gitalk.js', function () {
+        var gitalk = new Gitalk({
+            clientID: '0dad8455e8835477a625',
+            clientSecret: 'e736f5ff204f7b5f20321e3c558be7b8001efef5',
+            repo: 'noahyzhang.github.io',
+            owner: 'noahyzhang',
+            admin: ['noahyzhang'],
+            id: decodeURI(location.pathname),
+            distractionFreeMode: 'true',
+            language: 'zh-CN',
+            perPage: parseInt('10',10)
+        })
+        gitalk.render('comments')
+    })
+</script>
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2016-2020 noahyzhang
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+<div class="hide_box" onclick="dashangToggle()"></div>
+<div class="shang_box">
+    <a class="shang_close"  onclick="dashangToggle()">×</a>
+    <div class="shang_tit">
+        <p>Help us with donation</p>
+    </div>
+    <div class="shang_payimg">
+        <div class="pay_img">
+            <img src="/img/alipay.jpg" class="alipay" title="扫码支持">
+            <img src="/img/weixin.jpg" class="weixin" title="扫码支持">
+        </div>
+    </div>
+    <div class="shang_payselect">
+        <span><label><input type="radio" name="pay" checked value="alipay">alipay</label></span><span><label><input type="radio" name="pay" value="weixin">weixin</label></span>
+    </div>
+</div>
+
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+        $("input[name=pay]").on("click", function () {
+            if($("input[name=pay]:checked").val()=="weixin"){
+                $(".shang_box .shang_payimg .pay_img").addClass("weixin_img");
+            } else {
+                $(".shang_box .shang_payimg .pay_img").removeClass("weixin_img");
+            }
+        })
+        
+
+        /*高亮代码块行号*/
+        
+        $('pre code').each(function(){
+            var lines = $(this).text().trim().split('\n').length, widther='';
+            if (lines>99) {
+                widther = 'widther'
+            }
+            var $numbering = $('<ul/>').addClass('pre-numbering ' + widther).attr("unselectable","on");
+            $(this).addClass('has-numbering ' + widther)
+                    .parent()
+                    .append($numbering);
+            for(var i=1;i<=lines;i++){
+                $numbering.append($('<li/>').text(i));
+            }
+        });
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+    function dashangToggle() {
+        $(".shang_box").fadeToggle();
+        $(".hide_box").fadeToggle();
+    }
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<style>
+    pre{
+        position: relative;
+        margin-bottom: 24px;
+        border-radius: 10px;
+        border: 1px solid #e2dede;
+        background: #FFF;
+        overflow: hidden;
+    }
+    code.has-numbering{
+        margin-left: 30px;
+    }
+    code.has-numbering.widther{
+        margin-left: 35px;
+    }
+    .pre-numbering{
+        margin: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        padding: 0.5em 3px 0.7em 5px;
+        border-right: 1px solid #C3CCD0;
+        text-align: right;
+        color: #AAA;
+        background-color: #fafafa;
+    }
+    .pre-numbering.widther {
+        width: 35px;
+    }
+</style>
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+<div id="musicMouseDrag" style="position:fixed; z-index: 9999; bottom: 0; right: 0;">
+    <div id="musicDragArea" style="position: absolute; top: 0; left: 0; width: 100%;height: 10px;cursor: move; z-index: 10;"></div>
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1293886117&auto=1&height=66"></iframe>
+<script>
+    var $DOC = $(document)
+    $('#musicMouseDrag').on ('mousedown', function (e) {
+      // 阻止文本选中
+      $DOC.bind ("selectstart", function () {
+        return false;
+      });
+      $('#musicDragArea').css ('height', '100%');
+      var $moveTarget = $('#musicMouseDrag');
+      $moveTarget.css ('border', '1px dashed grey')
+      var div_x = e.pageX - $moveTarget.offset ().left;
+      var div_y = e.pageY - $moveTarget.offset ().top;
+      $DOC.on ('mousemove', function (e) {
+        var targetX = e.pageX - div_x;
+        var targetY = e.pageY - div_y;
+        targetX = targetX < 0 ? 0 : (targetX + $moveTarget.outerWidth () >= window.innerWidth) ? window.innerWidth - $moveTarget.outerWidth () : targetX;
+        targetY = targetY < 0 ? 0 : (targetY + $moveTarget.outerHeight () >= window.innerHeight) ? window.innerHeight - $moveTarget.outerHeight () : targetY;
+        $moveTarget.css ({'left': targetX + 'px', 'top': targetY + 'px', 'bottom': 'inherit', 'right': 'inherit'})
+      }).on ('mouseup', function () {
+        $DOC.unbind ("selectstart");
+        $DOC.off ('mousemove')
+        $DOC.off ('mouseup')
+        $moveTarget.css ('border', 'none')
+        $('#musicDragArea').css ('height', '10px');
+      })
+    })
+</script>
+</div>
+
+</html>

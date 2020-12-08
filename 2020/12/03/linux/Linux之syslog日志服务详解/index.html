@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Linux之syslog日志服务详解 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" syslog日志服务 ">
+  <meta name="description" content="Linux之syslog日志服务详解 | Zhangxiaoyi&#39;s Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
+<meta property="og:type" content="website">
+<meta property="og:title" content="about">
+<meta property="og:url" content="http://example.com/about/index.html">
+<meta property="og:site_name" content="Zhangxiaoyi&#39;s Blog">
+<meta property="og:description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-10-06T05:28:23.000Z">
+<meta property="article:modified_time" content="2020-10-06T07:52:54.234Z">
+<meta property="article:author" content="Zhangxiaoyi">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/avatar2.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/avatar2.jpg" />
+</a>
+<div class="author">
+    <span>Zhangxiaoyi</span>
+</div>
+
+<div class="icon">
+    
+        
+    
+        
+        <a title="github" href="https://github.com/noahyzhang" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-github"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+        <a title="csdn" href="https://blog.csdn.net/qq_40421919" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-csdn"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+        <a title="email" href="mailto:1251108673@qq.com" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-email"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+        <a title="qq" href="http://wpa.qq.com/msgrd?v=3&uin=1251108673&site=qq&menu=yes" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-qq"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active" data-rel="All">All<small>(28)</small></div></li>
+    
+        
+            
+            <li><div data-rel="读书">读书<small>(1)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="生活">生活<small>(3)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="linux">linux<small>(12)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="编程语言">编程语言<small>(1)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="数据库">数据库<small>(2)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="组件学习">组件学习<small>(6)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="其他">其他<small>(3)</small></div>
+                
+            </li>
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    
+    </div>
+    <div><a class="about  site_url"  href="/about">About</a></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="28">
+<input type="hidden" id="yelog_site_word_count" value="50.4k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        Links
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://www.zhangxiaoyiya.cn/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">All</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" />
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>c++</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>c++链接</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>curl</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>gcc</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>gdb linux</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>git</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>json protobuf</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>linux</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>linux 日志</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>makefile</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>mysql</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>mysqldump</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>syslog日志服务</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tcpdump</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>个人成长</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>代理</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>共享内存</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>内存管理</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>守护进程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>段错误 core</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>进程丢失</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        <a  class="All linux "
+           href="/2020/12/03/linux/Linux%E4%B9%8Bsyslog%E6%97%A5%E5%BF%97%E6%9C%8D%E5%8A%A1%E8%AF%A6%E8%A7%A3/"
+           data-tag="syslog日志服务"
+           data-author="" >
+            <span class="post-title" title="Linux之syslog日志服务详解">Linux之syslog日志服务详解</span>
+            <span class="post-date" title="2020-12-03 19:11:41">2020/12/03</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/02/linux/Linux%E4%B8%8B%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%90%AF%E5%8A%A8%E6%96%B9%E6%B3%95/"
+           data-tag="守护进程"
+           data-author="" >
+            <span class="post-title" title="Linux下守护进程的启动方法">Linux下守护进程的启动方法</span>
+            <span class="post-date" title="2020-12-02 16:19:17">2020/12/02</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/11/07/linux/tcpdump%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="tcpdump"
+           data-author="" >
+            <span class="post-title" title="tcpdump的使用">tcpdump的使用</span>
+            <span class="post-date" title="2020-11-07 14:11:41">2020/11/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/11/01/%E6%95%B0%E6%8D%AE%E5%BA%93/mysqldump%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="mysqldump"
+           data-author="" >
+            <span class="post-title" title="mysqldump的使用">mysqldump的使用</span>
+            <span class="post-date" title="2020-11-01 19:19:17">2020/11/01</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/11/01/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/curl%E5%91%BD%E4%BB%A4%E4%B8%8E%E5%85%B6API%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="curl"
+           data-author="" >
+            <span class="post-title" title="curl命令与其API的使用">curl命令与其API的使用</span>
+            <span class="post-date" title="2020-11-01 18:19:17">2020/11/01</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%8E%92%E6%9F%A5%E8%BF%9B%E7%A8%8B%E7%BB%88%E6%AD%A2%E7%9A%84%E5%8E%9F%E5%9B%A0/"
+           data-tag="进程丢失"
+           data-author="" >
+            <span class="post-title" title="排查进程终止的原因">排查进程终止的原因</span>
+            <span class="post-date" title="2020-10-25 19:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%9F%A5%E7%9C%8B%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E8%A2%AB%E5%93%AA%E4%BA%9B%E8%BF%9B%E7%A8%8Bnattch/"
+           data-tag="共享内存"
+           data-author="" >
+            <span class="post-title" title="查看共享内存被哪些进程nattch">查看共享内存被哪些进程nattch</span>
+            <span class="post-date" title="2020-10-25 19:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/linux%E4%B8%8B%E6%AE%B5%E9%94%99%E8%AF%AF%E7%9A%84%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95/"
+           data-tag="段错误 core"
+           data-author="" >
+            <span class="post-title" title="linux下段错误的产生原因及调试方法">linux下段错误的产生原因及调试方法</span>
+            <span class="post-date" title="2020-10-25 17:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%9F%A5%E7%9C%8B%E6%89%A7%E8%A1%8C%E6%9F%90%E4%B8%AA%E8%BF%9B%E7%A8%8B%E4%B8%AD%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8--strace%E5%91%BD%E4%BB%A4/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="查看执行某个进程中系统调用--strace命令">查看执行某个进程中系统调用--strace命令</span>
+            <span class="post-date" title="2020-10-25 15:31:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/Linux%E4%B9%8Bproc%E4%B8%8Bkcore%E6%96%87%E4%BB%B6%E8%A7%A3%E9%87%8A/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="/proc/kcore文件解释">/proc/kcore文件解释</span>
+            <span class="post-date" title="2020-10-25 15:11:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/linux%E7%B3%BB%E7%BB%9F%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90/"
+           data-tag="linux 日志"
+           data-author="" >
+            <span class="post-title" title="linux 系统日志分析">linux 系统日志分析</span>
+            <span class="post-date" title="2020-10-25 14:11:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/22/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96(json%E5%92%8Cprotobuf)/"
+           data-tag="json protobuf"
+           data-author="" >
+            <span class="post-title" title="序列化和反序列化(json/protobuf)">序列化和反序列化(json/protobuf)</span>
+            <span class="post-date" title="2020-10-22 20:19:17">2020/10/22</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/gcc%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="gcc"
+           data-author="" >
+            <span class="post-title" title="gcc的使用">gcc的使用</span>
+            <span class="post-date" title="2020-10-18 19:54:54">2020/10/18</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/gdb%20%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/"
+           data-tag="gdb linux"
+           data-author="" >
+            <span class="post-title" title="gdb调试工具">gdb调试工具</span>
+            <span class="post-date" title="2020-10-18 15:45:45">2020/10/18</span>
+        </a>
+        
+        <a  class="All 其他 "
+           href="/2020/10/18/%E5%85%B6%E4%BB%96/std--bad_alloc%E7%9A%84%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="同时启动多个程序，出现“std::bad_alloc”的问题">同时启动多个程序，出现“std::bad_alloc”的问题</span>
+            <span class="post-date" title="2020-10-18 11:11:11">2020/10/18</span>
+        </a>
+        
+        <a  class="All 其他 "
+           href="/2020/10/16/%E5%85%B6%E4%BB%96/%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%96%87%E4%BB%B6%E6%89%A7%E8%A1%8Cload%E4%B8%8D%E5%88%B0%E5%85%B1%E4%BA%AB%E5%BA%93%E9%97%AE%E9%A2%98/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="二进制文件执行加载不到共享库问题">二进制文件执行加载不到共享库问题</span>
+            <span class="post-date" title="2020-10-16 11:41:41">2020/10/16</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/09/linux/%E6%9F%A5%E7%9C%8Blinux%20%E7%A1%AC%E4%BB%B6%E8%B5%84%E6%BA%90%E6%96%B9%E6%B3%95/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="查看linux硬件资源方法">查看linux硬件资源方法</span>
+            <span class="post-date" title="2020-10-09 13:11:24">2020/10/09</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/06/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/git%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/"
+           data-tag="git"
+           data-author="" >
+            <span class="post-title" title="git学习记录">git学习记录</span>
+            <span class="post-date" title="2020-10-06 16:22:14">2020/10/06</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/06/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/makefile%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/"
+           data-tag="makefile"
+           data-author="" >
+            <span class="post-title" title="makefile学习记录">makefile学习记录</span>
+            <span class="post-date" title="2020-10-06 16:22:14">2020/10/06</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/06/linux/cc++%E9%94%99%E8%AF%AF%E4%B9%8B%20Undefined%20reference%20%E6%9C%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E9%97%AE%E9%A2%98/"
+           data-tag="c++链接"
+           data-author="" >
+            <span class="post-title" title="c和c++链接未定义的问题">c和c++链接未定义的问题</span>
+            <span class="post-date" title="2020-10-06 16:19:17">2020/10/06</span>
+        </a>
+        
+        <a  class="All 编程语言 "
+           href="/2020/10/06/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/c++%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/"
+           data-tag="c++"
+           data-author="" >
+            <span class="post-title" title="c++初始化的问题记录">c++初始化的问题记录</span>
+            <span class="post-date" title="2020-10-06 16:19:17">2020/10/06</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/10/06/%E6%95%B0%E6%8D%AE%E5%BA%93/show-slave-status-G%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="show slave status\G参数介绍">show slave status\G参数介绍</span>
+            <span class="post-date" title="2020-10-06 16:14:06">2020/10/06</span>
+        </a>
+        
+        <a  class="All 生活 "
+           href="/2020/10/06/%E7%94%9F%E6%B4%BB/2020-10-06-%E3%80%8A%E4%BA%BA%E7%94%9F%E3%80%8B%E8%AE%B0%E5%BD%95/"
+           data-tag="个人成长"
+           data-author="" >
+            <span class="post-title" title="《人生》记录">《人生》记录</span>
+            <span class="post-date" title="2020-10-06 16:12:42">2020/10/06</span>
+        </a>
+        
+        <a  class="All 生活 "
+           href="/2020/10/06/%E7%94%9F%E6%B4%BB/2020-10-08%E6%97%A5%E8%AE%B0/"
+           data-tag="个人成长"
+           data-author="" >
+            <span class="post-title" title="2020.10.8日志">2020.10.8日志</span>
+            <span class="post-date" title="2020-10-06 16:12:42">2020/10/06</span>
+        </a>
+        
+        <a  class="All 生活 "
+           href="/2020/10/06/%E7%94%9F%E6%B4%BB/%E5%85%B3%E4%BA%8E%E6%88%90%E7%86%9F/"
+           data-tag="个人成长"
+           data-author="" >
+            <span class="post-title" title="关于成熟">关于成熟</span>
+            <span class="post-date" title="2020-10-06 16:12:42">2020/10/06</span>
+        </a>
+        
+        <a  class="All 读书 "
+           href="/2020/10/06/%E8%AF%BB%E4%B9%A6/2020-10-06-%E6%98%8E%E6%9C%9D%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF%E6%84%9F%E6%83%B3/"
+           data-tag="个人成长"
+           data-author="" >
+            <span class="post-title" title="明朝那些事儿感想">明朝那些事儿感想</span>
+            <span class="post-date" title="2020-10-06 16:12:42">2020/10/06</span>
+        </a>
+        
+        <a  class="All 其他 "
+           href="/2020/10/06/%E5%85%B6%E4%BB%96/%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86%E4%B8%8E%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"
+           data-tag="代理"
+           data-author="" >
+            <span class="post-title" title="正向代理与反向代理">正向代理与反向代理</span>
+            <span class="post-date" title="2020-10-06 16:11:29">2020/10/06</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/06/linux/%E9%80%9A%E8%BF%87free%E5%91%BD%E4%BB%A4%E7%90%86%E8%A7%A3linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/"
+           data-tag="内存管理"
+           data-author="" >
+            <span class="post-title" title="通过free命令理解linux内存管理">通过free命令理解linux内存管理</span>
+            <span class="post-date" title="2020-10-06 16:09:52">2020/10/06</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-linux/Linux之syslog日志服务详解" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">Linux之syslog日志服务详解</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="linux">linux</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color1">syslog日志服务</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            Created At : <time class="date" title='Updated At: 2020-12-08 21:50:26'>2020-12-03 19:11</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>Count:2.8k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            Views 👀 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+        <span class="top-comment" title="跳转至评论区">
+            <a href="#comments">
+                Comment:<span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </a>
+        </span>
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E4%B9%8B-syslog-%E6%97%A5%E5%BF%97%E6%9C%8D%E5%8A%A1%E8%AF%A6%E8%A7%A3"><span class="toc-text">Linux 之 syslog 日志服务详解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81syslog%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">一、syslog的配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81syslog-%E5%8D%8F%E8%AE%AE"><span class="toc-text">二、syslog 协议</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-Priority"><span class="toc-text">1. Priority</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%85%B6%E4%B8%ADPriority%E6%98%AF%E7%94%B1%E4%B8%A4%E4%B8%AA%E9%83%A8%E5%88%86%E7%BB%84%E6%88%90%E2%80%94Facility%E3%80%81Level"><span class="toc-text">其中Priority是由两个部分组成—Facility、Level</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2%E3%80%81Head"><span class="toc-text">2、Head</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3%E3%80%81Message"><span class="toc-text">3、Message</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%BD%BF%E7%94%A8syslog%E6%8E%A5%E5%8F%A3%E8%B0%83%E7%94%A8syslog%E6%9C%8D%E5%8A%A1"><span class="toc-text">三、使用syslog接口调用syslog服务</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81syslog-API"><span class="toc-text">1、syslog API</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84syslog%E4%BE%8B%E5%AD%90"><span class="toc-text">2、一个简单的syslog例子</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-text">其他</span></a></li></ol></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Linux-之-syslog-日志服务详解"><a href="#Linux-之-syslog-日志服务详解" class="headerlink" title="Linux 之 syslog 日志服务详解"></a>Linux 之 syslog 日志服务详解</h1><p>syslog 和 rsyslog 是 Linux 下默认的日志守护进程。rsyslog 是 syslog 的升级版。同时 syslog 是标准协议，可以用来记录设备的日志。在UNIX系统，路由器、交换机等网络设备中，系统日志(System Log)记录系统中任何时间发生的大小事件。管理者可以通过查看系统记录，随时掌握系统状况。UNIX的系统日志是通过syslogd这个进程记录系统有关事件记录，也可以记录应用程序运作事件。通过适当的配置，我们还可以实现运行syslog协议的机器间通信，通过分析这些网络行为日志，藉以追踪掌握与设备和网络有关的状况。</p>
+<h2 id="一、syslog的配置文件"><a href="#一、syslog的配置文件" class="headerlink" title="一、syslog的配置文件"></a>一、syslog的配置文件</h2><p>想要整体了解syslog，先从syslog的配置文件开始看起。 /etc/rsyslog.conf 是 rsyslog 守护进程启动时需要的配置文件。各版本内容有略微不同，但是整体大致都相同。</p>
+<pre><code class="shell"># rsyslog configuration file
+
+# For more information see /usr/share/doc/rsyslog-*/rsyslog_conf.html
+# If you experience problems, see http://www.rsyslog.com/doc/troubleshoot.html
+
+#### MODULES ####
+# 加载模块
+# The imjournal module bellow is now used as a message source instead of imuxsock.
+# 加载 imuxsock 模块，为本地系统登陆提供支持(例如通过logger命令)
+$ModLoad imuxsock # provides support for local system logging (e.g. via logger command)
+# 提供对systemd日志的访问
+$ModLoad imjournal # provides access to the systemd journal
+# 加载 imklog，为内核登陆提供支持
+#$ModLoad imklog # reads kernel messages (the same are read from journald)
+# 提供标记信息功能
+#$ModLoad immark  # provides --MARK-- message capability
+
+# 加载 UDP 模块，允许使用UDP的514端口接收采用UDP协议转发的日志
+# Provides UDP syslog reception
+#$ModLoad imudp
+#$UDPServerRun 514
+
+# 加载 TCP 模块，允许使用TCP的514端口接收采用TCP协议转发的日志
+# Provides TCP syslog reception
+#$ModLoad imtcp
+#$InputTCPServerRun 514
+
+
+#### GLOBAL DIRECTIVES ####
+# 全局指令的配置
+# Where to place auxiliary files
+# 辅助文件目录
+$WorkDirectory /var/lib/rsyslog
+
+# Use default timestamp format
+# 使用默认的时间戳格式
+$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
+
+# File syncing capability is disabled by default. This feature is usually not required,
+# not useful and an extreme performance hit
+# 文件同步功能，通常是被禁用的，这个功能通常不是必要的，会大幅影响性能
+#$ActionFileEnableSync on
+
+# Include all config files in /etc/rsyslog.d/
+# 包含配置文件的目录，这个目录下的配置文件也是生效的
+$IncludeConfig /etc/rsyslog.d/*.conf
+
+# Turn off message reception via local log socket;
+# local messages are retrieved through imjournal now.
+# 通过本地消息日志套接字关闭消息接收，本地消息可以用imjournal检索
+$OmitLocalLogging on
+
+# File to store the position in the journal
+# 在日志中文件用于存储的位置
+$IMJournalStateFile imjournal.state
+
+
+#### RULES ####
+#RULES部分主要是对各种facility和level进行设置
+#设置你想要接收的facility的何种level的日志消息
+
+# Log all kernel messages to the console.
+# Logging much else clutters up the screen.
+# 将将所有的内核日志记录在界面，会造成屏幕混乱
+#kern.*                                                 /dev/console
+
+# Log anything (except mail) of level info or higher.
+# Don&#39;t log private authentication messages!
+# 将 info或者更高级别的消息送到这个文件，除了mail以外
+# 其中 * 是通配符，代表任何设备，none表示不对任何级别的信息进行记录
+# 同一行配置中，允许出现多个选择条件，多个选择条件使用 ; 隔开
+*.info;mail.none;authpriv.none;cron.none                /var/log/messages
+
+# The authpriv file has restricted access.
+# 将 authpriv 设备的任何级别信息记录到这个文件中，这主要是一些权限相关的信息
+authpriv.*                                              /var/log/secure
+
+# Log all the mail messages in one place.
+# 将 mail 设备中的任何级别的信息记录到这个文件，这主要是和电子邮件相关的信息
+# 文件前的前缀表示可以避免日志的同步写入，某些时候对提升系统的性能有很大的帮助
+mail.*                                                  -/var/log/maillog
+
+
+# Log cron stuff
+# 将 cron 设备中的任何级别的信息记录到这个文件，这主要是系统中定期执行的任务相关信息
+cron.*                                                  /var/log/cron
+
+# Everybody gets emergency messages
+# 将任何级别的 emerg 级别的信息发送给所有正在系统上的用户
+*.emerg                                                 :omusrmsg:*
+
+# Save news errors of level crit and higher in a special file.
+# uucp 和 news 设备的 crit 级别的信息记录到这个文件
+uucp,news.crit                                          /var/log/spooler
+
+# Save boot messages also to boot.log
+# 将系统启动相关的信息记录在这个文件
+local7.*                                                /var/log/boot.log
+
+
+# ### begin forwarding rule ###
+# 转发规则
+# The statement between the begin ... end define a SINGLE forwarding
+# rule. They belong together, do NOT split them. If you create multiple
+# forwarding rules, duplicate the whole block!
+# 远程日志可以使用 TCP 保持可靠
+# Remote Logging (we use TCP for reliable delivery)
+#
+# 创建一个磁盘上的队列，如果远程的主机是关闭的状态，消息会先存储在磁盘中并且在远程主机启动时发送过去(TCP)
+# An on-disk queue is created for this action. If the remote host is
+# down, messages are spooled to disk and sent when it is up again.
+# spool 文件 唯一的前缀
+#$ActionQueueFileName fwdRule1 # unique name prefix for spool files
+# 1gb的空间限制(尽量使用)
+#$ActionQueueMaxDiskSpace 1g   # 1gb space limit (use as much as possible)
+# 在关机的时候把信息存储在磁盘中
+#$ActionQueueSaveOnShutdown on # save messages to disk on shutdown
+# 异步运行
+#$ActionQueueType LinkedList   # run asynchronously
+# 如果远程主机宕机，将无限次重试
+#$ActionResumeRetryCount -1    # infinite retries if host is down
+# remote host is: name/ip:port, e.g. 192.168.0.1:514, port optional
+# 远程的主机和端口,注意：若用UDP传输，则将@@改为@即可。
+#*.* @@remote-host:514
+# ### end of the forwarding rule ###</code></pre>
+<p>/etc/rsyslog.conf 的修改只是在 rsyslog 守护进程重新启动后才会生效。</p>
+<p>该文件由不同程序或者消息分类的单个条目组成，每个占一行，对每类消息提供一个选择域和一个动作域。这些域由 tab 隔开：</p>
+<ul>
+<li>选择域指明消息的类型和优先级</li>
+<li>动作域指明 syslog 接收到一个与选择标准相匹配的消息时所执行的动作。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>消息类型</th>
+<th>消息来源</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>kern</td>
+<td>内核</td>
+</tr>
+<tr>
+<td>user</td>
+<td>用户程序</td>
+</tr>
+<tr>
+<td>Damon</td>
+<td>系统守护进程</td>
+</tr>
+<tr>
+<td>Mail</td>
+<td>电子邮件系统</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td>与安全权限相关的命令</td>
+</tr>
+<tr>
+<td>Lpr</td>
+<td>打印机</td>
+</tr>
+<tr>
+<td>News</td>
+<td>新闻组信息</td>
+</tr>
+<tr>
+<td>Uucp</td>
+<td>Uucp程序</td>
+</tr>
+<tr>
+<td>Cron</td>
+<td>记录当前登陆的每个用户信息</td>
+</tr>
+<tr>
+<td>wtmp</td>
+<td>一个用户每次登陆进入和退出时间的永久记录</td>
+</tr>
+<tr>
+<td>Authpriv</td>
+<td>授权信息</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>emerg</td>
+<td>最高的紧急程度状态</td>
+</tr>
+<tr>
+<td>alert</td>
+<td>紧急状态</td>
+</tr>
+<tr>
+<td>Cirt</td>
+<td>重要信息</td>
+</tr>
+<tr>
+<td>Warning</td>
+<td>警告</td>
+</tr>
+<tr>
+<td>err</td>
+<td>临界状态</td>
+</tr>
+<tr>
+<td>notice</td>
+<td>出现不寻常的事情</td>
+</tr>
+<tr>
+<td>info</td>
+<td>一般性消息</td>
+</tr>
+<tr>
+<td>Debug</td>
+<td>调试级信息</td>
+</tr>
+<tr>
+<td>None</td>
+<td>不记录任何日志信息</td>
+</tr>
+</tbody></table>
+<p>rsyslog 还有一个启动选项。在 /etc/sysconfig/rsyslog 里面，但是从rsysconfig v3就不推荐使用了，如果要使用，可以加上选项 -c2。</p>
+<ul>
+<li>-r：将当前主机作为日志服务器，监听514端口上进来的UDP包，接收远程系统的信息。没有该选项，将不会接收来自远程系统的信息。 </li>
+<li>-m **：将默认的时间戳标记信息出现频率变为自己指定的值【eg： -m240，表示每240分钟在日志文件中增加一行时间戳消息】</li>
+<li>-x：表示不希望让中央日志服务器解析其他机器的FQDN（完全合格域名，指的是主机名+全路径）</li>
+</ul>
+<p>例如：SYSLOGD_OPTIONS=”-r -x -m 240 -c 5”</p>
+<h2 id="二、syslog-协议"><a href="#二、syslog-协议" class="headerlink" title="二、syslog 协议"></a>二、syslog 协议</h2><p>Syslog协议[2]是一种用来在互联网协议（TCP/IP）的网络中传递记录档讯息的标准，属于一种主从式协议：syslog发送端发送一条文字信息到syslog接收端。</p>
+<p>syslog消息格式：syslog消息主要分为 Priority、Head和Message三个部分</p>
+<h5 id="1-Priority"><a href="#1-Priority" class="headerlink" title="1. Priority"></a>1. Priority</h5><h5 id="其中Priority是由两个部分组成—Facility、Level"><a href="#其中Priority是由两个部分组成—Facility、Level" class="headerlink" title="其中Priority是由两个部分组成—Facility、Level"></a>其中Priority是由两个部分组成—Facility、Level</h5><ul>
+<li>Facility表明该日志消息是由谁产生的，是内核kern？还是用户user？又或是邮件mail？不同的facility对应不同的代号，可通过man 3 syslog查看：</li>
+</ul>
+<pre><code>LOG_AUTHPRIV          security/authorization messages (private)
+LOG_CRON              clock daemon (cron and at)
+LOG_DAEMON            system daemons without separate facility value
+LOG_FTP               ftp daemon
+LOG_KERN              kernel messages (these can’t be generated from user processes)
+LOG_LOCAL0 through LOG_LOCAL7        reserved for local use
+LOG_LPR               line printer subsystem
+LOG_MAIL              mail subsystem
+LOG_NEWS              USENET news subsystem
+LOG_SYSLOG            messages generated internally by syslogd(8)
+LOG_USER (default)    generic user-level messages
+LOG_UUCP              UUCP subsystem</code></pre>
+<ul>
+<li>Level表明该日志消息的重要程度，是导致系统不能正常使用了的紧急级别emerg？还是需要被及时处理的警告级别alert？又或仅仅是需要调试的debug级别的信息？同样可通过man 3 syslog查看：</li>
+</ul>
+<pre><code>LOG_EMERG      system is unusable
+LOG_ALERT      action must be taken immediately
+LOG_CRIT       critical conditions
+LOG_ERR        error conditions
+LOG_WARNING    warning conditions
+LOG_NOTICE     normal, but significant, condition
+LOG_INFO       informational message
+LOG_DEBUG      debug-level message</code></pre>
+<p>Facility和level分别定义了不同的代号，其各自的宏定义可见/usr/include/sys/syslog.h头文件，它们两者的组合构成了Priority头的值。而该priority的值也恰恰是syslog函数的第一个参数的值。</p>
+<h5 id="2、Head"><a href="#2、Head" class="headerlink" title="2、Head"></a>2、Head</h5><p>包括 时间戳、Host等等</p>
+<h5 id="3、Message"><a href="#3、Message" class="headerlink" title="3、Message"></a>3、Message</h5><p>消息内容</p>
+<h2 id="三、使用syslog接口调用syslog服务"><a href="#三、使用syslog接口调用syslog服务" class="headerlink" title="三、使用syslog接口调用syslog服务"></a>三、使用syslog接口调用syslog服务</h2><h4 id="1、syslog-API"><a href="#1、syslog-API" class="headerlink" title="1、syslog API"></a>1、syslog API</h4><p>linux C 中提供了一套系统日志写入的接口，主要涉及三个函数openlog，syslog，closelog。</p>
+<ul>
+<li><p>打开一个syslog连接</p>
+<pre><code class="c++">#include &lt;syslog.h&gt;
+void openlog(const char *ident, int option, int facility);</code></pre>
+<p>参数：</p>
+<ul>
+<li><p>ident 指定的字符串会放入到相应的消息日志中</p>
+</li>
+<li><p>option有如下选项</p>
+</li>
+</ul>
+<pre><code class="shell">LOG_CONS              Write directly to system console if there is an error while sending to system logger.
+LOG_NDELAY            Open the connection immediately
+LOG_NOWAIT            Don’t  wait for child processes that may have been created while logging the message.
+LOG_ODELAY            The converse of LOG_NDELAY; opening of the connection is delayed until syslog() is called.
+LOG_PERROR            (Not in POSIX.1-2001.)  Print to stderr as well.
+LOG_PID               Include PID with each message.打印的每一条日志信息包含当前进程的PID</code></pre>
+<ul>
+<li>facility 上面介绍了，下面是常用选项</li>
+</ul>
+<pre><code>LOG_USER：打印的每一条日志信息包含当前用户的等级信息</code></pre>
+</li>
+<li><p>产生一条日志消息以特定的规则分发出去</p>
+<pre><code>#include &lt;syslog.h&gt;
+void syslog(int priority, const char *format, ...);</code></pre>
+<p>参数:</p>
+<ul>
+<li>priority 优先级，由facility和level的或运算组成；</li>
+<li>format 格式化输出，类似于printf函数中的format参数。</li>
+</ul>
+</li>
+<li><p>关闭用来写日志记录的文件描述符</p>
+<pre><code>#include &lt;syslog.h&gt;
+void closelog(void);</code></pre>
+</li>
+</ul>
+<h4 id="2、一个简单的syslog例子"><a href="#2、一个简单的syslog例子" class="headerlink" title="2、一个简单的syslog例子"></a>2、一个简单的syslog例子</h4><pre><code class="c++">#include &lt;stdio.h&gt;
+#include &lt;syslog.h&gt;
+#include &lt;stdlib.h&gt;
+int main(int argc,char* argv[])
+&#123;
+    openlog(argv[0],LOG_CONS | LOG_PID, LOG_USER);
+    int count = 0;
+    while(1)
+    &#123;
+        syslog(LOG_INFO, &quot;%d, log info test ...&quot;, count);
+        count++;
+          sleep(1);
+    &#125;
+    closelog();
+    return 0;
+&#125;</code></pre>
+<p>在 rsyslog 配置文件中添加一行内容如下</p>
+<pre><code>user.*            /var/log/user_message.log</code></pre>
+<p>重启 rsyslog 服务 systemctl restart rsyslog</p>
+<p>执行这个syslog 例子。</p>
+<p>cat user_message.log 就可以看到发送的消息内容</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>扩展：也可以将这台机器上syslog日志发送到另一台机器的syslog进程并存储起来，只需要配置一下即可</p>
+<p>注意：重点是学习syslog的配置文件，搞清楚系统日志，便于我们查找系统问题。</p>
+<p>Linux下的syslog，它出现的目的并不是为了提供用户每个进程的日志输出，syslog只是用来作为对于服务管理的整套机制，它针对的是一类服务，用来做日志服务器，实现对整个系统网络中日志的维护（对日志的维护，实际上就是对整个计算机群的维护）。同时，真正的工程中，并不会使用syslog作为全套的日志管理工具，在Linux下有提供了很多完整的日志库工具，比如log4cplus、zlog等。</p>
+
+      
+       
+    </div>
+</article>
+
+
+<p>
+    <a  class="dashang" onclick="dashangToggle()">💰</a>
+</p>
+
+
+
+
+    <div id="comments"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+<script type="text/javascript">
+    $.getScript('/js/gitalk.js', function () {
+        var gitalk = new Gitalk({
+            clientID: '0dad8455e8835477a625',
+            clientSecret: 'e736f5ff204f7b5f20321e3c558be7b8001efef5',
+            repo: 'noahyzhang.github.io',
+            owner: 'noahyzhang',
+            admin: ['noahyzhang'],
+            id: decodeURI(location.pathname),
+            distractionFreeMode: 'true',
+            language: 'zh-CN',
+            perPage: parseInt('10',10)
+        })
+        gitalk.render('comments')
+    })
+</script>
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2016-2020 noahyzhang
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+<div class="hide_box" onclick="dashangToggle()"></div>
+<div class="shang_box">
+    <a class="shang_close"  onclick="dashangToggle()">×</a>
+    <div class="shang_tit">
+        <p>Help us with donation</p>
+    </div>
+    <div class="shang_payimg">
+        <div class="pay_img">
+            <img src="/img/alipay.jpg" class="alipay" title="扫码支持">
+            <img src="/img/weixin.jpg" class="weixin" title="扫码支持">
+        </div>
+    </div>
+    <div class="shang_payselect">
+        <span><label><input type="radio" name="pay" checked value="alipay">alipay</label></span><span><label><input type="radio" name="pay" value="weixin">weixin</label></span>
+    </div>
+</div>
+
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+        $("input[name=pay]").on("click", function () {
+            if($("input[name=pay]:checked").val()=="weixin"){
+                $(".shang_box .shang_payimg .pay_img").addClass("weixin_img");
+            } else {
+                $(".shang_box .shang_payimg .pay_img").removeClass("weixin_img");
+            }
+        })
+        
+
+        /*高亮代码块行号*/
+        
+        $('pre code').each(function(){
+            var lines = $(this).text().trim().split('\n').length, widther='';
+            if (lines>99) {
+                widther = 'widther'
+            }
+            var $numbering = $('<ul/>').addClass('pre-numbering ' + widther).attr("unselectable","on");
+            $(this).addClass('has-numbering ' + widther)
+                    .parent()
+                    .append($numbering);
+            for(var i=1;i<=lines;i++){
+                $numbering.append($('<li/>').text(i));
+            }
+        });
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+    function dashangToggle() {
+        $(".shang_box").fadeToggle();
+        $(".hide_box").fadeToggle();
+    }
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<style>
+    pre{
+        position: relative;
+        margin-bottom: 24px;
+        border-radius: 10px;
+        border: 1px solid #e2dede;
+        background: #FFF;
+        overflow: hidden;
+    }
+    code.has-numbering{
+        margin-left: 30px;
+    }
+    code.has-numbering.widther{
+        margin-left: 35px;
+    }
+    .pre-numbering{
+        margin: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        padding: 0.5em 3px 0.7em 5px;
+        border-right: 1px solid #C3CCD0;
+        text-align: right;
+        color: #AAA;
+        background-color: #fafafa;
+    }
+    .pre-numbering.widther {
+        width: 35px;
+    }
+</style>
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+<div id="musicMouseDrag" style="position:fixed; z-index: 9999; bottom: 0; right: 0;">
+    <div id="musicDragArea" style="position: absolute; top: 0; left: 0; width: 100%;height: 10px;cursor: move; z-index: 10;"></div>
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1293886117&auto=1&height=66"></iframe>
+<script>
+    var $DOC = $(document)
+    $('#musicMouseDrag').on ('mousedown', function (e) {
+      // 阻止文本选中
+      $DOC.bind ("selectstart", function () {
+        return false;
+      });
+      $('#musicDragArea').css ('height', '100%');
+      var $moveTarget = $('#musicMouseDrag');
+      $moveTarget.css ('border', '1px dashed grey')
+      var div_x = e.pageX - $moveTarget.offset ().left;
+      var div_y = e.pageY - $moveTarget.offset ().top;
+      $DOC.on ('mousemove', function (e) {
+        var targetX = e.pageX - div_x;
+        var targetY = e.pageY - div_y;
+        targetX = targetX < 0 ? 0 : (targetX + $moveTarget.outerWidth () >= window.innerWidth) ? window.innerWidth - $moveTarget.outerWidth () : targetX;
+        targetY = targetY < 0 ? 0 : (targetY + $moveTarget.outerHeight () >= window.innerHeight) ? window.innerHeight - $moveTarget.outerHeight () : targetY;
+        $moveTarget.css ({'left': targetX + 'px', 'top': targetY + 'px', 'bottom': 'inherit', 'right': 'inherit'})
+      }).on ('mouseup', function () {
+        $DOC.unbind ("selectstart");
+        $DOC.off ('mousemove')
+        $DOC.off ('mouseup')
+        $moveTarget.css ('border', 'none')
+        $('#musicDragArea').css ('height', '10px');
+      })
+    })
+</script>
+</div>
+
+</html>
