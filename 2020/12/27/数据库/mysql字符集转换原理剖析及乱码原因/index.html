@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>mysql字符集转换原理剖析及乱码原因 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" mysql ">
+  <meta name="description" content="mysql字符集转换原理剖析及乱码原因 | Zhangxiaoyi&#39;s Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
+<meta property="og:type" content="website">
+<meta property="og:title" content="about">
+<meta property="og:url" content="http://example.com/about/index.html">
+<meta property="og:site_name" content="Zhangxiaoyi&#39;s Blog">
+<meta property="og:description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-10-06T05:28:23.000Z">
+<meta property="article:modified_time" content="2020-10-06T07:52:54.234Z">
+<meta property="article:author" content="Zhangxiaoyi">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/avatar2.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/avatar2.jpg" />
+</a>
+<div class="author">
+    <span>Zhangxiaoyi</span>
+</div>
+
+<div class="icon">
+    
+        
+    
+        
+        <a title="github" href="https://github.com/noahyzhang" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-github"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+        <a title="csdn" href="https://blog.csdn.net/qq_40421919" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-csdn"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+        <a title="email" href="mailto:1251108673@qq.com" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-email"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+        <a title="qq" href="http://wpa.qq.com/msgrd?v=3&uin=1251108673&site=qq&menu=yes" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-qq"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active" data-rel="All">All<small>(31)</small></div></li>
+    
+        
+            
+            <li><div data-rel="读书">读书<small>(1)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="生活">生活<small>(3)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="linux">linux<small>(14)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="编程语言">编程语言<small>(1)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="数据库">数据库<small>(3)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="组件学习">组件学习<small>(6)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="其他">其他<small>(3)</small></div>
+                
+            </li>
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    
+    </div>
+    <div><a class="about  site_url"  href="/about">About</a></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="31">
+<input type="hidden" id="yelog_site_word_count" value="57.5k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        Links
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://www.zhangxiaoyiya.cn/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">All</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" />
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>c++</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>c++链接</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>curl</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>gcc</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>gdb linux</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>git</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>json protobuf</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>linux</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>linux 日志</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>makefile</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>mysql</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>mysqldump</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>syslog日志服务</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tcpdump</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tempfs /dev/shm</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>个人成长</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>代理</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>共享内存</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>内存管理</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>守护进程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>段错误 core</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>进程丢失</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>进程状态</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        <a  class="All 数据库 "
+           href="/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E5%AD%97%E7%AC%A6%E9%9B%86%E8%BD%AC%E6%8D%A2%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90%E5%8F%8A%E4%B9%B1%E7%A0%81%E5%8E%9F%E5%9B%A0/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="mysql字符集转换原理剖析及乱码原因">mysql字符集转换原理剖析及乱码原因</span>
+            <span class="post-date" title="2020-12-27 14:14:06">2020/12/27</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/20/linux/Linux%E7%B3%BB%E7%BB%9F%E8%BF%9B%E7%A8%8B%E7%8A%B6%E6%80%81%E8%A7%A3%E6%9E%90/"
+           data-tag="进程状态"
+           data-author="" >
+            <span class="post-title" title="Linux系统进程状态解析">Linux系统进程状态解析</span>
+            <span class="post-date" title="2020-12-20 14:19:17">2020/12/20</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/20/linux/Linux%E7%B3%BB%E7%BB%9Ftempfs%E5%92%8C:dev:shm%E8%A7%A3%E6%9E%90/"
+           data-tag="tempfs /dev/shm"
+           data-author="" >
+            <span class="post-title" title="Linux系统tempfs和/dev/shm解析">Linux系统tempfs和/dev/shm解析</span>
+            <span class="post-date" title="2020-12-20 13:19:17">2020/12/20</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/03/linux/Linux%E4%B9%8Bsyslog%E6%97%A5%E5%BF%97%E6%9C%8D%E5%8A%A1%E8%AF%A6%E8%A7%A3/"
+           data-tag="syslog日志服务"
+           data-author="" >
+            <span class="post-title" title="Linux之syslog日志服务详解">Linux之syslog日志服务详解</span>
+            <span class="post-date" title="2020-12-03 19:11:41">2020/12/03</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/02/linux/Linux%E4%B8%8B%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%90%AF%E5%8A%A8%E6%96%B9%E6%B3%95/"
+           data-tag="守护进程"
+           data-author="" >
+            <span class="post-title" title="Linux下守护进程的启动方法">Linux下守护进程的启动方法</span>
+            <span class="post-date" title="2020-12-02 16:19:17">2020/12/02</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/11/07/linux/tcpdump%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="tcpdump"
+           data-author="" >
+            <span class="post-title" title="tcpdump的使用">tcpdump的使用</span>
+            <span class="post-date" title="2020-11-07 14:11:41">2020/11/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/11/01/%E6%95%B0%E6%8D%AE%E5%BA%93/mysqldump%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="mysqldump"
+           data-author="" >
+            <span class="post-title" title="mysqldump的使用">mysqldump的使用</span>
+            <span class="post-date" title="2020-11-01 19:19:17">2020/11/01</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/11/01/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/curl%E5%91%BD%E4%BB%A4%E4%B8%8E%E5%85%B6API%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="curl"
+           data-author="" >
+            <span class="post-title" title="curl命令与其API的使用">curl命令与其API的使用</span>
+            <span class="post-date" title="2020-11-01 18:19:17">2020/11/01</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%8E%92%E6%9F%A5%E8%BF%9B%E7%A8%8B%E7%BB%88%E6%AD%A2%E7%9A%84%E5%8E%9F%E5%9B%A0/"
+           data-tag="进程丢失"
+           data-author="" >
+            <span class="post-title" title="排查进程终止的原因">排查进程终止的原因</span>
+            <span class="post-date" title="2020-10-25 19:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%9F%A5%E7%9C%8B%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E8%A2%AB%E5%93%AA%E4%BA%9B%E8%BF%9B%E7%A8%8Bnattch/"
+           data-tag="共享内存"
+           data-author="" >
+            <span class="post-title" title="查看共享内存被哪些进程nattch">查看共享内存被哪些进程nattch</span>
+            <span class="post-date" title="2020-10-25 19:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/linux%E4%B8%8B%E6%AE%B5%E9%94%99%E8%AF%AF%E7%9A%84%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95/"
+           data-tag="段错误 core"
+           data-author="" >
+            <span class="post-title" title="linux下段错误的产生原因及调试方法">linux下段错误的产生原因及调试方法</span>
+            <span class="post-date" title="2020-10-25 17:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%9F%A5%E7%9C%8B%E6%89%A7%E8%A1%8C%E6%9F%90%E4%B8%AA%E8%BF%9B%E7%A8%8B%E4%B8%AD%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8--strace%E5%91%BD%E4%BB%A4/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="查看执行某个进程中系统调用--strace命令">查看执行某个进程中系统调用--strace命令</span>
+            <span class="post-date" title="2020-10-25 15:31:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/Linux%E4%B9%8Bproc%E4%B8%8Bkcore%E6%96%87%E4%BB%B6%E8%A7%A3%E9%87%8A/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="/proc/kcore文件解释">/proc/kcore文件解释</span>
+            <span class="post-date" title="2020-10-25 15:11:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/linux%E7%B3%BB%E7%BB%9F%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90/"
+           data-tag="linux 日志"
+           data-author="" >
+            <span class="post-title" title="linux 系统日志分析">linux 系统日志分析</span>
+            <span class="post-date" title="2020-10-25 14:11:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/22/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96(json%E5%92%8Cprotobuf)/"
+           data-tag="json protobuf"
+           data-author="" >
+            <span class="post-title" title="序列化和反序列化(json/protobuf)">序列化和反序列化(json/protobuf)</span>
+            <span class="post-date" title="2020-10-22 20:19:17">2020/10/22</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/gcc%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="gcc"
+           data-author="" >
+            <span class="post-title" title="gcc的使用">gcc的使用</span>
+            <span class="post-date" title="2020-10-18 19:54:54">2020/10/18</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/gdb%20%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/"
+           data-tag="gdb linux"
+           data-author="" >
+            <span class="post-title" title="gdb调试工具">gdb调试工具</span>
+            <span class="post-date" title="2020-10-18 15:45:45">2020/10/18</span>
+        </a>
+        
+        <a  class="All 其他 "
+           href="/2020/10/18/%E5%85%B6%E4%BB%96/std--bad_alloc%E7%9A%84%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="同时启动多个程序，出现“std::bad_alloc”的问题">同时启动多个程序，出现“std::bad_alloc”的问题</span>
+            <span class="post-date" title="2020-10-18 11:11:11">2020/10/18</span>
+        </a>
+        
+        <a  class="All 其他 "
+           href="/2020/10/16/%E5%85%B6%E4%BB%96/%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%96%87%E4%BB%B6%E6%89%A7%E8%A1%8Cload%E4%B8%8D%E5%88%B0%E5%85%B1%E4%BA%AB%E5%BA%93%E9%97%AE%E9%A2%98/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="二进制文件执行加载不到共享库问题">二进制文件执行加载不到共享库问题</span>
+            <span class="post-date" title="2020-10-16 11:41:41">2020/10/16</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/09/linux/%E6%9F%A5%E7%9C%8Blinux%20%E7%A1%AC%E4%BB%B6%E8%B5%84%E6%BA%90%E6%96%B9%E6%B3%95/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="查看linux硬件资源方法">查看linux硬件资源方法</span>
+            <span class="post-date" title="2020-10-09 13:11:24">2020/10/09</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/06/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/git%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/"
+           data-tag="git"
+           data-author="" >
+            <span class="post-title" title="git学习记录">git学习记录</span>
+            <span class="post-date" title="2020-10-06 16:22:14">2020/10/06</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/06/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/makefile%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/"
+           data-tag="makefile"
+           data-author="" >
+            <span class="post-title" title="makefile学习记录">makefile学习记录</span>
+            <span class="post-date" title="2020-10-06 16:22:14">2020/10/06</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/06/linux/cc++%E9%94%99%E8%AF%AF%E4%B9%8B%20Undefined%20reference%20%E6%9C%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E9%97%AE%E9%A2%98/"
+           data-tag="c++链接"
+           data-author="" >
+            <span class="post-title" title="c和c++链接未定义的问题">c和c++链接未定义的问题</span>
+            <span class="post-date" title="2020-10-06 16:19:17">2020/10/06</span>
+        </a>
+        
+        <a  class="All 编程语言 "
+           href="/2020/10/06/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/c++%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/"
+           data-tag="c++"
+           data-author="" >
+            <span class="post-title" title="c++初始化的问题记录">c++初始化的问题记录</span>
+            <span class="post-date" title="2020-10-06 16:19:17">2020/10/06</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/10/06/%E6%95%B0%E6%8D%AE%E5%BA%93/show-slave-status-G%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="show slave status\G参数介绍">show slave status\G参数介绍</span>
+            <span class="post-date" title="2020-10-06 16:14:06">2020/10/06</span>
+        </a>
+        
+        <a  class="All 生活 "
+           href="/2020/10/06/%E7%94%9F%E6%B4%BB/2020-10-06-%E3%80%8A%E4%BA%BA%E7%94%9F%E3%80%8B%E8%AE%B0%E5%BD%95/"
+           data-tag="个人成长"
+           data-author="" >
+            <span class="post-title" title="《人生》记录">《人生》记录</span>
+            <span class="post-date" title="2020-10-06 16:12:42">2020/10/06</span>
+        </a>
+        
+        <a  class="All 生活 "
+           href="/2020/10/06/%E7%94%9F%E6%B4%BB/2020-10-08%E6%97%A5%E8%AE%B0/"
+           data-tag="个人成长"
+           data-author="" >
+            <span class="post-title" title="2020.10.8日志">2020.10.8日志</span>
+            <span class="post-date" title="2020-10-06 16:12:42">2020/10/06</span>
+        </a>
+        
+        <a  class="All 生活 "
+           href="/2020/10/06/%E7%94%9F%E6%B4%BB/%E5%85%B3%E4%BA%8E%E6%88%90%E7%86%9F/"
+           data-tag="个人成长"
+           data-author="" >
+            <span class="post-title" title="关于成熟">关于成熟</span>
+            <span class="post-date" title="2020-10-06 16:12:42">2020/10/06</span>
+        </a>
+        
+        <a  class="All 读书 "
+           href="/2020/10/06/%E8%AF%BB%E4%B9%A6/2020-10-06-%E6%98%8E%E6%9C%9D%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF%E6%84%9F%E6%83%B3/"
+           data-tag="个人成长"
+           data-author="" >
+            <span class="post-title" title="明朝那些事儿感想">明朝那些事儿感想</span>
+            <span class="post-date" title="2020-10-06 16:12:42">2020/10/06</span>
+        </a>
+        
+        <a  class="All 其他 "
+           href="/2020/10/06/%E5%85%B6%E4%BB%96/%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86%E4%B8%8E%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"
+           data-tag="代理"
+           data-author="" >
+            <span class="post-title" title="正向代理与反向代理">正向代理与反向代理</span>
+            <span class="post-date" title="2020-10-06 16:11:29">2020/10/06</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/06/linux/%E9%80%9A%E8%BF%87free%E5%91%BD%E4%BB%A4%E7%90%86%E8%A7%A3linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/"
+           data-tag="内存管理"
+           data-author="" >
+            <span class="post-title" title="通过free命令理解linux内存管理">通过free命令理解linux内存管理</span>
+            <span class="post-date" title="2020-10-06 16:09:52">2020/10/06</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-数据库/mysql字符集转换原理剖析及乱码原因" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">mysql字符集转换原理剖析及乱码原因</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="数据库">数据库</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color1">mysql</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            Created At : <time class="date" title='Updated At: 2020-12-27 20:14:40'>2020-12-27 14:14</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>Count:3.3k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            Views 👀 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+        <span class="top-comment" title="跳转至评论区">
+            <a href="#comments">
+                Comment:<span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </a>
+        </span>
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81mysql%E5%AD%97%E7%AC%A6%E9%9B%86%E5%92%8C%E6%A0%A1%E5%AF%B9"><span class="toc-text">一、mysql字符集和校对</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Mysql%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E5%AD%97%E7%AC%A6%E9%9B%86"><span class="toc-text">1. Mysql如何使用字符集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Mysql%E6%94%AF%E6%8C%81%E7%9A%84%E5%AD%97%E7%AC%A6%E9%9B%86%E5%92%8C%E5%AD%97%E7%AC%A6%E5%BA%8F"><span class="toc-text">2. Mysql支持的字符集和字符序</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-%E6%9F%A5%E7%9C%8B%E6%94%AF%E6%8C%81%E7%9A%84%E5%AD%97%E7%AC%A6%E9%9B%86"><span class="toc-text">2.1 查看支持的字符集</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-%E6%9F%A5%E7%9C%8B%E6%94%AF%E6%8C%81%E7%9A%84%E5%AD%97%E7%AC%A6%E5%BA%8F"><span class="toc-text">2.2 查看支持的字符序</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%AE%BE%E5%AE%9A%E5%AD%97%E7%AC%A6%E9%9B%86%E5%92%8C%E5%AD%97%E7%AC%A6%E5%BA%8F"><span class="toc-text">3. 设定字符集和字符序</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-%E5%AD%97%E7%AC%A6%E9%9B%86%E5%90%AB%E4%B9%89%E4%BB%8B%E7%BB%8D"><span class="toc-text">3.1 字符集含义介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-character-set-client%EF%BC%9AMysql%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%80%BB%E6%98%AF%E5%81%87%E5%AE%9A%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%98%AF%E6%8C%89%E7%85%A7-character-set-client-%E8%AE%BE%E7%BD%AE%E7%9A%84%E5%AD%97%E7%AC%A6%E9%9B%86%E6%9D%A5%E4%BC%A0%E8%BE%93%E6%95%B0%E6%8D%AE%E5%92%8CSQL%E8%AF%AD%E5%8F%A5%E7%9A%84%E3%80%82"><span class="toc-text">1. character_set_client：Mysql服务端总是假定客户端是按照 character_set_client 设置的字符集来传输数据和SQL语句的。</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-character-set-connection%EF%BC%9A%E5%BD%93Mysql%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%94%B6%E5%88%B0%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84SQL%E8%AF%AD%E5%8F%A5%E6%97%B6%EF%BC%8C%E5%AE%83%E5%85%88%E5%B0%86%E5%85%B6%E8%BD%AC%E6%8D%A2%E6%88%90%E5%AD%97%E7%AC%A6%E9%9B%86-character-set-connection-%E3%80%82%E5%AE%83%E8%BF%98%E4%BD%BF%E7%94%A8%E8%BF%99%E4%B8%AA%E8%AE%BE%E7%BD%AE%E6%9D%A5%E5%86%B3%E5%AE%9A%E5%A6%82%E4%BD%95%E5%B0%86%E6%95%B0%E6%8D%AE%E8%BD%AC%E6%8D%A2%E6%88%90%E5%AD%97%E7%AC%A6%E4%B8%B2%E3%80%82"><span class="toc-text">2. character_set_connection：当Mysql服务器收到客户端的SQL语句时，它先将其转换成字符集 character_set_connection 。它还使用这个设置来决定如何将数据转换成字符串。</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-character-set-database%EF%BC%9A%E9%BB%98%E8%AE%A4%E6%98%AF%E5%BD%93%E5%89%8D%E6%89%80%E5%9C%A8%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%AD%97%E7%AC%A6%E9%9B%86%EF%BC%8C%E5%A6%82%E6%9E%9C%E6%B2%A1%E6%9C%89%E4%BD%BF%E7%94%A8use%E8%BF%9B%E5%85%A5%E4%BB%BB%E4%BD%95%E5%BA%93%EF%BC%8C%E9%82%A3%E4%B9%88%E8%BF%99%E4%B8%AA%E5%8F%82%E6%95%B0%E7%9A%84%E5%80%BC%E5%92%8C-character-set-server-%E4%B8%80%E6%A0%B7%E3%80%82%E8%BF%99%E4%B8%AA%E5%8F%98%E9%87%8F%E7%94%B1%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86%E3%80%82Mysql5-7%E4%B8%AD%E4%B8%8D%E6%8E%A8%E8%8D%90%E4%BD%BF%E7%94%A8%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8Fcharacter-set-database%E3%80%81collation-database%E7%B3%BB%E7%BB%9F%E5%8F%98%E9%87%8F%E3%80%82%E5%B8%8C%E6%9C%9B%E5%9C%A8%E5%B0%86%E6%9D%A5%E7%9A%84MySQL%E7%89%88%E6%9C%AC%E4%B8%AD%E5%B0%86%E5%85%B6%E5%88%A0%E9%99%A4%E3%80%82"><span class="toc-text">3. character_set_database：默认是当前所在数据库的字符集，如果没有使用use进入任何库，那么这个参数的值和 character_set_server 一样。这个变量由系统管理。Mysql5.7中不推荐使用全局变量character_set_database、collation_database系统变量。希望在将来的MySQL版本中将其删除。</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-character-set-filesystem%EF%BC%9A%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%AD%97%E7%AC%A6%E9%9B%86%EF%BC%8C%E6%AD%A4%E5%8F%98%E9%87%8F%E7%94%A8%E4%BA%8E%E8%A7%A3%E9%87%8A%E5%BC%95%E7%94%A8%E6%96%87%E4%BB%B6%E5%90%8D%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%96%87%E5%AD%97%E3%80%82%E4%BE%8B%E5%A6%82%E4%BD%BF%E7%94%A8-LOAD-DATA%E8%AF%AD%E5%8F%A5%E6%88%96LOAD-FILE-%E5%87%BD%E6%95%B0%E8%AF%BB%E5%8F%96%E6%96%87%E4%BB%B6%E5%B9%B6%E4%BB%A5%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%BD%A2%E5%BC%8F%E8%BF%94%E5%9B%9E%E5%86%85%E5%AE%B9%EF%BC%8C%E5%9C%A8%E6%96%87%E4%BB%B6%E5%B0%9D%E8%AF%95%E6%89%93%E5%BC%80%E4%B9%8B%E5%89%8D%EF%BC%8C%E6%96%87%E4%BB%B6%E5%90%8D%E4%BB%8E-character-set-client-%E5%88%B0-character-set-filesystem-%E5%AD%97%E7%AC%A6%E9%9B%86%E7%9A%84%E8%BD%AC%E6%8D%A2%E3%80%82%E5%A6%82%E6%9E%9Ccharacter-set-filesystem-%E7%9A%84%E5%80%BC%E4%B8%BA-binary%EF%BC%8C%E5%88%99%E9%BB%98%E8%AE%A4%E4%B8%8D%E5%81%9A%E8%BD%AC%E6%8D%A2%E3%80%82%E5%A6%82%E6%9E%9C%E7%B3%BB%E7%BB%9F%E5%85%81%E8%AE%B8%E4%BD%BF%E7%94%A8%E5%A4%9A%E5%AD%97%E8%8A%82%E7%9A%84%E6%96%87%E4%BB%B6%E5%90%8D%EF%BC%8C%E9%82%A3%E4%B9%88%E5%8F%AF%E4%BB%A5%E8%AE%BE%E7%BD%AE%E8%BF%99%E4%B8%AA%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F%EF%BC%8C%E6%AF%94%E5%A6%82%E5%8F%AF%E4%BB%A5%E8%AE%BE%E7%BD%AEutf8%E3%80%82"><span class="toc-text">4. character_set_filesystem：文件系统字符集，此变量用于解释引用文件名的字符串文字。例如使用 LOAD DATA语句或LOAD_FILE()函数读取文件并以字符串形式返回内容，在文件尝试打开之前，文件名从 character_set_client 到 character_set_filesystem 字符集的转换。如果character_set_filesystem 的值为 binary，则默认不做转换。如果系统允许使用多字节的文件名，那么可以设置这个全局变量，比如可以设置utf8。</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#5-character-set-results%EF%BC%9A%E5%BD%93Mysql%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%BF%94%E5%9B%9E%E6%95%B0%E6%8D%AE%E6%88%96%E8%80%85%E9%94%99%E8%AF%AF%E4%BF%A1%E6%81%AF%E7%BB%99%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%97%B6%EF%BC%8C%E5%AE%83%E4%BC%9A%E5%B0%86%E5%85%B6%E8%BD%AC%E6%8D%A2%E6%88%90-character-set-results"><span class="toc-text">5. character_set_results：当Mysql服务端返回数据或者错误信息给客户端时，它会将其转换成 character_set_results</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#6-character-set-server%EF%BC%9AMysql%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E9%BB%98%E8%AE%A4%E5%AD%97%E7%AC%A6%E9%9B%86%EF%BC%8C%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%8C%E5%B0%86%E6%A0%B9%E6%8D%AE%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E7%9A%84character-set-server%E8%AE%BE%E7%BD%AE%E6%9D%A5%E8%AE%BE%E5%AE%9A%E8%AF%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E9%BB%98%E8%AE%A4%E5%AD%97%E7%AC%A6%E9%9B%86%E3%80%82"><span class="toc-text">6. character_set_server：Mysql服务器的默认字符集，创建数据库的时候，将根据服务器上的character_set_server设置来设定该数据库的默认字符集。</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#7-character-set-system%EF%BC%9A%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%94%A8%E4%BA%8E%E5%AD%98%E5%82%A8%E6%A0%87%E8%AF%86%E7%AC%A6%E7%9A%84%E5%AD%97%E7%AC%A6%E9%9B%86%E3%80%82%E8%AF%A5%E5%80%BC%E5%A7%8B%E7%BB%88%E4%B8%BAutf8%E3%80%82%E6%98%AF%E4%B8%AA%E5%8F%AA%E8%AF%BB%E6%95%B0%E6%8D%AE%E4%B8%8D%E8%83%BD%E6%9B%B4%E6%94%B9%E3%80%82%E4%B9%9F%E6%B2%A1%E5%A4%9A%E5%B0%91%E6%94%B9%E7%9A%84%E6%84%8F%E4%B9%89%EF%BC%8C%E4%BB%96%E6%98%AF%E5%85%83%E6%95%B0%E6%8D%AE%E7%9A%84%E7%BC%96%E7%A0%81%EF%BC%8C%E7%9B%B8%E4%BF%A1%E4%B8%8D%E4%BC%9A%E6%9C%89%E4%BA%BA%E7%94%A8%E4%B8%AD%E6%96%87%E5%81%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8D%E5%92%8C%E5%AD%97%E6%AE%B5%E5%90%8D%E4%B9%8B%E7%B1%BB%E7%9A%84%E5%90%A7%EF%BC%8C%E8%BF%99%E4%B8%AA%E5%AD%97%E6%AE%B5%E5%92%8C%E5%85%B7%E4%BD%93%E5%AD%98%E5%82%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E6%97%A0%E5%85%B3%E3%80%82"><span class="toc-text">7. character_set_system：服务器用于存储标识符的字符集。该值始终为utf8。是个只读数据不能更改。也没多少改的意义，他是元数据的编码，相信不会有人用中文做数据库名和字段名之类的吧，这个字段和具体存储的数据无关。</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#8-character-sets-dir%EF%BC%9A%E5%AD%97%E7%AC%A6%E9%9B%86%E7%9A%84%E5%AE%89%E8%A3%85%E7%9B%AE%E5%BD%95%E3%80%82"><span class="toc-text">8. character_sets_dir：字符集的安装目录。</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-%E8%AE%BE%E7%BD%AE%E5%AD%97%E7%AC%A6%E9%9B%86"><span class="toc-text">3.2 设置字符集</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-database-%E7%9A%84%E5%AD%97%E7%AC%A6%E9%9B%86%E3%80%81%E5%AD%97%E7%AC%A6%E9%9B%86%E6%9F%A5%E7%9C%8B%E8%AE%BE%E5%AE%9A"><span class="toc-text">3.3 database 的字符集、字符集查看设定</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-table%E7%9A%84%E5%AD%97%E7%AC%A6%E9%9B%86%E3%80%81%E5%AD%97%E7%AC%A6%E5%BA%8F"><span class="toc-text">3.4 table的字符集、字符序</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-column%E7%9A%84%E5%AD%97%E7%AC%A6%E9%9B%86%E3%80%81%E5%AD%97%E7%AC%A6%E5%BA%8F"><span class="toc-text">3.5 column的字符集、字符序</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Mysql%E9%80%9A%E4%BF%A1%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%BC%96%E7%A0%81%E4%B8%8E%E8%A7%A3%E7%A0%81"><span class="toc-text">二、Mysql通信过程中编码与解码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Mysql%E5%AD%98%E5%82%A8%E6%95%B0%E6%8D%AE%E6%97%B6%E5%8F%91%E7%94%9F%E7%9A%84%E7%BC%96%E7%A0%81%E8%BD%AC%E6%8D%A2%E8%BF%87%E7%A8%8B"><span class="toc-text">1. Mysql存储数据时发生的编码转换过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Mysql%E5%8F%96%E5%87%BA%E6%95%B0%E6%8D%AE%E6%97%B6%E5%8F%91%E7%94%9F%E7%9A%84%E7%BC%96%E7%A0%81%E8%BD%AC%E6%8D%A2%E8%BF%87%E7%A8%8B"><span class="toc-text">2. Mysql取出数据时发生的编码转换过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E5%AD%97%E7%AC%A6%E9%9B%86%E5%92%8C%E5%BB%BA%E8%AE%AE"><span class="toc-text">设置字符集和建议</span></a></li></ol></li></ol></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="一、mysql字符集和校对"><a href="#一、mysql字符集和校对" class="headerlink" title="一、mysql字符集和校对"></a>一、mysql字符集和校对</h1><p>字符集是指一种从二进制编码到某类字符符号的映射。校对是指一组用于某个字符集的排序规则。在Mysql4.1和之后的版本中，每一类编码字符都有其对应的字符集和校对规则。</p>
+<h3 id="1-Mysql如何使用字符集"><a href="#1-Mysql如何使用字符集" class="headerlink" title="1. Mysql如何使用字符集"></a>1. Mysql如何使用字符集</h3><p>Mysql服务器有默认的字符集和校对规则，每个数据库也有自己的默认值，每个表也有自己的默认值。这是一个逐层继承的默认设置，最终最靠底层的默认设置将影响你创建的对象。这些默认值，至上而下的告诉MYSQL应该使用什么字符集来存储某个列。</p>
+<p>在这个“阶梯”的每一层，你都可以指定一个特定的字符集或者让服务器使用它的默认值。</p>
+<ul>
+<li>创建数据库时，将根据服务器上的 character_set_server 设置来设定该数据库的默认字符集</li>
+<li>创建表的时候，将根据数据库的字符集设置指定这个表的字符集设置</li>
+<li>创建列的时候，将根据表的设置指定列的字符集设置</li>
+</ul>
+<p><strong>重点：真正存放数据的是列，所以更高“阶梯”的设置只是指定默认值。一个表的默认字符集设置无法影响存储在这个表中某个列的值。只有当创建列而没有为列指定字符集的时候，列的字符集才会被指定为表的默认字符集。</strong></p>
+<h3 id="2-Mysql支持的字符集和字符序"><a href="#2-Mysql支持的字符集和字符序" class="headerlink" title="2. Mysql支持的字符集和字符序"></a>2. Mysql支持的字符集和字符序</h3><p>Mysql 支持多种字符集与字符序。</p>
+<ol>
+<li>一个字符集对应至少一个字符序（一般是一对多）</li>
+<li>两个不同的字符集不能有相同的字符序</li>
+<li>每个字符集都有默认的字符序</li>
+</ol>
+<h4 id="2-1-查看支持的字符集"><a href="#2-1-查看支持的字符集" class="headerlink" title="2.1 查看支持的字符集"></a>2.1 查看支持的字符集</h4><ul>
+<li><p>方式一：show character set;</p>
+<pre><code>mysql&gt; show character set;
++----------+-----------------------------+---------------------+--------+
+| Charset  | Description                 | Default collation   | Maxlen |
++----------+-----------------------------+---------------------+--------+
+| big5     | Big5 Traditional Chinese    | big5_chinese_ci     |      2 |
+| dec8     | DEC West European           | dec8_swedish_ci     |      1 |
+| cp850    | DOS West European           | cp850_general_ci    |      1 |
+| hp8      | HP West European            | hp8_english_ci      |      1 |
+| koi8r    | KOI8-R Relcom Russian       | koi8r_general_ci    |      1 |
+| latin1   | cp1252 West European        | latin1_swedish_ci   |      1 |
+| latin2   | ISO 8859-2 Central European | latin2_general_ci   |      1 |
+| swe7     | 7bit Swedish                | swe7_swedish_ci     |      1 |
+| ascii    | US ASCII                    | ascii_general_ci    |      1 |
+| ujis     | EUC-JP Japanese             | ujis_japanese_ci    |      3 |
+| sjis     | Shift-JIS Japanese          | sjis_japanese_ci    |      2 |
+| hebrew   | ISO 8859-8 Hebrew           | hebrew_general_ci   |      1 |
+| tis620   | TIS620 Thai                 | tis620_thai_ci      |      1 |
+| euckr    | EUC-KR Korean               | euckr_korean_ci     |      2 |
+| koi8u    | KOI8-U Ukrainian            | koi8u_general_ci    |      1 |
+| gb2312   | GB2312 Simplified Chinese   | gb2312_chinese_ci   |      2 |
+| greek    | ISO 8859-7 Greek            | greek_general_ci    |      1 |
+| cp1250   | Windows Central European    | cp1250_general_ci   |      1 |
+| gbk      | GBK Simplified Chinese      | gbk_chinese_ci      |      2 |
+| latin5   | ISO 8859-9 Turkish          | latin5_turkish_ci   |      1 |
+| armscii8 | ARMSCII-8 Armenian          | armscii8_general_ci |      1 |
+| utf8     | UTF-8 Unicode               | utf8_general_ci     |      3 |
+| ucs2     | UCS-2 Unicode               | ucs2_general_ci     |      2 |
+| cp866    | DOS Russian                 | cp866_general_ci    |      1 |
+| keybcs2  | DOS Kamenicky Czech-Slovak  | keybcs2_general_ci  |      1 |
+| macce    | Mac Central European        | macce_general_ci    |      1 |
+| macroman | Mac West European           | macroman_general_ci |      1 |
+| cp852    | DOS Central European        | cp852_general_ci    |      1 |
+| latin7   | ISO 8859-13 Baltic          | latin7_general_ci   |      1 |
+| utf8mb4  | UTF-8 Unicode               | utf8mb4_general_ci  |      4 |
+| cp1251   | Windows Cyrillic            | cp1251_general_ci   |      1 |
+| utf16    | UTF-16 Unicode              | utf16_general_ci    |      4 |
+| utf16le  | UTF-16LE Unicode            | utf16le_general_ci  |      4 |
+| cp1256   | Windows Arabic              | cp1256_general_ci   |      1 |
+| cp1257   | Windows Baltic              | cp1257_general_ci   |      1 |
+| utf32    | UTF-32 Unicode              | utf32_general_ci    |      4 |
+| binary   | Binary pseudo charset       | binary              |      1 |
+| geostd8  | GEOSTD8 Georgian            | geostd8_general_ci  |      1 |
+| cp932    | SJIS for Windows Japanese   | cp932_japanese_ci   |      2 |
+| eucjpms  | UJIS for Windows Japanese   | eucjpms_japanese_ci |      3 |
++----------+-----------------------------+---------------------+--------+</code></pre>
+</li>
+<li><p>方式二：select * from information_schema.character_sets;</p>
+<pre><code>mysql&gt; select * from information_schema.character_sets;
++--------------------+----------------------+-----------------------------+--------+
+| CHARACTER_SET_NAME | DEFAULT_COLLATE_NAME | DESCRIPTION                 | MAXLEN |
++--------------------+----------------------+-----------------------------+--------+
+| big5               | big5_chinese_ci      | Big5 Traditional Chinese    |      2 |
+| dec8               | dec8_swedish_ci      | DEC West European           |      1 |
+| cp850              | cp850_general_ci     | DOS West European           |      1 |
+| hp8                | hp8_english_ci       | HP West European            |      1 |
+| koi8r              | koi8r_general_ci     | KOI8-R Relcom Russian       |      1 |
+| latin1             | latin1_swedish_ci    | cp1252 West European        |      1 |
+| latin2             | latin2_general_ci    | ISO 8859-2 Central European |      1 |
+| swe7               | swe7_swedish_ci      | 7bit Swedish                |      1 |
+| ascii              | ascii_general_ci     | US ASCII                    |      1 |
+| ujis               | ujis_japanese_ci     | EUC-JP Japanese             |      3 |
+| sjis               | sjis_japanese_ci     | Shift-JIS Japanese          |      2 |
+| hebrew             | hebrew_general_ci    | ISO 8859-8 Hebrew           |      1 |
+| tis620             | tis620_thai_ci       | TIS620 Thai                 |      1 |
+| euckr              | euckr_korean_ci      | EUC-KR Korean               |      2 |
+| koi8u              | koi8u_general_ci     | KOI8-U Ukrainian            |      1 |
+| gb2312             | gb2312_chinese_ci    | GB2312 Simplified Chinese   |      2 |
+| greek              | greek_general_ci     | ISO 8859-7 Greek            |      1 |
+| cp1250             | cp1250_general_ci    | Windows Central European    |      1 |
+| gbk                | gbk_chinese_ci       | GBK Simplified Chinese      |      2 |
+| latin5             | latin5_turkish_ci    | ISO 8859-9 Turkish          |      1 |
+| armscii8           | armscii8_general_ci  | ARMSCII-8 Armenian          |      1 |
+| utf8               | utf8_general_ci      | UTF-8 Unicode               |      3 |
+| ucs2               | ucs2_general_ci      | UCS-2 Unicode               |      2 |
+| cp866              | cp866_general_ci     | DOS Russian                 |      1 |
+| keybcs2            | keybcs2_general_ci   | DOS Kamenicky Czech-Slovak  |      1 |
+| macce              | macce_general_ci     | Mac Central European        |      1 |
+| macroman           | macroman_general_ci  | Mac West European           |      1 |
+| cp852              | cp852_general_ci     | DOS Central European        |      1 |
+| latin7             | latin7_general_ci    | ISO 8859-13 Baltic          |      1 |
+| utf8mb4            | utf8mb4_general_ci   | UTF-8 Unicode               |      4 |
+| cp1251             | cp1251_general_ci    | Windows Cyrillic            |      1 |
+| utf16              | utf16_general_ci     | UTF-16 Unicode              |      4 |
+| utf16le            | utf16le_general_ci   | UTF-16LE Unicode            |      4 |
+| cp1256             | cp1256_general_ci    | Windows Arabic              |      1 |
+| cp1257             | cp1257_general_ci    | Windows Baltic              |      1 |
+| utf32              | utf32_general_ci     | UTF-32 Unicode              |      4 |
+| binary             | binary               | Binary pseudo charset       |      1 |
+| geostd8            | geostd8_general_ci   | GEOSTD8 Georgian            |      1 |
+| cp932              | cp932_japanese_ci    | SJIS for Windows Japanese   |      2 |
+| eucjpms            | eucjpms_japanese_ci  | UJIS for Windows Japanese   |      3 |
++--------------------+----------------------+-----------------------------+--------+</code></pre>
+</li>
+</ul>
+<p>这两种方式都可以查看Mysql支持的字符集。也可以加上 where 或者 like 等关键词作为限定条件。</p>
+<p><code>show character set where charset=&#39;utf8&#39;;</code></p>
+<p><code>show character set like &#39;utf8%&#39;;</code></p>
+<h4 id="2-2-查看支持的字符序"><a href="#2-2-查看支持的字符序" class="headerlink" title="2.2 查看支持的字符序"></a>2.2 查看支持的字符序</h4><ul>
+<li><p>方式一：<code>show collation;</code></p>
+<pre><code>mysql&gt; show collation where charset=&#39;utf8&#39;;
++--------------------------+---------+-----+---------+----------+---------+
+| Collation                | Charset | Id  | Default | Compiled | Sortlen |
++--------------------------+---------+-----+---------+----------+---------+
+| utf8_general_ci          | utf8    |  33 | Yes     | Yes      |       1 |
+| utf8_bin                 | utf8    |  83 |         | Yes      |       1 |
+| utf8_unicode_ci          | utf8    | 192 |         | Yes      |       8 |
+| utf8_icelandic_ci        | utf8    | 193 |         | Yes      |       8 |
+| utf8_latvian_ci          | utf8    | 194 |         | Yes      |       8 |
+| utf8_romanian_ci         | utf8    | 195 |         | Yes      |       8 |
+| utf8_slovenian_ci        | utf8    | 196 |         | Yes      |       8 |
+| utf8_polish_ci           | utf8    | 197 |         | Yes      |       8 |
+| utf8_estonian_ci         | utf8    | 198 |         | Yes      |       8 |
+| utf8_spanish_ci          | utf8    | 199 |         | Yes      |       8 |
+| utf8_swedish_ci          | utf8    | 200 |         | Yes      |       8 |
+| utf8_turkish_ci          | utf8    | 201 |         | Yes      |       8 |
+| utf8_czech_ci            | utf8    | 202 |         | Yes      |       8 |
+| utf8_danish_ci           | utf8    | 203 |         | Yes      |       8 |
+| utf8_lithuanian_ci       | utf8    | 204 |         | Yes      |       8 |
+| utf8_slovak_ci           | utf8    | 205 |         | Yes      |       8 |
+| utf8_spanish2_ci         | utf8    | 206 |         | Yes      |       8 |
+| utf8_roman_ci            | utf8    | 207 |         | Yes      |       8 |
+| utf8_persian_ci          | utf8    | 208 |         | Yes      |       8 |
+| utf8_esperanto_ci        | utf8    | 209 |         | Yes      |       8 |
+| utf8_hungarian_ci        | utf8    | 210 |         | Yes      |       8 |
+| utf8_sinhala_ci          | utf8    | 211 |         | Yes      |       8 |
+| utf8_german2_ci          | utf8    | 212 |         | Yes      |       8 |
+| utf8_croatian_ci         | utf8    | 213 |         | Yes      |       8 |
+| utf8_unicode_520_ci      | utf8    | 214 |         | Yes      |       8 |
+| utf8_vietnamese_ci       | utf8    | 215 |         | Yes      |       8 |
+| utf8_general_mysql500_ci | utf8    | 223 |         | Yes      |       1 |
++--------------------------+---------+-----+---------+----------+---------+</code></pre>
+</li>
+<li><p>方式二：<code>select * from information_schema.collations where character_set_name=&#39;latin1&#39;;</code></p>
+<pre><code>mysql&gt; select * from information_schema.collations where character_set_name=&#39;latin1&#39;;
++-------------------+--------------------+----+------------+-------------+---------+
+| COLLATION_NAME    | CHARACTER_SET_NAME | ID | IS_DEFAULT | IS_COMPILED | SORTLEN |
++-------------------+--------------------+----+------------+-------------+---------+
+| latin1_german1_ci | latin1             |  5 |            | Yes         |       1 |
+| latin1_swedish_ci | latin1             |  8 | Yes        | Yes         |       1 |
+| latin1_danish_ci  | latin1             | 15 |            | Yes         |       1 |
+| latin1_german2_ci | latin1             | 31 |            | Yes         |       2 |
+| latin1_bin        | latin1             | 47 |            | Yes         |       1 |
+| latin1_general_ci | latin1             | 48 |            | Yes         |       1 |
+| latin1_general_cs | latin1             | 49 |            | Yes         |       1 |
+| latin1_spanish_ci | latin1             | 94 |            | Yes         |       1 |
++-------------------+--------------------+----+------------+-------------+---------+</code></pre>
+</li>
+</ul>
+<h3 id="3-设定字符集和字符序"><a href="#3-设定字符集和字符序" class="headerlink" title="3. 设定字符集和字符序"></a>3. 设定字符集和字符序</h3><h4 id="3-1-字符集含义介绍"><a href="#3-1-字符集含义介绍" class="headerlink" title="3.1 字符集含义介绍"></a>3.1 字符集含义介绍</h4><p>先来看都可以设定哪些字符集：<code>show variables like &#39;character_set_%&#39;; </code></p>
+<pre><code>mysql&gt; show variables like &#39;character_set_%&#39;;
++--------------------------+--------------------------------------+
+| Variable_name            | Value                                |
++--------------------------+--------------------------------------+
+| character_set_client     | utf8                                 |
+| character_set_connection | utf8                                 |
+| character_set_database   | latin1                               |
+| character_set_filesystem | binary                               |
+| character_set_results    | utf8                                 |
+| character_set_server     | latin1                               |
+| character_set_system     | utf8                                 |
+| character_sets_dir       | /path/myenv/mysql5.6/share/charsets/ |
++--------------------------+--------------------------------------+</code></pre>
+<h5 id="1-character-set-client：Mysql服务端总是假定客户端是按照-character-set-client-设置的字符集来传输数据和SQL语句的。"><a href="#1-character-set-client：Mysql服务端总是假定客户端是按照-character-set-client-设置的字符集来传输数据和SQL语句的。" class="headerlink" title="1. character_set_client：Mysql服务端总是假定客户端是按照 character_set_client 设置的字符集来传输数据和SQL语句的。"></a>1. character_set_client：Mysql服务端总是假定客户端是按照 character_set_client 设置的字符集来传输数据和SQL语句的。</h5><h5 id="2-character-set-connection：当Mysql服务器收到客户端的SQL语句时，它先将其转换成字符集-character-set-connection-。它还使用这个设置来决定如何将数据转换成字符串。"><a href="#2-character-set-connection：当Mysql服务器收到客户端的SQL语句时，它先将其转换成字符集-character-set-connection-。它还使用这个设置来决定如何将数据转换成字符串。" class="headerlink" title="2. character_set_connection：当Mysql服务器收到客户端的SQL语句时，它先将其转换成字符集 character_set_connection 。它还使用这个设置来决定如何将数据转换成字符串。"></a>2. character_set_connection：当Mysql服务器收到客户端的SQL语句时，它先将其转换成字符集 character_set_connection 。它还使用这个设置来决定如何将数据转换成字符串。</h5><h5 id="3-character-set-database：默认是当前所在数据库的字符集，如果没有使用use进入任何库，那么这个参数的值和-character-set-server-一样。这个变量由系统管理。Mysql5-7中不推荐使用全局变量character-set-database、collation-database系统变量。希望在将来的MySQL版本中将其删除。"><a href="#3-character-set-database：默认是当前所在数据库的字符集，如果没有使用use进入任何库，那么这个参数的值和-character-set-server-一样。这个变量由系统管理。Mysql5-7中不推荐使用全局变量character-set-database、collation-database系统变量。希望在将来的MySQL版本中将其删除。" class="headerlink" title="3. character_set_database：默认是当前所在数据库的字符集，如果没有使用use进入任何库，那么这个参数的值和 character_set_server 一样。这个变量由系统管理。Mysql5.7中不推荐使用全局变量character_set_database、collation_database系统变量。希望在将来的MySQL版本中将其删除。"></a>3. character_set_database：默认是当前所在数据库的字符集，如果没有使用use进入任何库，那么这个参数的值和 character_set_server 一样。这个变量由系统管理。Mysql5.7中不推荐使用全局变量character_set_database、collation_database系统变量。希望在将来的MySQL版本中将其删除。</h5><h5 id="4-character-set-filesystem：文件系统字符集，此变量用于解释引用文件名的字符串文字。例如使用-LOAD-DATA语句或LOAD-FILE-函数读取文件并以字符串形式返回内容，在文件尝试打开之前，文件名从-character-set-client-到-character-set-filesystem-字符集的转换。如果character-set-filesystem-的值为-binary，则默认不做转换。如果系统允许使用多字节的文件名，那么可以设置这个全局变量，比如可以设置utf8。"><a href="#4-character-set-filesystem：文件系统字符集，此变量用于解释引用文件名的字符串文字。例如使用-LOAD-DATA语句或LOAD-FILE-函数读取文件并以字符串形式返回内容，在文件尝试打开之前，文件名从-character-set-client-到-character-set-filesystem-字符集的转换。如果character-set-filesystem-的值为-binary，则默认不做转换。如果系统允许使用多字节的文件名，那么可以设置这个全局变量，比如可以设置utf8。" class="headerlink" title="4. character_set_filesystem：文件系统字符集，此变量用于解释引用文件名的字符串文字。例如使用 LOAD DATA语句或LOAD_FILE()函数读取文件并以字符串形式返回内容，在文件尝试打开之前，文件名从 character_set_client 到 character_set_filesystem 字符集的转换。如果character_set_filesystem 的值为 binary，则默认不做转换。如果系统允许使用多字节的文件名，那么可以设置这个全局变量，比如可以设置utf8。"></a>4. character_set_filesystem：文件系统字符集，此变量用于解释引用文件名的字符串文字。例如使用 LOAD DATA语句或LOAD_FILE()函数读取文件并以字符串形式返回内容，在文件尝试打开之前，文件名从 character_set_client 到 character_set_filesystem 字符集的转换。如果character_set_filesystem 的值为 binary，则默认不做转换。如果系统允许使用多字节的文件名，那么可以设置这个全局变量，比如可以设置utf8。</h5><h5 id="5-character-set-results：当Mysql服务端返回数据或者错误信息给客户端时，它会将其转换成-character-set-results"><a href="#5-character-set-results：当Mysql服务端返回数据或者错误信息给客户端时，它会将其转换成-character-set-results" class="headerlink" title="5. character_set_results：当Mysql服务端返回数据或者错误信息给客户端时，它会将其转换成 character_set_results"></a>5. character_set_results：当Mysql服务端返回数据或者错误信息给客户端时，它会将其转换成 character_set_results</h5><h5 id="6-character-set-server：Mysql服务器的默认字符集，创建数据库的时候，将根据服务器上的character-set-server设置来设定该数据库的默认字符集。"><a href="#6-character-set-server：Mysql服务器的默认字符集，创建数据库的时候，将根据服务器上的character-set-server设置来设定该数据库的默认字符集。" class="headerlink" title="6. character_set_server：Mysql服务器的默认字符集，创建数据库的时候，将根据服务器上的character_set_server设置来设定该数据库的默认字符集。"></a>6. character_set_server：Mysql服务器的默认字符集，创建数据库的时候，将根据服务器上的character_set_server设置来设定该数据库的默认字符集。</h5><h5 id="7-character-set-system：服务器用于存储标识符的字符集。该值始终为utf8。是个只读数据不能更改。也没多少改的意义，他是元数据的编码，相信不会有人用中文做数据库名和字段名之类的吧，这个字段和具体存储的数据无关。"><a href="#7-character-set-system：服务器用于存储标识符的字符集。该值始终为utf8。是个只读数据不能更改。也没多少改的意义，他是元数据的编码，相信不会有人用中文做数据库名和字段名之类的吧，这个字段和具体存储的数据无关。" class="headerlink" title="7. character_set_system：服务器用于存储标识符的字符集。该值始终为utf8。是个只读数据不能更改。也没多少改的意义，他是元数据的编码，相信不会有人用中文做数据库名和字段名之类的吧，这个字段和具体存储的数据无关。"></a>7. character_set_system：服务器用于存储标识符的字符集。该值始终为<code>utf8</code>。是个只读数据不能更改。也没多少改的意义，他是元数据的编码，相信不会有人用中文做数据库名和字段名之类的吧，这个字段和具体存储的数据无关。</h5><h5 id="8-character-sets-dir：字符集的安装目录。"><a href="#8-character-sets-dir：字符集的安装目录。" class="headerlink" title="8. character_sets_dir：字符集的安装目录。"></a>8. character_sets_dir：字符集的安装目录。</h5><h4 id="3-2-设置字符集"><a href="#3-2-设置字符集" class="headerlink" title="3.2 设置字符集"></a>3.2 设置字符集</h4><ol>
+<li><p>可以在Mysql服务启动时，指定server字符集、字符序。如不置顶，视不同版本，Mysql5.6默认的字符集和字符序分别为 latin1、latin1_swedish_ci。</p>
+<p><code>mysqld --character-set-server=latin1 --collation-server=latin1_swedish_ci</code></p>
+</li>
+<li><p>Mysql服务的配置文件指定(my.cnf)</p>
+<pre><code>[client]
+default-character-set=utf8
+
+[mysql]
+default-character-set=utf8
+
+[mysqld]
+collation-server = utf8_unicode_ci
+init-connect=&#39;SET NAMES utf8&#39;
+character-set-server = utf8</code></pre>
+</li>
+<li><p>运行时修改【推荐，比较方便】</p>
+<p><code>set character_set_server = utf8;</code></p>
+</li>
+<li><p>Mysql编译的时候，通过编译选项指定</p>
+<p><code>cmake . -DDEFAULT_CHARSET=latin1 -DDEFAULT_COLLATION=latin1_german1_ci</code></p>
+</li>
+</ol>
+<h4 id="3-3-database-的字符集、字符集查看设定"><a href="#3-3-database-的字符集、字符集查看设定" class="headerlink" title="3.3 database 的字符集、字符集查看设定"></a>3.3 database 的字符集、字符集查看设定</h4><pre><code>1. 创建database或者修改database时设定字符集
+`CREATE DATABASE db_name [[DEFAULT] CHARACTER SET charset_name] [[DEFAULT] COLLATE collation_name];`</code></pre>
+<ol start="2">
+<li><p>查看database的字符集或字符序</p>
+<pre><code>mysql&gt; use test;
+Database changed
+mysql&gt; SELECT @@character_set_database, @@collation_database;
++--------------------------+----------------------+
+| @@character_set_database | @@collation_database |
++--------------------------+----------------------+
+| utf8                     | utf8_general_ci      |
++--------------------------+----------------------+</code></pre>
+<p>或</p>
+<p><code>SELECT SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME  FROM information_schema.SCHEMATA WHERE schema_name=&quot;test&quot;;</code></p>
+<p>或</p>
+<pre><code>mysql&gt; SHOW CREATE DATABASE test;
++-------------+----------------------------------------------------------------------+
+| Database    | Create Database                                                      |
++-------------+----------------------------------------------------------------------+
+| test        | CREATE DATABASE `test_schema` /*!40100 DEFAULT CHARACTER SET utf8 */ |
++-------------+----------------------------------------------------------------------+</code></pre>
+</li>
+</ol>
+<ol start="3">
+<li>database 字符集、字符序如何确定<ol>
+<li>创建数据库时，指定了<code>CHARACTER SET</code>或<code>COLLATE</code>，则以对应的字符集、排序规则为准。</li>
+<li>创建数据库时，如果没有指定字符集、排序规则，则以<code>character_set_server</code>、<code>collation_server</code>为准。</li>
+</ol>
+</li>
+</ol>
+<h4 id="3-4-table的字符集、字符序"><a href="#3-4-table的字符集、字符序" class="headerlink" title="3.4 table的字符集、字符序"></a>3.4 table的字符集、字符序</h4><ol>
+<li><p>创建table时设定字符集、字符序</p>
+<p><code>CREATE TABLE tbl_name (column_list) [[DEFAULT] CHARACTER SET charset_name] [COLLATE collation_name]]</code></p>
+<p><code>ALTER TABLE tbl_name [[DEFAULT] CHARACTER SET charset_name] [COLLATE collation_name]</code></p>
+</li>
+<li><p>查看table的字符集或字符序</p>
+<p><code>show table status from test\G</code>，其中test为database名，test_table为table名</p>
+<pre><code>mysql&gt; show table status from test\G
+*************************** 1. row ***************************
+           Name: test_table
+         Engine: InnoDB
+        Version: 10
+     Row_format: Compact
+           Rows: 6
+ Avg_row_length: 2730
+    Data_length: 16384
+Max_data_length: 0
+   Index_length: 0
+      Data_free: 0
+ Auto_increment: NULL
+    Create_time: 2020-12-26 18:01:30
+    Update_time: NULL
+     Check_time: NULL
+      Collation: latin1_swedish_ci
+       Checksum: NULL
+ Create_options: 
+        Comment: </code></pre>
+<p>或</p>
+<pre><code>mysql&gt; USE test;
+mysql&gt; SELECT TABLE_COLLATION FROM information_schema.TABLES WHERE TABLE_SCHEMA = &quot;test&quot; AND TABLE_NAME = &quot;test_table&quot;;
++-----------------+
+| TABLE_COLLATION |
++-----------------+
+| utf8_general_ci |
++-----------------+</code></pre>
+<p>或</p>
+<pre><code>mysql&gt;  SHOW CREATE TABLE test_table;
++------------+----------------------------------------------------------------------------------------------------------------------------+
+| Table      | Create Table                                                                                                               |
++------------+----------------------------------------------------------------------------------------------------------------------------+
+| test_table | CREATE TABLE `test_table` (
+  `id` int(11) NOT NULL,
+  `title` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 |
++------------+----------------------------------------------------------------------------------------------------------------------------+</code></pre>
+</li>
+<li><p>table 字符集、字符序如何确定</p>
+<p>假设<code>CHARACTER SET</code>、<code>COLLATE</code>的值分别是<code>charset_name</code>、<code>collation_name</code>。如果创建table时：</p>
+<ul>
+<li>明确了<code>charset_name</code>、<code>collation_name</code>，则采用<code>charset_name</code>、<code>collation_name</code>。</li>
+<li>只明确了<code>charset_name</code>，但<code>collation_name</code>未明确，则字符集采用<code>charset_name</code>，字符序采用<code>charset_name</code>对应的默认字符序。</li>
+<li>只明确了<code>collation_name</code>，但<code>charset_name</code>未明确，则字符序采用<code>collation_name</code>，字符集采用<code>collation_name</code>关联的字符集。</li>
+<li><code>charset_name</code>、<code>collation_name</code>均未明确，则采用数据库的字符集、字符序设置。</li>
+</ul>
+</li>
+</ol>
+<h4 id="3-5-column的字符集、字符序"><a href="#3-5-column的字符集、字符序" class="headerlink" title="3.5 column的字符集、字符序"></a>3.5 column的字符集、字符序</h4><p>类型为CHAR、VARCHAR、TEXT的列，可以指定字符集/字符序，语法：<code>col_name &#123;CHAR | VARCHAR | TEXT&#125; (col_length)    [CHARACTER SET charset_name]    [COLLATE collation_name]</code></p>
+<ol>
+<li><p>新增column并指定字符集、字符序</p>
+<p><code>ALTER TABLE test_table ADD COLUMN char_column VARCHAR(25) CHARACTER SET utf8;</code></p>
+</li>
+<li><p>查看column的字符集、字符序</p>
+<pre><code>mysql&gt; SELECT CHARACTER_SET_NAME, COLLATION_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=&quot;test&quot; AND TABLE_NAME=&quot;test_table&quot; AND COLUMN_NAME=&quot;char_column&quot;;
++--------------------+-----------------+
+| CHARACTER_SET_NAME | COLLATION_NAME  |
++--------------------+-----------------+
+| utf8               | utf8_general_ci |
++--------------------+-----------------+</code></pre>
+</li>
+<li><p>column 字符集、字符序规则确定</p>
+<p>假设<code>CHARACTER SET</code>、<code>COLLATE</code>的值分别是<code>charset_name</code>、<code>collation_name</code>：</p>
+<ul>
+<li>如果<code>charset_name</code>、<code>collation_name</code>均明确，则字符集、字符序以<code>charset_name</code>、<code>collation_name</code>为准。</li>
+<li>只明确了<code>charset_name</code>，<code>collation_name</code>未明确，则字符集为<code>charset_name</code>，字符序为<code>charset_name</code>的默认字符序。</li>
+<li>只明确了<code>collation_name</code>，<code>charset_name</code>未明确，则字符序为<code>collation_name</code>，字符集为<code>collation_name</code>关联的字符集。</li>
+<li><code>charset_name</code>、<code>collation_name</code>均未明确，则以table的字符集、字符序为准。</li>
+</ul>
+</li>
+</ol>
+<h1 id="二、Mysql通信过程中编码与解码"><a href="#二、Mysql通信过程中编码与解码" class="headerlink" title="二、Mysql通信过程中编码与解码"></a>二、Mysql通信过程中编码与解码</h1><p>当服务器和客户端通信的时候，他们可能使用不同的字符集。这时，服务器端将进行必要的翻译转换工作。</p>
+<h3 id="1-Mysql存储数据时发生的编码转换过程"><a href="#1-Mysql存储数据时发生的编码转换过程" class="headerlink" title="1. Mysql存储数据时发生的编码转换过程"></a>1. Mysql存储数据时发生的编码转换过程</h3><ol>
+<li>在终端（可以是 bash窗口、客户端工具如iTerm、WeTERM、navicat等）中输入，输入的内容由终端Terminal根据自己的字符集进行编码。</li>
+<li>经过Terminal编码后的二进制数据流被传输到Mysql服务端，Mysql服务端总是假定客户端是按照 character_set_client 设置的字符集来传输数据和SQL语句的。因此Mysql服务端会认为这个二进制流是character_set_client 字符集编码的。</li>
+<li>接下来，Mysql服务端会将这个SQL语句从character_set_client字符集转换为character_set_connection字符集，还会使用 character_set_connection 来决定如何将数据转换成字符串。然后开始处理SQL。</li>
+<li>以character_set_connection字符集解码之后，Mysql服务端再次根据目的表，即table的字符集或column的字符集来判断是否需要字符编码转换。如果character_set_connection字符集设置和table或column定义时的character设置一致，则无需字符编码转换。否则进行转换，然后将转换后的二进制流存放到数据文件中去。</li>
+</ol>
+<h3 id="2-Mysql取出数据时发生的编码转换过程"><a href="#2-Mysql取出数据时发生的编码转换过程" class="headerlink" title="2. Mysql取出数据时发生的编码转换过程"></a>2. Mysql取出数据时发生的编码转换过程</h3><ol>
+<li>从数据文件中读取二进制流，将该数据流根据table或者column定义时的character设置来进行解码</li>
+<li>在使用table或column定义的character对二进制数据流进行编码之后，在Mysql服务端，需要根据character_set_result字符集对解码后的数据库流再一次进行编码，将编码之后的二进制数据库流传给client端</li>
+<li>client端，即终端收到二进制流后根据自己的字符集编码来展示查询结果。</li>
+</ol>
+<h3 id="设置字符集和建议"><a href="#设置字符集和建议" class="headerlink" title="设置字符集和建议"></a>设置字符集和建议</h3><p>可以使用 <code>set names </code>或者<code>set character set</code>语句来改变设置</p>
+<pre><code>set names &#39;charset_name&#39;
+相当于
+SET character_set_client = charset_name;
+SET character_set_results = charset_name;
+SET character_set_connection = charset_name;</code></pre>
+<p>还需要注意：</p>
+<ol>
+<li>编码转换可能不是无损编码导致乱码的出现。比如utf8和gbk之间的转换就是有损编码转换。</li>
+<li>Mysql的“utf8”实际上不是真正的UTF-8，Mysql的utf8 只支持每个字符最多三个字节，而真正的UTF-8 是每个字符最多四个字节。Mysql一直没有修复这个BUG，在2010年发布了“utf8mb4”的字符集用来代表真正的UTF-8。因此在Mysql或者MariaDB用户最好使用“utf8mb4”。</li>
+<li>在遇到乱码的情况下，一步一步的查询下，终端的字符集编码、Mysql服务端的字符集编码、以及表、字段的字符集编码。比如保证终端的字符集编码和Mysql服务端 character_set_client的字符集编码一致等。</li>
+<li>养成好习惯，在创建库、表、字段的时候设置字符集编码。</li>
+</ol>
+
+      
+       
+    </div>
+</article>
+
+
+<p>
+    <a  class="dashang" onclick="dashangToggle()">💰</a>
+</p>
+
+
+
+
+    <div id="comments"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+<script type="text/javascript">
+    $.getScript('/js/gitalk.js', function () {
+        var gitalk = new Gitalk({
+            clientID: '0dad8455e8835477a625',
+            clientSecret: 'e736f5ff204f7b5f20321e3c558be7b8001efef5',
+            repo: 'noahyzhang.github.io',
+            owner: 'noahyzhang',
+            admin: ['noahyzhang'],
+            id: decodeURI(location.pathname),
+            distractionFreeMode: 'true',
+            language: 'zh-CN',
+            perPage: parseInt('10',10)
+        })
+        gitalk.render('comments')
+    })
+</script>
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2016-2020 noahyzhang
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+<div class="hide_box" onclick="dashangToggle()"></div>
+<div class="shang_box">
+    <a class="shang_close"  onclick="dashangToggle()">×</a>
+    <div class="shang_tit">
+        <p>Help us with donation</p>
+    </div>
+    <div class="shang_payimg">
+        <div class="pay_img">
+            <img src="/img/alipay.jpg" class="alipay" title="扫码支持">
+            <img src="/img/weixin.jpg" class="weixin" title="扫码支持">
+        </div>
+    </div>
+    <div class="shang_payselect">
+        <span><label><input type="radio" name="pay" checked value="alipay">alipay</label></span><span><label><input type="radio" name="pay" value="weixin">weixin</label></span>
+    </div>
+</div>
+
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+        $("input[name=pay]").on("click", function () {
+            if($("input[name=pay]:checked").val()=="weixin"){
+                $(".shang_box .shang_payimg .pay_img").addClass("weixin_img");
+            } else {
+                $(".shang_box .shang_payimg .pay_img").removeClass("weixin_img");
+            }
+        })
+        
+
+        /*高亮代码块行号*/
+        
+        $('pre code').each(function(){
+            var lines = $(this).text().trim().split('\n').length, widther='';
+            if (lines>99) {
+                widther = 'widther'
+            }
+            var $numbering = $('<ul/>').addClass('pre-numbering ' + widther).attr("unselectable","on");
+            $(this).addClass('has-numbering ' + widther)
+                    .parent()
+                    .append($numbering);
+            for(var i=1;i<=lines;i++){
+                $numbering.append($('<li/>').text(i));
+            }
+        });
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+    function dashangToggle() {
+        $(".shang_box").fadeToggle();
+        $(".hide_box").fadeToggle();
+    }
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<style>
+    pre{
+        position: relative;
+        margin-bottom: 24px;
+        border-radius: 10px;
+        border: 1px solid #e2dede;
+        background: #FFF;
+        overflow: hidden;
+    }
+    code.has-numbering{
+        margin-left: 30px;
+    }
+    code.has-numbering.widther{
+        margin-left: 35px;
+    }
+    .pre-numbering{
+        margin: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        padding: 0.5em 3px 0.7em 5px;
+        border-right: 1px solid #C3CCD0;
+        text-align: right;
+        color: #AAA;
+        background-color: #fafafa;
+    }
+    .pre-numbering.widther {
+        width: 35px;
+    }
+</style>
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+<div id="musicMouseDrag" style="position:fixed; z-index: 9999; bottom: 0; right: 0;">
+    <div id="musicDragArea" style="position: absolute; top: 0; left: 0; width: 100%;height: 10px;cursor: move; z-index: 10;"></div>
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1293886117&auto=1&height=66"></iframe>
+<script>
+    var $DOC = $(document)
+    $('#musicMouseDrag').on ('mousedown', function (e) {
+      // 阻止文本选中
+      $DOC.bind ("selectstart", function () {
+        return false;
+      });
+      $('#musicDragArea').css ('height', '100%');
+      var $moveTarget = $('#musicMouseDrag');
+      $moveTarget.css ('border', '1px dashed grey')
+      var div_x = e.pageX - $moveTarget.offset ().left;
+      var div_y = e.pageY - $moveTarget.offset ().top;
+      $DOC.on ('mousemove', function (e) {
+        var targetX = e.pageX - div_x;
+        var targetY = e.pageY - div_y;
+        targetX = targetX < 0 ? 0 : (targetX + $moveTarget.outerWidth () >= window.innerWidth) ? window.innerWidth - $moveTarget.outerWidth () : targetX;
+        targetY = targetY < 0 ? 0 : (targetY + $moveTarget.outerHeight () >= window.innerHeight) ? window.innerHeight - $moveTarget.outerHeight () : targetY;
+        $moveTarget.css ({'left': targetX + 'px', 'top': targetY + 'px', 'bottom': 'inherit', 'right': 'inherit'})
+      }).on ('mouseup', function () {
+        $DOC.unbind ("selectstart");
+        $DOC.off ('mousemove')
+        $DOC.off ('mouseup')
+        $moveTarget.css ('border', 'none')
+        $('#musicDragArea').css ('height', '10px');
+      })
+    })
+</script>
+</div>
+
+</html>
