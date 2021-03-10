@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>about | Zhangxiaoyi&#39;s Blog</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="about | Zhangxiaoyi&#39;s Blog">
+  <title>Mysql导入数据 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" 导入数据 ">
+  <meta name="description" content="Mysql导入数据 | Zhangxiaoyi&#39;s Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
 <meta property="og:type" content="website">
@@ -805,24 +805,39 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+        <article id="post-数据库/mysql导入数据" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">about</h1>
+        <h1 class="article-title">Mysql导入数据</h1>
     
     <div class="article-meta">
         
         
         
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="数据库">数据库</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">导入数据</a>
+            
+        </span>
         
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2020-10-06 15:52:54'>2020-10-06 13:28</time>
+            Created At : <time class="date" title='Updated At: 2021-03-10 23:13:55'>2021-03-07 20:19</time>
         
     </div>
     <div class="article-meta">
         
-        <span>Count:14</span>
+        <span>Count:1.2k</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -852,7 +867,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql-%E7%9A%84%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-text">mysql 的导入数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81mysql%E5%91%BD%E4%BB%A4%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-text">一、mysql命令导入数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81source-%E5%91%BD%E4%BB%A4%E5%AF%BC%E5%85%A5"><span class="toc-text">二、source 命令导入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%BD%BF%E7%94%A8-LOAD-DATA-%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-text">三、使用 LOAD DATA 导入数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81mysqlimport-%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="toc-text">四、mysqlimport 导入数据</span></a></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -868,7 +883,88 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>欢迎和我探讨有趣的事情<br>WX: 13572252156<br>QQ: 1251108673</p>
+        <h2 id="mysql-的导入数据"><a href="#mysql-的导入数据" class="headerlink" title="mysql 的导入数据"></a>mysql 的导入数据</h2><h3 id="一、mysql命令导入数据"><a href="#一、mysql命令导入数据" class="headerlink" title="一、mysql命令导入数据"></a>一、mysql命令导入数据</h3><p>使用 mysql 命令导入语法格式为：</p>
+<pre><code class="shell">mysql -h `host` -P `port` -u `user` -p `passwd`  &lt;  data.sql</code></pre>
+<h3 id="二、source-命令导入"><a href="#二、source-命令导入" class="headerlink" title="二、source 命令导入"></a>二、source 命令导入</h3><pre><code class="shell">mysql&gt; create database abc;      # 创建数据库
+mysql&gt; use abc;                  # 使用已创建的数据库 
+mysql&gt; set names utf8;           # 设置编码
+mysql&gt; source /home/abc/abc.sql  # 导入备份数据库</code></pre>
+<p>注意：可以将source命令的输出结果重定向到一个文件中，这样就可以避免不停的在控制台输出了。<code>source D:/test.sql &gt; output.log</code></p>
+<h3 id="三、使用-LOAD-DATA-导入数据"><a href="#三、使用-LOAD-DATA-导入数据" class="headerlink" title="三、使用 LOAD DATA 导入数据"></a>三、使用 LOAD DATA 导入数据</h3><pre><code class="mysql">LOAD DATA LOCAL &#39;通过该命令导入本地文件&#39;
+    INFILE &#39;file_name&#39; &#39;本地文件的路径，包含文件地址和文件名。&#39;
+    [REPLACE | IGNORE] &#39;导入数据遇到主键重复时用当前数据覆盖已有数据或者自动忽略失败行&#39;
+    INTO TABLE table_name &#39;MySQL中的目标表名&#39;
+    [&#123;FIELDS | COLUMNS&#125;
+        [TERMINATED BY &#39;string&#39;] &#39;定义每行数据的列分隔符，默认为\t，与MySQL一致。&#39;
+        [[OPTIONALLY] ENCLOSED BY &#39;char&#39;] &#39;定义每列数据的enclosed符号&#39;
+    ]
+    [LINES
+        [TERMINATED BY &#39;string&#39;] &#39;定义行分隔符，默认为\n。&#39;
+    ]
+    [IGNORE number &#123;LINES | ROWS&#125;] &#39;设置导入数据时忽略开始的某几行&#39;
+    [(column_name_or_user_var
+    [, column_name_or_user_var] ...)] &#39;设置导入的列，如果不设置，默认按照列的顺序来导入数据&#39;      
+</code></pre>
+<p>参数详解：</p>
+<ul>
+<li><p><code>LOAD DATA LOCAL INFILE</code>：表示要进行本地文件导入操作。</p>
+<p>如果指定LOCAL关键词，则表明从客户主机上按路径读取文件。如果没有指定，则文件在服务器上按路径读取文件。</p>
+</li>
+<li><p><code>file_name</code>：要导入MySQL的本地文件的路径，包含文件地址和文件名。</p>
+<p><strong>说明：</strong> 如果<code>file_name</code>使用相对路径，则是相对于客户端程序启动时的路径。</p>
+</li>
+<li><p><code>table_name</code>：MySQL中的目标表名。</p>
+<p><strong>说明</strong> 表名前无需携带数据库名。</p>
+</li>
+<li><p><code>REPLACE</code>：导入数据时，遇到主键重复则强制用当前数据覆盖已有数据。</p>
+</li>
+<li><p><code>IGNORE</code>：导入数据时，遇到主键重复或者数据问题时则自动忽略失败行，部分行导入失败但不影响其他行导入。</p>
+</li>
+<li><p><code>[FIELDS] TERMINATED BY &#39;string&#39;</code>：定义每行数据的列分隔符，默认为<code>\t</code>，与MySQL一致。</p>
+</li>
+<li><p><code>[FIELDS] ENCLOSED BY &#39;char&#39;</code> :  定义每列数据的enclosed符号。</p>
+<p>例如，某一列数据为<code>&quot;a&quot;</code>，定义<code>enclosed by &#39;&quot;&#39;</code>后，导入数据时先将<code>&quot;a&quot;</code>前后的<code>&quot;</code>移除，然后导入数据。</p>
+</li>
+<li><p><code>[LINES] TERMINATED BY &#39;string&#39;</code>：定义行分隔符，默认为<code>\n</code>。</p>
+</li>
+<li><p><code>IGNORE number LINES</code>：设置导入数据时忽略开始的某几行。例如<code>IGNORE 1 LINES</code>，导入数据时忽略第一行数据，即第一行数据不会导入AnalyticDB for MySQL。</p>
+</li>
+<li><p><code>(column_name_or_user_var,...)</code>：设置导入的列，如果不设置，默认按照列的顺序来导入数据。</p>
+<ul>
+<li>如果导入列数 &gt; 目标表的列数，则系统自动忽略多余的列。</li>
+<li>如果导入列数 &lt; 目标表的列数，则后续缺少的列将自动填充默认值。</li>
+</ul>
+</li>
+</ul>
+<p>注意：两个命令的 FIELDS 和 LINES 子句的语法是一样的。两个子句都是可选的，但是如果两个同时被指定，FIELDS 子句必须出现在 LINES 子句之前。</p>
+<ol>
+<li>如果用户指定一个 FIELDS 子句，它的子句 （TERMINATED BY、[OPTIONALLY] ENCLOSED BY 和 ESCAPED BY) 也是可选的，不过，用户必须至少指定它们中的一个。</li>
+</ol>
+<pre><code class="mysql"> LOAD DATA LOCAL INFILE &#39;dump.txt&#39; INTO TABLE mytbl FIELDS TERMINATED BY &#39;:&#39; LINES TERMINATED BY &#39;\r\n&#39;;</code></pre>
+<ol start="2">
+<li>LOAD DATA 默认情况下是按照数据文件中列的顺序插入数据的，如果数据文件中的列与插入表中的列不一致，则需要指定列的顺序。在数据文件中的列顺序是 a,b,c，但在插入表的列顺序为b,c,a，则数据导入语法如下：</li>
+</ol>
+<pre><code class="mysql">LOAD DATA LOCAL INFILE &#39;dump.txt&#39;  INTO TABLE mytbl (b, c, a);</code></pre>
+<p><strong>注意事项</strong></p>
+<ul>
+<li><p>客户端开启 local-file</p>
+<p>以mysql-client为例，需要在<code>my.cnf</code>文件中增加以下配置开启<code>local-file</code>功能。</p>
+<pre><code class="shell">cat ~/.my.cnf
+[mysqld]
+local-infile
+[mysql]
+local-infile                    </code></pre>
+</li>
+<li><p>导入数据时无法保证操作的原子性。</p>
+<ul>
+<li>在<code>IGNORE</code>模式下，忽略导入失败的数据行。</li>
+<li>在<code>REPLACE</code>模式下，一旦有数据行导入失败，系统将中止后续<code>INSERT</code>操作，因此可能存在部分行数据导入，部分行数据未导入的情况。</li>
+</ul>
+</li>
+<li><p>支持通过<code>SHOW WARNINGS</code>命令，查看失败行的错误信息。</p>
+</li>
+</ul>
+<h3 id="四、mysqlimport-导入数据"><a href="#四、mysqlimport-导入数据" class="headerlink" title="四、mysqlimport 导入数据"></a>四、mysqlimport 导入数据</h3><p>暂未使用到，后面有使用了补上</p>
 
       
        

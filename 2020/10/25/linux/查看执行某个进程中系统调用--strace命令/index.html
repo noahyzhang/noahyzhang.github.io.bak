@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>查看执行某个进程中系统调用--strace命令 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" linux ">
+  <meta name="description" content="查看执行某个进程中系统调用--strace命令 | Zhangxiaoyi&#39;s Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
+<meta property="og:type" content="website">
+<meta property="og:title" content="about">
+<meta property="og:url" content="http://example.com/about/index.html">
+<meta property="og:site_name" content="Zhangxiaoyi&#39;s Blog">
+<meta property="og:description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-10-06T05:28:23.000Z">
+<meta property="article:modified_time" content="2020-10-06T07:52:54.234Z">
+<meta property="article:author" content="Zhangxiaoyi">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/avatar2.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/avatar2.jpg" />
+</a>
+<div class="author">
+    <span>Zhangxiaoyi</span>
+</div>
+
+<div class="icon">
+    
+        
+    
+        
+        <a title="github" href="https://github.com/noahyzhang" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-github"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+        <a title="csdn" href="https://blog.csdn.net/qq_40421919" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-csdn"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+        <a title="email" href="mailto:1251108673@qq.com" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-email"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+        <a title="qq" href="http://wpa.qq.com/msgrd?v=3&uin=1251108673&site=qq&menu=yes" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-qq"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active" data-rel="All">All<small>(51)</small></div></li>
+    
+        
+            
+            <li><div data-rel="linux">linux<small>(20)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="数据库">数据库<small>(16)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="组件学习">组件学习<small>(8)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="其他">其他<small>(2)</small></div>
+                
+            </li>
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    
+    </div>
+    <div><a class="about  site_url"  href="/about">About</a></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="51">
+<input type="hidden" id="yelog_site_word_count" value="84k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        Links
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://www.zhangxiaoyiya.cn/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">All</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" />
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>c++链接</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>curl</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>datetime</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>gcc</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>gdb linux</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>git</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>ibdata1文件</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>json protobuf</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>linux</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>linux 日志</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>load</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>makefile</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>mysql</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>mysqldump</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>show processlist</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>show slave status</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>syslog日志服务</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tcpdump</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tempfs /dev/shm</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>代理</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>共享内存</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>内存管理</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>删除日志</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>存储</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>守护进程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>导入数据</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>时间戳 时间 转换</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>段错误 core</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>环境变量</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>端口</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>网卡</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>输入中文</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>进程丢失</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>进程状态</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>配置文件</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>重置密码</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        <a  class="All "
+           href="/2021/03/10/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/c++%E8%AF%AD%E8%A8%80/test/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2021-03-10 23:11:58">2021/03/10</span>
+        </a>
+        
+        <a  class="All "
+           href="/2021/03/10/linux/linux%E6%9D%83%E9%99%90%E5%92%8Cumask%E5%80%BC/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
+        </a>
+        
+        <a  class="All "
+           href="/2021/03/10/linux/iptables%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
+        </a>
+        
+        <a  class="All "
+           href="/2021/03/10/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%9C%AA%E6%80%BB%E7%BB%93Mysql_on_duplicate_key_update/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
+        </a>
+        
+        <a  class="All "
+           href="/2021/03/10/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%AE%BD%E8%A1%A8%E5%92%8C%E7%AA%84%E8%A1%A8/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2021/03/07/linux/TCP%E5%92%8CUDP%E5%8D%A0%E7%94%A8%E5%90%8C%E4%B8%80%E7%AB%AF%E5%8F%A3/"
+           data-tag="端口"
+           data-author="" >
+            <span class="post-title" title="系统TCP/UDP占用同一端口">系统TCP/UDP占用同一端口</span>
+            <span class="post-date" title="2021-03-07 21:54:54">2021/03/07</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2021/03/07/linux/VM0%E5%92%8CVM8%E5%92%8CVM1%E7%9A%84%E5%8C%BA%E5%88%AB/"
+           data-tag="网卡"
+           data-author="" >
+            <span class="post-title" title="VM0和VM8和VM1的区别">VM0和VM8和VM1的区别</span>
+            <span class="post-date" title="2021-03-07 21:54:54">2021/03/07</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2021/03/07/linux/PATH%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%80%BB%E7%BB%93/"
+           data-tag="环境变量"
+           data-author="" >
+            <span class="post-title" title="linux中PATH环境变量总结">linux中PATH环境变量总结</span>
+            <span class="post-date" title="2021-03-07 21:11:41">2021/03/07</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2021/03/07/linux/load%E4%B8%8D%E5%88%B0%E5%85%B1%E4%BA%AB%E5%BA%93/"
+           data-tag="load"
+           data-author="" >
+            <span class="post-title" title="linux下load不到共享库">linux下load不到共享库</span>
+            <span class="post-date" title="2021-03-07 21:11:41">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/Mysql%E7%BB%88%E7%AB%AF%E6%97%A0%E6%B3%95%E8%BE%93%E5%85%A5%E4%B8%AD%E6%96%87%E9%97%AE%E9%A2%98/"
+           data-tag="输入中文"
+           data-author="" >
+            <span class="post-title" title="mysql终端无法输入中文问题">mysql终端无法输入中文问题</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql_%E8%A1%A8%E7%A9%BA%E9%97%B4%E4%B8%80%E7%BA%A7ibdata1%E6%96%87%E4%BB%B6%E8%BF%87%E5%A4%A7%E9%97%AE%E9%A2%98/"
+           data-tag="ibdata1文件"
+           data-author="" >
+            <span class="post-title" title="Mysql表空间一级ibdata1文件过大问题">Mysql表空间一级ibdata1文件过大问题</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E4%B8%ADdatetime%E6%AF%94%E8%BE%83/"
+           data-tag="datetime"
+           data-author="" >
+            <span class="post-title" title="mysql中datetime比较">mysql中datetime比较</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE/"
+           data-tag="导入数据"
+           data-author="" >
+            <span class="post-title" title="Mysql导入数据">Mysql导入数据</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E7%A3%81%E7%9B%98%E5%AD%98%E5%82%A8%E6%B5%85%E6%9E%90/"
+           data-tag="存储"
+           data-author="" >
+            <span class="post-title" title="mysql磁盘存储">mysql磁盘存储</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81/"
+           data-tag="重置密码"
+           data-author="" >
+            <span class="post-title" title="mysql重置密码">mysql重置密码</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/show%20processlist%E5%91%BD%E4%BB%A4%E8%A7%A3%E6%9E%90/"
+           data-tag="show processlist"
+           data-author="" >
+            <span class="post-title" title="Mysql show processlist 详解">Mysql show processlist 详解</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/show_slave_status%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/"
+           data-tag="show slave status"
+           data-author="" >
+            <span class="post-title" title="Mysql show slave status">Mysql show slave status</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/my-cnf_%E6%96%87%E4%BB%B6/"
+           data-tag="配置文件"
+           data-author="" >
+            <span class="post-title" title="mysql配置文件解析">mysql配置文件解析</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/mysqldump_%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="mysqldump"
+           data-author="" >
+            <span class="post-title" title="mysqldump使用">mysqldump使用</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/02/18/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="Mysql用户管理">Mysql用户管理</span>
+            <span class="post-date" title="2021-02-18 15:14:06">2021/02/18</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/02/18/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E7%9A%84%E6%A8%A1%E7%B3%8A%E5%8C%B9%E9%85%8D%E6%9F%A5%E6%89%BE/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="Mysql模糊匹配查找">Mysql模糊匹配查找</span>
+            <span class="post-date" title="2021-02-18 15:14:06">2021/02/18</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93/Mysql%E8%A1%A8%E7%A9%BA%E9%97%B4%E4%BB%A5%E5%8F%8Aibdata1%E6%96%87%E4%BB%B6%E8%A7%A3%E9%87%8A/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="Mysql表空间以及ibdata1文件解释">Mysql表空间以及ibdata1文件解释</span>
+            <span class="post-date" title="2020-12-27 19:14:06">2020/12/27</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E5%AD%97%E7%AC%A6%E9%9B%86%E8%BD%AC%E6%8D%A2%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90%E5%8F%8A%E4%B9%B1%E7%A0%81%E5%8E%9F%E5%9B%A0/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="mysql字符集转换原理剖析及乱码原因">mysql字符集转换原理剖析及乱码原因</span>
+            <span class="post-date" title="2020-12-27 14:14:06">2020/12/27</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/20/linux/Linux%E7%B3%BB%E7%BB%9F%E8%BF%9B%E7%A8%8B%E7%8A%B6%E6%80%81%E8%A7%A3%E6%9E%90/"
+           data-tag="进程状态"
+           data-author="" >
+            <span class="post-title" title="Linux系统进程状态解析">Linux系统进程状态解析</span>
+            <span class="post-date" title="2020-12-20 14:19:17">2020/12/20</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/20/linux/Linux%E7%B3%BB%E7%BB%9Ftempfs%E5%92%8C:dev:shm%E8%A7%A3%E6%9E%90/"
+           data-tag="tempfs /dev/shm"
+           data-author="" >
+            <span class="post-title" title="Linux系统tempfs和/dev/shm解析">Linux系统tempfs和/dev/shm解析</span>
+            <span class="post-date" title="2020-12-20 13:19:17">2020/12/20</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/03/linux/Linux%E4%B9%8Bsyslog%E6%97%A5%E5%BF%97%E6%9C%8D%E5%8A%A1%E8%AF%A6%E8%A7%A3/"
+           data-tag="syslog日志服务"
+           data-author="" >
+            <span class="post-title" title="Linux之syslog日志服务详解">Linux之syslog日志服务详解</span>
+            <span class="post-date" title="2020-12-03 19:11:41">2020/12/03</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/02/linux/Linux%E4%B8%8B%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%90%AF%E5%8A%A8%E6%96%B9%E6%B3%95/"
+           data-tag="守护进程"
+           data-author="" >
+            <span class="post-title" title="Linux下守护进程的启动方法">Linux下守护进程的启动方法</span>
+            <span class="post-date" title="2020-12-02 16:19:17">2020/12/02</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/11/07/linux/tcpdump%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="tcpdump"
+           data-author="" >
+            <span class="post-title" title="tcpdump的使用">tcpdump的使用</span>
+            <span class="post-date" title="2020-11-07 14:11:41">2020/11/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/11/01/%E6%95%B0%E6%8D%AE%E5%BA%93/mysqldump%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="mysqldump"
+           data-author="" >
+            <span class="post-title" title="mysqldump的使用">mysqldump的使用</span>
+            <span class="post-date" title="2020-11-01 19:19:17">2020/11/01</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/11/01/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/curl%E5%91%BD%E4%BB%A4%E4%B8%8E%E5%85%B6API%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="curl"
+           data-author="" >
+            <span class="post-title" title="curl命令与其API的使用">curl命令与其API的使用</span>
+            <span class="post-date" title="2020-11-01 18:19:17">2020/11/01</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%8E%92%E6%9F%A5%E8%BF%9B%E7%A8%8B%E7%BB%88%E6%AD%A2%E7%9A%84%E5%8E%9F%E5%9B%A0/"
+           data-tag="进程丢失"
+           data-author="" >
+            <span class="post-title" title="排查进程终止的原因">排查进程终止的原因</span>
+            <span class="post-date" title="2020-10-25 19:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%9F%A5%E7%9C%8B%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E8%A2%AB%E5%93%AA%E4%BA%9B%E8%BF%9B%E7%A8%8Bnattch/"
+           data-tag="共享内存"
+           data-author="" >
+            <span class="post-title" title="查看共享内存被哪些进程nattch">查看共享内存被哪些进程nattch</span>
+            <span class="post-date" title="2020-10-25 19:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/linux%E4%B8%8B%E6%AE%B5%E9%94%99%E8%AF%AF%E7%9A%84%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95/"
+           data-tag="段错误 core"
+           data-author="" >
+            <span class="post-title" title="linux下段错误的产生原因及调试方法">linux下段错误的产生原因及调试方法</span>
+            <span class="post-date" title="2020-10-25 17:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%9F%A5%E7%9C%8B%E6%89%A7%E8%A1%8C%E6%9F%90%E4%B8%AA%E8%BF%9B%E7%A8%8B%E4%B8%AD%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8--strace%E5%91%BD%E4%BB%A4/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="查看执行某个进程中系统调用--strace命令">查看执行某个进程中系统调用--strace命令</span>
+            <span class="post-date" title="2020-10-25 15:31:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/Linux%E4%B9%8Bproc%E4%B8%8Bkcore%E6%96%87%E4%BB%B6%E8%A7%A3%E9%87%8A/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="/proc/kcore文件解释">/proc/kcore文件解释</span>
+            <span class="post-date" title="2020-10-25 15:11:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/linux%E7%B3%BB%E7%BB%9F%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90/"
+           data-tag="linux 日志"
+           data-author="" >
+            <span class="post-title" title="linux 系统日志分析">linux 系统日志分析</span>
+            <span class="post-date" title="2020-10-25 14:11:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/22/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96(json%E5%92%8Cprotobuf)/"
+           data-tag="json protobuf"
+           data-author="" >
+            <span class="post-title" title="序列化和反序列化(json/protobuf)">序列化和反序列化(json/protobuf)</span>
+            <span class="post-date" title="2020-10-22 20:19:17">2020/10/22</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/gcc%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="gcc"
+           data-author="" >
+            <span class="post-title" title="gcc的使用">gcc的使用</span>
+            <span class="post-date" title="2020-10-18 19:54:54">2020/10/18</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/linux_%E5%88%A0%E9%99%A4n%E5%A4%A9%E5%89%8D%E7%9A%84%E6%97%A5%E5%BF%97/"
+           data-tag="删除日志"
+           data-author="" >
+            <span class="post-title" title="linux删除n天前的日志">linux删除n天前的日志</span>
+            <span class="post-date" title="2020-10-18 19:54:54">2020/10/18</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/makefile_%E5%AD%A6%E4%B9%A0/"
+           data-tag="makefile"
+           data-author="" >
+            <span class="post-title" title="makefile学习">makefile学习</span>
+            <span class="post-date" title="2020-10-18 19:54:54">2020/10/18</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/gdb%20%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/"
+           data-tag="gdb linux"
+           data-author="" >
+            <span class="post-title" title="gdb调试工具">gdb调试工具</span>
+            <span class="post-date" title="2020-10-18 15:45:45">2020/10/18</span>
+        </a>
+        
+        <a  class="All 其他 "
+           href="/2020/10/16/%E5%85%B6%E4%BB%96/%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%96%87%E4%BB%B6%E6%89%A7%E8%A1%8Cload%E4%B8%8D%E5%88%B0%E5%85%B1%E4%BA%AB%E5%BA%93%E9%97%AE%E9%A2%98/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="二进制文件执行加载不到共享库问题">二进制文件执行加载不到共享库问题</span>
+            <span class="post-date" title="2020-10-16 11:41:41">2020/10/16</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/09/linux/%E6%9F%A5%E7%9C%8Blinux%20%E7%A1%AC%E4%BB%B6%E8%B5%84%E6%BA%90%E6%96%B9%E6%B3%95/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="查看linux硬件资源方法">查看linux硬件资源方法</span>
+            <span class="post-date" title="2020-10-09 13:11:24">2020/10/09</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/06/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/git%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/"
+           data-tag="git"
+           data-author="" >
+            <span class="post-title" title="git学习记录">git学习记录</span>
+            <span class="post-date" title="2020-10-06 16:22:14">2020/10/06</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/06/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/makefile%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/"
+           data-tag="makefile"
+           data-author="" >
+            <span class="post-title" title="makefile学习记录">makefile学习记录</span>
+            <span class="post-date" title="2020-10-06 16:22:14">2020/10/06</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/06/linux/cc++%E9%94%99%E8%AF%AF%E4%B9%8B%20Undefined%20reference%20%E6%9C%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E9%97%AE%E9%A2%98/"
+           data-tag="c++链接"
+           data-author="" >
+            <span class="post-title" title="c和c++链接未定义的问题">c和c++链接未定义的问题</span>
+            <span class="post-date" title="2020-10-06 16:19:17">2020/10/06</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/10/06/%E6%95%B0%E6%8D%AE%E5%BA%93/show-slave-status-G%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="show slave status\G参数介绍">show slave status\G参数介绍</span>
+            <span class="post-date" title="2020-10-06 16:14:06">2020/10/06</span>
+        </a>
+        
+        <a  class="All 其他 "
+           href="/2020/10/06/%E5%85%B6%E4%BB%96/%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86%E4%B8%8E%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"
+           data-tag="代理"
+           data-author="" >
+            <span class="post-title" title="正向代理与反向代理">正向代理与反向代理</span>
+            <span class="post-date" title="2020-10-06 16:11:29">2020/10/06</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/06/linux/%E9%80%9A%E8%BF%87free%E5%91%BD%E4%BB%A4%E7%90%86%E8%A7%A3linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/"
+           data-tag="内存管理"
+           data-author="" >
+            <span class="post-title" title="通过free命令理解linux内存管理">通过free命令理解linux内存管理</span>
+            <span class="post-date" title="2020-10-06 16:09:52">2020/10/06</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/03/07/linux/date%E5%91%BD%E4%BB%A4%E6%97%B6%E9%97%B4%E6%88%B3%E5%92%8C%E6%97%B6%E9%97%B4%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2/"
+           data-tag="时间戳 时间 转换"
+           data-author="" >
+            <span class="post-title" title="linux上时间和时间戳之间的转换">linux上时间和时间戳之间的转换</span>
+            <span class="post-date" title="2020-03-07 21:11:24">2020/03/07</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/03/07/linux/linux%E5%B7%A5%E5%85%B7%E4%B9%8Bcurl/"
+           data-tag="curl"
+           data-author="" >
+            <span class="post-title" title="linux工具之curl">linux工具之curl</span>
+            <span class="post-date" title="2020-03-07 21:11:24">2020/03/07</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-linux/查看执行某个进程中系统调用--strace命令" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">查看执行某个进程中系统调用--strace命令</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="linux">linux</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color1">linux</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            Created At : <time class="date" title='Updated At: 2021-03-10 23:13:55'>2020-10-25 15:31</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>Count:14.4k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            Views 👀 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+        <span class="top-comment" title="跳转至评论区">
+            <a href="#comments">
+                Comment:<span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </a>
+        </span>
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#strace-%E5%91%BD%E4%BB%A4"><span class="toc-text">strace 命令</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-%E8%BE%93%E5%87%BA%E5%8F%82%E6%95%B0%E7%9A%84%E5%90%AB%E4%B9%89"><span class="toc-text">1. 输出参数的含义</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-%E5%8F%82%E6%95%B0"><span class="toc-text">2. 参数</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E6%9E%90strace-ls-l-%E8%BE%93%E5%87%BA"><span class="toc-text">分析strace ls -l 输出</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>公司分配给我的机器的 /data 目录下执行 ls -l 或者 ll 的时候，偶尔发现特别慢，大概有 5s，对于我来说，实在是忍不了忍不了。</p>
+<p>于是看了 /data 目录是一个新挂的盘，我猜测这是个网络盘。为了验证这个想法。于是去跟踪命令 ll 所进行的系统调用。</p>
+<p>执行 <code>strace ls -l</code> 后，发现主要卡在 poll 这个系统调用上了。这就验证了我的猜想，果然是网络盘，负载过高，导致比较慢。</p>
+<h4 id="strace-命令"><a href="#strace-命令" class="headerlink" title="strace 命令"></a>strace 命令</h4><p>strace常用来跟踪进程执行时的系统调用和所接收的信号。 在Linux世界，进程不能直接访问硬件设备，当进程需要访问硬件设备(比如读取磁盘文件，接收网络数据等等)时，必须由用户态模式切换至内核态模式，通过系统调用访问硬件设备。strace可以跟踪到一个进程产生的系统调用,包括参数，返回值，执行消耗的时间。</p>
+<h5 id="1-输出参数的含义"><a href="#1-输出参数的含义" class="headerlink" title="1. 输出参数的含义"></a>1. 输出参数的含义</h5><p>每一行都是一条系统调用，等号左边是系统调用的函数名及其参数，右边是该调用的返回值。 strace 显示这些调用的参数并返回符号形式的值。strace 从内核接收信息，而且不需要以任何特殊的方式来构建内核。</p>
+<h5 id="2-参数"><a href="#2-参数" class="headerlink" title="2. 参数"></a>2. 参数</h5><pre><code class="shell">-c 统计每一系统调用的所执行的时间,次数和出错的次数等.
+-d 输出strace关于标准错误的调试信息.
+-f 跟踪由fork调用所产生的子进程.
+-ff 如果提供-o filename,则所有进程的跟踪结果输出到相应的filename.pid中,pid是各进程的进程号.
+-F 尝试跟踪vfork调用.在-f时,vfork不被跟踪.
+-h 输出简要的帮助信息.
+-i 输出系统调用的入口指针.
+-q 禁止输出关于脱离的消息.
+-r 打印出相对时间关于,,每一个系统调用.
+-t 在输出中的每一行前加上时间信息.
+-tt 在输出中的每一行前加上时间信息,微秒级.
+-ttt 微秒级输出,以秒了表示时间.
+-T 显示每一调用所耗的时间.
+-v 输出所有的系统调用.一些调用关于环境变量,状态,输入输出等调用由于使用频繁,默认不输出.
+-V 输出strace的版本信息.
+-x 以十六进制形式输出非标准字符串
+-xx 所有字符串以十六进制形式输出.
+-a column
+设置返回值的输出位置.默认 为40.
+-e expr
+指定一个表达式,用来控制如何跟踪.格式如下:
+[qualifier=][!]value1[,value2]...
+qualifier只能是 trace,abbrev,verbose,raw,signal,read,write其中之一.value是用来限定的符号或数字.默认的 qualifier是 trace.感叹号是否定符号.例如:
+-eopen等价于 -e trace=open,表示只跟踪open调用.而-etrace!=open表示跟踪除了open以外的其他调用.有两个特殊的符号 all 和 none.
+注意有些shell使用!来执行历史记录里的命令,所以要使用\\.
+-e trace=set
+只跟踪指定的系统 调用.例如:-e trace=open,close,rean,write表示只跟踪这四个系统调用.默认的为set=all.
+-e trace=file
+只跟踪有关文件操作的系统调用.
+-e trace=process
+只跟踪有关进程控制的系统调用.
+-e trace=network
+跟踪与网络有关的所有系统调用.
+-e strace=signal
+跟踪所有与系统信号有关的 系统调用
+-e trace=ipc
+跟踪所有与进程通讯有关的系统调用
+-e abbrev=set
+设定 strace输出的系统调用的结果集.-v 等与 abbrev=none.默认为abbrev=all.
+-e raw=set
+将指 定的系统调用的参数以十六进制显示.
+-e signal=set
+指定跟踪的系统信号.默认为all.如 signal=!SIGIO(或者signal=!io),表示不跟踪SIGIO信号.
+-e read=set
+输出从指定文件中读出 的数据.例如:
+-e read=3,5
+-e write=set
+输出写入到指定文件中的数据.
+-o filename
+将strace的输出写入文件filename
+-p pid
+跟踪指定的进程pid.
+-s strsize
+指定输出的字符串的最大长度.默认为32.文件名一直全部输出.
+-u username
+以username 的UID和GID执行被跟踪的命令</code></pre>
+<h4 id="分析strace-ls-l-输出"><a href="#分析strace-ls-l-输出" class="headerlink" title="分析strace ls -l 输出"></a>分析strace ls -l 输出</h4><p>执行 <code>strace -tt -T -v -o /tmp/strace_ll.log  ls -l</code> 之后，分析一下 strace_ll.log 文件。</p>
+<pre><code class="shell">16:23:19.795706 execve(&quot;/usr/bin/ls&quot;, [&quot;ls&quot;, &quot;-l&quot;], [&quot;HOSTNAME=VM-239-95-centos&quot;, &quot;TERM=xterm-256color&quot;, &quot;SHELL=/bin/bash&quot;, &quot;HISTSIZE=3000&quot;, &quot;SSH_CLIENT=10.64.43.14 62186 360&quot;..., &quot;OLDPWD=/proc&quot;, &quot;SSH_TTY=/dev/pts/9&quot;, &quot;USER=root&quot;, &quot;LS_COLORS=rs=0:di=38;5;27:ln=38;&quot;..., &quot;MAIL=/var/spool/mail/root&quot;, &quot;PATH=/path/myenv/mysql5.6/bin:/u&quot;..., &quot;PWD=/tmp&quot;, &quot;TST_HACK_BASH_SESSION_ID=7737114&quot;..., &quot;LANG=zh_CN.UTF-8&quot;, &quot;HISTCONTROL=ignoredups&quot;, &quot;SHLVL=1&quot;, &quot;HOME=/root&quot;, &quot;LOGNAME=root&quot;, &quot;CVS_RSH=ssh&quot;, &quot;SSH_CONNECTION=10.64.43.14 62186&quot;..., &quot;LESSOPEN=||/usr/bin/lesspipe.sh &quot;..., &quot;_=/usr/bin/strace&quot;]) = 0 &lt;0.000181&gt;
+16:23:19.796014 brk(0)                  = 0x14a9000 &lt;0.000016&gt;
+16:23:19.796073 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f5d4a0eb000 &lt;0.000016&gt;
+16:23:19.796124 access(&quot;/etc/ld.so.preload&quot;, R_OK) = 0 &lt;0.000022&gt;
+16:23:19.796170 open(&quot;/etc/ld.so.preload&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000017&gt;
+16:23:19.796212 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=4607, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=18, st_atime=2018/06/19-15:11:01, st_mtime=2016/11/22-05:07:58, st_ctime=2018/08/22-18:53:04&#125;) = 0 &lt;0.000015&gt;
+16:23:19.796272 mmap(NULL, 18, PROT_READ|PROT_WRITE, MAP_PRIVATE, 3, 0) = 0x7f5d4a0ea000 &lt;0.000017&gt;
+16:23:19.796312 close(3)                = 0 &lt;0.000015&gt;
+16:23:19.796355 readlink(&quot;/proc/self/exe&quot;, &quot;/usr/bin/ls&quot;, 4096) = 11 &lt;0.000020&gt;
+16:23:19.796406 open(&quot;/lib64/libonion.so&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000017&gt;
+16:23:19.796462 read(3, &quot;\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0&gt;\0\1\0\0\0`\20\0\0\0\0\0\0&quot;..., 832) = 832 &lt;0.000016&gt;
+16:23:19.796502 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=25620, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=88, st_size=42880, st_atime=2018/06/19-15:11:01, st_mtime=2017/05/15-15:38:54, st_ctime=2018/08/22-18:53:05&#125;) = 0 &lt;0.000014&gt;
+16:23:19.796549 mmap(NULL, 1072448, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f5d49fe4000 &lt;0.000016&gt;
+16:23:19.796587 mprotect(0x7f5d49fe7000, 1048576, PROT_NONE) = 0 &lt;0.000018&gt;
+16:23:19.796630 mmap(0x7f5d4a0e7000, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x3000) = 0x7f5d4a0e7000 &lt;0.000018&gt;
+16:23:19.796672 mmap(0x7f5d4a0e8000, 7488, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f5d4a0e8000 &lt;0.000024&gt;
+16:23:19.796719 close(3)                = 0 &lt;0.000015&gt;
+16:23:19.796755 munmap(0x7f5d4a0ea000, 18) = 0 &lt;0.000019&gt;
+16:23:19.796798 open(&quot;/etc/ld.so.cache&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000020&gt;
+16:23:19.796841 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=43510, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=168, st_size=82239, st_atime=2020/10/22-19:51:07, st_mtime=2020/10/22-19:51:07, st_ctime=2020/10/22-19:51:07&#125;) = 0 &lt;0.000015&gt;
+16:23:19.796886 mmap(NULL, 82239, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f5d49fcf000 &lt;0.000016&gt;
+16:23:19.796925 close(3)                = 0 &lt;0.000015&gt;
+16:23:19.796967 open(&quot;/lib64/libselinux.so.1&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000017&gt;
+16:23:19.797006 read(3, &quot;\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0&gt;\0\1\0\0\0\220j\0\0\0\0\0\0&quot;..., 832) = 832 &lt;0.000017&gt;
+16:23:19.797045 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=25797, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=312, st_size=155744, st_atime=2020/04/30-17:31:30, st_mtime=2020/04/30-17:31:30, st_ctime=2020/07/29-10:39:58&#125;) = 0 &lt;0.000016&gt;
+16:23:19.797091 mmap(NULL, 2255216, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f5d49ca4000 &lt;0.000017&gt;
+16:23:19.797129 mprotect(0x7f5d49cc8000, 2093056, PROT_NONE) = 0 &lt;0.000018&gt;
+16:23:19.797171 mmap(0x7f5d49ec7000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x23000) = 0x7f5d49ec7000 &lt;0.000018&gt;
+16:23:19.797218 mmap(0x7f5d49ec9000, 6512, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f5d49ec9000 &lt;0.000018&gt;
+16:23:19.797260 close(3)                = 0 &lt;0.000015&gt;
+16:23:19.797301 open(&quot;/lib64/libcap.so.2&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000018&gt;
+16:23:19.797341 read(3, &quot;\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0&gt;\0\1\0\0\0 \26\0\0\0\0\0\0&quot;..., 832) = 832 &lt;0.000016&gt;
+16:23:19.797382 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=25067, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=40, st_size=20024, st_atime=2018/06/19-15:11:01, st_mtime=2014/06/10-11:05:45, st_ctime=2018/08/22-18:53:04&#125;) = 0 &lt;0.000020&gt;
+16:23:19.797433 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f5d4a0ea000 &lt;0.000016&gt;
+16:23:19.797472 mmap(NULL, 2114112, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f5d49a9f000 &lt;0.000016&gt;
+16:23:19.797510 mprotect(0x7f5d49aa3000, 2093056, PROT_NONE) = 0 &lt;0.000020&gt;
+16:23:19.797552 mmap(0x7f5d49ca2000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x3000) = 0x7f5d49ca2000 &lt;0.000017&gt;
+16:23:19.797595 close(3)                = 0 &lt;0.000014&gt;
+16:23:19.797635 open(&quot;/lib64/libacl.so.1&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000019&gt;
+16:23:19.797678 read(3, &quot;\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0&gt;\0\1\0\0\0\200\37\0\0\0\0\0\0&quot;..., 832) = 832 &lt;0.000016&gt;
+16:23:19.797716 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=24981, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=80, st_size=37056, st_atime=2018/06/19-15:11:01, st_mtime=2014/06/10-16:43:26, st_ctime=2018/08/22-18:53:04&#125;) = 0 &lt;0.000014&gt;
+16:23:19.797760 mmap(NULL, 2130560, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f5d49896000 &lt;0.000017&gt;
+16:23:19.797798 mprotect(0x7f5d4989d000, 2097152, PROT_NONE) = 0 &lt;0.000017&gt;
+16:23:19.797836 mmap(0x7f5d49a9d000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x7000) = 0x7f5d49a9d000 &lt;0.000016&gt;
+16:23:19.797886 close(3)                = 0 &lt;0.000015&gt;
+16:23:19.797926 open(&quot;/lib64/libc.so.6&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000041&gt;
+16:23:19.798008 read(3, &quot;\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0&gt;\0\1\0\0\0\200&amp;\2\0\0\0\0\0&quot;..., 832) = 832 &lt;0.000031&gt;
+16:23:19.798082 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=24989, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=4248, st_size=2172544, st_atime=2019/10/21-10:47:02, st_mtime=2019/10/21-10:47:02, st_ctime=2020/07/29-10:39:57&#125;) = 0 &lt;0.000042&gt;
+16:23:19.798174 mmap(NULL, 3989984, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f5d494c7000 &lt;0.000035&gt;
+16:23:19.798249 mprotect(0x7f5d4968c000, 2093056, PROT_NONE) = 0 &lt;0.000039&gt;
+16:23:19.798326 mmap(0x7f5d4988b000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1c4000) = 0x7f5d4988b000 &lt;0.000036&gt;
+16:23:19.798422 mmap(0x7f5d49891000, 16864, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f5d49891000 &lt;0.000033&gt;
+16:23:19.798503 close(3)                = 0 &lt;0.000032&gt;
+16:23:19.798584 open(&quot;/lib64/libdl.so.2&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000023&gt;
+16:23:19.798629 read(3, &quot;\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0&gt;\0\1\0\0\0`\16\0\0\0\0\0\0&quot;..., 832) = 832 &lt;0.000016&gt;
+16:23:19.798667 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=25105, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=40, st_size=19336, st_atime=2019/10/21-10:47:03, st_mtime=2019/10/21-10:47:03, st_ctime=2020/07/29-10:39:57&#125;) = 0 &lt;0.000014&gt;
+16:23:19.798711 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f5d49fce000 &lt;0.000018&gt;
+16:23:19.798755 mmap(NULL, 2109744, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f5d492c3000 &lt;0.000016&gt;
+16:23:19.798792 mprotect(0x7f5d492c5000, 2097152, PROT_NONE) = 0 &lt;0.000018&gt;
+16:23:19.798831 mmap(0x7f5d494c5000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x2000) = 0x7f5d494c5000 &lt;0.000018&gt;
+16:23:19.798873 close(3)                = 0 &lt;0.000015&gt;
+16:23:19.798916 open(&quot;/lib64/libpcre.so.1&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000031&gt;
+16:23:19.798971 read(3, &quot;\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0&gt;\0\1\0\0\0\360\25\0\0\0\0\0\0&quot;..., 832) = 832 &lt;0.000019&gt;
+16:23:19.799014 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=25677, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=792, st_size=402368, st_atime=2019/10/21-13:58:55, st_mtime=2019/10/21-13:58:55, st_ctime=2020/07/29-10:39:57&#125;) = 0 &lt;0.000016&gt;
+16:23:19.799070 mmap(NULL, 2494984, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f5d49061000 &lt;0.000017&gt;
+16:23:19.799108 mprotect(0x7f5d490c1000, 2097152, PROT_NONE) = 0 &lt;0.000031&gt;
+16:23:19.799169 mmap(0x7f5d492c1000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x60000) = 0x7f5d492c1000 &lt;0.000020&gt;
+16:23:19.799218 close(3)                = 0 &lt;0.000015&gt;
+16:23:19.799261 open(&quot;/lib64/libattr.so.1&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000020&gt;
+16:23:19.799309 read(3, &quot;\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0&gt;\0\1\0\0\0\320\23\0\0\0\0\0\0&quot;..., 832) = 832 &lt;0.000023&gt;
+16:23:19.799356 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=25018, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=40, st_size=19888, st_atime=2018/06/19-15:11:01, st_mtime=2014/06/10-12:33:35, st_ctime=2018/08/22-18:53:04&#125;) = 0 &lt;0.000015&gt;
+16:23:19.799411 mmap(NULL, 2113904, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f5d48e5c000 &lt;0.000017&gt;
+16:23:19.799449 mprotect(0x7f5d48e60000, 2093056, PROT_NONE) = 0 &lt;0.000018&gt;
+16:23:19.799496 mmap(0x7f5d4905f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x3000) = 0x7f5d4905f000 &lt;0.000018&gt;
+16:23:19.799542 close(3)                = 0 &lt;0.000014&gt;
+16:23:19.799584 open(&quot;/lib64/libpthread.so.0&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000019&gt;
+16:23:19.799624 read(3, &quot;\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0&gt;\0\1\0\0\0\220m\0\0\0\0\0\0&quot;..., 832) = 832 &lt;0.000026&gt;
+16:23:19.799674 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=25602, st_mode=S_IFREG|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=288, st_size=143664, st_atime=2019/10/21-10:47:03, st_mtime=2019/10/21-10:47:03, st_ctime=2020/07/29-10:39:57&#125;) = 0 &lt;0.000015&gt;
+16:23:19.799720 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f5d49fcd000 &lt;0.000016&gt;
+16:23:19.799758 mmap(NULL, 2208904, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f5d48c40000 &lt;0.000016&gt;
+16:23:19.799796 mprotect(0x7f5d48c57000, 2093056, PROT_NONE) = 0 &lt;0.000018&gt;
+16:23:19.799836 mmap(0x7f5d48e56000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x16000) = 0x7f5d48e56000 &lt;0.000017&gt;
+16:23:19.799877 mmap(0x7f5d48e58000, 13448, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f5d48e58000 &lt;0.000016&gt;
+16:23:19.799919 close(3)                = 0 &lt;0.000015&gt;
+16:23:19.799972 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f5d49fcc000 &lt;0.000015&gt;
+16:23:19.800012 mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f5d49fca000 &lt;0.000015&gt;
+16:23:19.800054 arch_prctl(ARCH_SET_FS, 0x7f5d49fca840) = 0 &lt;0.000020&gt;
+16:23:19.800157 mprotect(0x7f5d4988b000, 16384, PROT_READ) = 0 &lt;0.000027&gt;
+16:23:19.800234 mprotect(0x7f5d48e56000, 4096, PROT_READ) = 0 &lt;0.000020&gt;
+16:23:19.800288 mprotect(0x7f5d4905f000, 4096, PROT_READ) = 0 &lt;0.000016&gt;
+16:23:19.800329 mprotect(0x7f5d492c1000, 4096, PROT_READ) = 0 &lt;0.000017&gt;
+16:23:19.800373 mprotect(0x7f5d494c5000, 4096, PROT_READ) = 0 &lt;0.000020&gt;
+16:23:19.800427 mprotect(0x7f5d49a9d000, 4096, PROT_READ) = 0 &lt;0.000018&gt;
+16:23:19.800469 mprotect(0x7f5d49ca2000, 4096, PROT_READ) = 0 &lt;0.000016&gt;
+16:23:19.800515 mprotect(0x7f5d49ec7000, 4096, PROT_READ) = 0 &lt;0.000016&gt;
+16:23:19.800560 mprotect(0x61a000, 4096, PROT_READ) = 0 &lt;0.000016&gt;
+16:23:19.800599 mprotect(0x7f5d4a0ec000, 4096, PROT_READ) = 0 &lt;0.000016&gt;
+16:23:19.800636 munmap(0x7f5d49fcf000, 82239) = 0 &lt;0.000020&gt;
+16:23:19.800679 set_tid_address(0x7f5d49fcab10) = 23171 &lt;0.000015&gt;
+16:23:19.800717 set_robust_list(0x7f5d49fcab20, 24) = 0 &lt;0.000016&gt;
+16:23:19.800758 rt_sigaction(SIGRTMIN, &#123;0x7f5d48c46870, [], SA_RESTORER|SA_SIGINFO, 0x7f5d48c4f640&#125;, NULL, 8) = 0 &lt;0.000015&gt;
+16:23:19.800805 rt_sigaction(SIGRT_1, &#123;0x7f5d48c46900, [], SA_RESTORER|SA_RESTART|SA_SIGINFO, 0x7f5d48c4f640&#125;, NULL, 8) = 0 &lt;0.000014&gt;
+16:23:19.800843 rt_sigprocmask(SIG_UNBLOCK, [RTMIN RT_1], NULL, 8) = 0 &lt;0.000016&gt;
+16:23:19.800888 getrlimit(RLIMIT_STACK, &#123;rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY&#125;) = 0 &lt;0.000015&gt;
+16:23:19.800948 statfs(&quot;/sys/fs/selinux&quot;, 0x7ffc4c6b4740) = -1 ENOENT (No such file or directory) &lt;0.000022&gt;
+16:23:19.801006 statfs(&quot;/selinux&quot;, 0x7ffc4c6b4740) = -1 ENOENT (No such file or directory) &lt;0.000015&gt;
+16:23:19.801079 brk(0)                  = 0x14a9000 &lt;0.000017&gt;
+16:23:19.801117 brk(0x14ca000)          = 0x14ca000 &lt;0.000017&gt;
+16:23:19.801162 open(&quot;/proc/filesystems&quot;, O_RDONLY) = 3 &lt;0.000022&gt;
+16:23:19.801212 fstat(3, &#123;st_dev=makedev(0, 3), st_ino=4026532028, st_mode=S_IFREG|0444, st_nlink=1, st_uid=0, st_gid=0, st_blksize=1024, st_blocks=0, st_size=0, st_atime=2020/10/25-16:23:19, st_mtime=2020/10/25-16:23:19, st_ctime=2020/10/25-16:23:19&#125;) = 0 &lt;0.000015&gt;
+16:23:19.801259 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f5d49fe3000 &lt;0.000017&gt;
+16:23:19.801303 read(3, &quot;nodev\tsysfs\nnodev\trootfs\nnodev\tb&quot;..., 1024) = 374 &lt;0.000029&gt;
+16:23:19.801358 stat(&quot;/etc/sysconfig/64bit_strstr_via_64bit_strstr_sse2_unaligned&quot;, 0x7ffc4c6b42f0) = -1 ENOENT (No such file or directory) &lt;0.000017&gt;
+16:23:19.801409 read(3, &quot;&quot;, 1024)       = 0 &lt;0.000021&gt;
+16:23:19.801458 close(3)                = 0 &lt;0.000022&gt;
+16:23:19.801501 munmap(0x7f5d49fe3000, 4096) = 0 &lt;0.000019&gt;
+16:23:19.801542 access(&quot;/etc/selinux/config&quot;, F_OK) = 0 &lt;0.000017&gt;
+16:23:19.801601 open(&quot;/usr/lib/locale/locale-archive&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000019&gt;
+16:23:19.801642 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=50561, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=207128, st_size=106075056, st_atime=2020/07/29-10:39:55, st_mtime=2020/07/29-10:39:56, st_ctime=2020/07/29-10:39:56&#125;) = 0 &lt;0.000014&gt;
+16:23:19.801688 mmap(NULL, 106075056, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f5d42716000 &lt;0.000016&gt;
+16:23:19.801727 close(3)                = 0 &lt;0.000014&gt;
+16:23:19.801789 ioctl(1, SNDCTL_TMR_TIMEBASE or SNDRV_TIMER_IOCTL_NEXT_DEVICE or TCGETS, &#123;c_iflags=0x500, c_oflags=0x5, c_cflags=0xbf, c_lflags=0x8a3b, c_line=0, c_cc=&quot;\x03\x1c\x7f\x15\x04\x00\x01\x00\x11\x13\x1a\x00\x12\x0f\x17\x16\x00\x00\x00&quot;&#125;) = 0 &lt;0.000017&gt;
+16:23:19.801841 ioctl(1, TIOCGWINSZ, &#123;ws_row=44, ws_col=143, ws_xpixel=100, ws_ypixel=100&#125;) = 0 &lt;0.000015&gt;
+16:23:19.801896 open(&quot;/usr/share/locale/locale.alias&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000019&gt;
+16:23:19.801942 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=50546, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=2502, st_atime=2019/10/21-10:28:49, st_mtime=2019/10/21-10:28:49, st_ctime=2020/07/29-10:39:55&#125;) = 0 &lt;0.000016&gt;
+16:23:19.801991 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f5d49fe3000 &lt;0.000015&gt;
+16:23:19.802029 read(3, &quot;# Locale name alias data base.\n#&quot;..., 4096) = 2502 &lt;0.000017&gt;
+16:23:19.802082 read(3, &quot;&quot;, 4096)       = 0 &lt;0.000015&gt;
+16:23:19.802118 close(3)                = 0 &lt;0.000020&gt;
+16:23:19.802161 munmap(0x7f5d49fe3000, 4096) = 0 &lt;0.000018&gt;
+16:23:19.802216 open(&quot;/usr/share/locale/zh_CN.UTF-8/LC_TIME/coreutils.mo&quot;, O_RDONLY) = -1 ENOENT (No such file or directory) &lt;0.000017&gt;
+16:23:19.802259 open(&quot;/usr/share/locale/zh_CN.utf8/LC_TIME/coreutils.mo&quot;, O_RDONLY) = -1 ENOENT (No such file or directory) &lt;0.000016&gt;
+16:23:19.802298 open(&quot;/usr/share/locale/zh_CN/LC_TIME/coreutils.mo&quot;, O_RDONLY) = 3 &lt;0.000018&gt;
+16:23:19.802339 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=76447, st_mode=S_IFREG|0644, st_nlink=2, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=376, st_size=190751, st_atime=2017/02/10-14:16:51, st_mtime=2017/02/10-14:16:51, st_ctime=2018/08/22-18:53:06&#125;) = 0 &lt;0.000021&gt;
+16:23:19.802391 mmap(NULL, 190751, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f5d49f9b000 &lt;0.000016&gt;
+16:23:19.802440 close(3)                = 0 &lt;0.000014&gt;
+16:23:19.802510 open(&quot;/usr/lib64/gconv/gconv-modules.cache&quot;, O_RDONLY) = 3 &lt;0.000019&gt;
+16:23:19.802557 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=5008, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=56, st_size=26254, st_atime=2020/07/29-10:39:57, st_mtime=2020/07/29-10:39:57, st_ctime=2020/07/29-10:39:57&#125;) = 0 &lt;0.000015&gt;
+16:23:19.802601 mmap(NULL, 26254, PROT_READ, MAP_SHARED, 3, 0) = 0x7f5d49fdd000 &lt;0.000016&gt;
+16:23:19.802643 close(3)                = 0 &lt;0.000015&gt;
+16:23:19.802682 futex(0x7f5d49890a80, FUTEX_WAKE_PRIVATE, 2147483647) = 0 &lt;0.000015&gt;
+16:23:19.802725 stat(&quot;/etc/sysconfig/64bit_strstr_via_64bit_strstr_sse2_unaligned&quot;, 0x7ffc4c6b3f70) = -1 ENOENT (No such file or directory) &lt;0.000016&gt;
+16:23:19.802791 openat(AT_FDCWD, &quot;.&quot;, O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 3 &lt;0.000017&gt;
+16:23:19.802834 getdents(3, &#123;&#123;d_ino=393219, d_off=66071222711050786, d_reclen=32, d_name=".ICE-unix", d_type=DT_DIR&#125; &#123;d_ino=397731, d_off=364193898229513950, d_reclen=72, d_name="CoreFxPipe_vscode.19cdc46bf3b6d2091af5cc816bc3b39d", d_type=DT_SOCK&#125; &#123;d_ino=397727, d_off=964080077036503912, d_reclen=64, d_name="CoreFxPipe_ed0d0282da35423fb53ae3ff488289c3", d_type=DT_SOCK&#125; &#123;d_ino=790291, d_off=1135619529437458515, d_reclen=48, d_name="remote-file-71752ccfe2464e99", d_type=DT_DIR&#125; &#123;d_ino=397722, d_off=1329646061135803564, d_reclen=72, d_name="vscode-ipc-97bbdce4-9619-40a6-a994-989d4f0e938c.sock", d_type=DT_SOCK&#125; &#123;d_ino=397716, d_off=1495829360782141469, d_reclen=64, d_name="CoreFxPipe_5930c28ae6364601939b715025fe05e5", d_type=DT_SOCK&#125; &#123;d_ino=397699, d_off=1650305626629467143, d_reclen=72, d_name="vscode-ipc-f2bf78a8-8e5b-4433-9c38-2479e8d68fac.sock", d_type=DT_SOCK&#125; &#123;d_ino=393220, d_off=1707514257825697045, d_reclen=40, d_name="agent_cmd.sock", d_type=DT_SOCK&#125; &#123;d_ino=397726, d_off=1839295972570081672, d_reclen=72, d_name="vscode-ipc-002508c6-7968-4fac-954b-85c09bdf1287.sock", d_type=DT_SOCK&#125; &#123;d_ino=397717, d_off=2538150781375348769, d_reclen=72, d_name="vscode-ipc-10e12dad-79e0-483b-b3cc-817a36c00066.sock", d_type=DT_SOCK&#125; &#123;d_ino=790295, d_off=2651671947127860946, d_reclen=40, d_name="VSFeedbackVSRTCLogs", d_type=DT_DIR&#125; &#123;d_ino=397694, d_off=2830863892624495552, d_reclen=48, d_name="vscode-git-c7c751cafd.sock", d_type=DT_SOCK&#125; &#123;d_ino=397709, d_off=2839229431576066026, d_reclen=48, d_name="vscode-git-ec20fec18d.sock", d_type=DT_SOCK&#125; &#123;d_ino=393218, d_off=3238497401709217654, d_reclen=24, d_name=".", d_type=DT_DIR&#125; &#123;d_ino=529486, d_off=3551510631665562066, d_reclen=32, d_name="2dm-cpp", d_type=DT_DIR&#125; &#123;d_ino=397721, d_off=3607321771111329354, d_reclen=64, d_name="CoreFxPipe_b21e1bd335c04731bec235700fdf311c", d_type=DT_SOCK&#125; &#123;d_ino=394050, d_off=3857167332293830883, d_reclen=64, d_name="CoreFxPipe_48e5ec03088b41648d9c0d523593b342", d_type=DT_SOCK&#125; &#123;d_ino=393245, d_off=4101585867905529462, d_reclen=48, d_name="tencent_sec_webfilter_qzhttp", d_type=DT_REG&#125; &#123;d_ino=397730, d_off=4198518821145912746, d_reclen=64, d_name="CoreFxPipe_dee8ac007268482d9f505cd276418680", d_type=DT_SOCK&#125; &#123;d_ino=397715, d_off=4737155762133436614, d_reclen=48, d_name="vscode-git-11043de042.sock", d_type=DT_SOCK&#125; &#123;d_ino=397728, d_off=5003524080799449865, d_reclen=56, d_name="clr-debug-pipe-26492-759628703-out", d_type=DT_FIFO&#125; &#123;d_ino=393223, d_off=5135592277553527944, d_reclen=32, d_name=".XIM-unix", d_type=DT_DIR&#125; &#123;d_ino=397724, d_off=5136279442322180038, d_reclen=64, d_name="CoreFxPipe_ae926d7207da472b82db82cc029fec6d", d_type=DT_SOCK&#125; &#123;d_ino=397729, d_off=5183345896185079493, d_reclen=64, d_name="dotnet-diagnostic-26492-759628703-socket", d_type=DT_SOCK&#125; &#123;d_ino=397719, d_off=5195600624703869462, d_reclen=72, d_name="vscode-ipc-a63d8082-4ee6-4be6-b5fe-64ea13d709a9.sock", d_type=DT_SOCK&#125; &#123;d_ino=397713, d_off=5233154562355034691, d_reclen=64, d_name="CoreFxPipe_06df3c7e0668454db620c7fbbd6131d8", d_type=DT_SOCK&#125; &#123;d_ino=393222, d_off=5464394528706673886, d_reclen=32, d_name=".X11-unix", d_type=DT_DIR&#125; &#123;d_ino=397695, d_off=5811894089075406149, d_reclen=72, d_name="vscode-ipc-c30835c7-7d50-43fb-b251-c77924fa4d78.sock", d_type=DT_SOCK&#125; &#123;d_ino=397723, d_off=5883888996922303592, d_reclen=64, d_name="CoreFxPipe_c3805b7eebb541a78564ec0955e064c9", d_type=DT_SOCK&#125; &#123;d_ino=397718, d_off=5899249260138652868, d_reclen=72, d_name="vscode-ipc-0a1b200d-c94a-4e59-aed6-d916fbb25a30.sock", d_type=DT_SOCK&#125; &#123;d_ino=397732, d_off=5922843804791938993, d_reclen=40, d_name="strace_ll.log", d_type=DT_REG&#125; &#123;d_ino=393224, d_off=6041205501601559452, d_reclen=32, d_name=".font-unix", d_type=DT_DIR&#125; &#123;d_ino=393244, d_off=6095162436165446985, d_reclen=72, d_name="vscode-ipc-b2570fda-2742-4171-b21d-c3e7cb122f4e.sock", d_type=DT_SOCK&#125; &#123;d_ino=1054125, d_off=6592928799397525875, d_reclen=40, d_name="commandnotfound", d_type=DT_DIR&#125; &#123;d_ino=397689, d_off=6672420988897190016, d_reclen=32, d_name="mysql.sock", d_type=DT_SOCK&#125; &#123;d_ino=393221, d_off=6760494796767168247, d_reclen=32, d_name=".Test-unix", d_type=DT_DIR&#125; &#123;d_ino=790298, d_off=7045761086938793192, d_reclen=40, d_name="vsonline_logs", d_type=DT_DIR&#125; &#123;d_ino=395721, d_off=7532117049427963795, d_reclen=48, d_name="vscode-git-c117eb3d8d.sock", d_type=DT_SOCK&#125; &#123;d_ino=397725, d_off=7857234378425133083, d_reclen=56, d_name="clr-debug-pipe-26492-759628703-in", d_type=DT_FIFO&#125; &#123;d_ino=657223, d_off=8069047951813341151, d_reclen=80, d_name="appInsights-nodeAIF-d9b70cd4-b9f9-4d70-929b-a071c400b217", d_type=DT_DIR&#125; &#123;d_ino=397714, d_off=8653023893088420193, d_reclen=72, d_name="vscode-ipc-d936b95b-060d-4421-bb97-bd949105a3d4.sock", d_type=DT_SOCK&#125; &#123;d_ino=2, d_off=8890165242111957700, d_reclen=24, d_name="..", d_type=DT_DIR&#125; &#123;d_ino=397693, d_off=9025566493146445856, d_reclen=72, d_name="vscode-ipc-aef7e716-f3da-4ac2-a1c8-cac882fdfdea.sock", d_type=DT_SOCK&#125; &#123;d_ino=657451, d_off=9109926784388718580, d_reclen=40, d_name="vscode-typescript0", d_type=DT_DIR&#125; &#123;d_ino=397720, d_off=9223372036854775807, d_reclen=48, d_name="vscode-git-1bf11324be.sock", d_type=DT_SOCK&#125;&#125;, 32768) = 2408 &lt;0.000038&gt;
+16:23:19.802927 lstat(&quot;CoreFxPipe_vscode.19cdc46bf3b6d2091af5cc816bc3b39d&quot;, &#123;st_dev=makedev(252, 1), st_ino=397731, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/25-13:06:03, st_mtime=2020/10/25-13:06:03, st_ctime=2020/10/25-13:06:03&#125;) = 0 &lt;0.000017&gt;
+16:23:19.802979 lgetxattr(&quot;CoreFxPipe_vscode.19cdc46bf3b6d2091af5cc816bc3b39d&quot;, &quot;security.selinux&quot;, 0x14ba4d0, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.803026 getxattr(&quot;CoreFxPipe_vscode.19cdc46bf3b6d2091af5cc816bc3b39d&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.803066 getxattr(&quot;CoreFxPipe_vscode.19cdc46bf3b6d2091af5cc816bc3b39d&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.803113 socket(PF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 4 &lt;0.000033&gt;
+16:23:19.803185 connect(4, &#123;sa_family=AF_LOCAL, sun_path=&quot;/var/run/nscd/socket&quot;&#125;, 110) = 0 &lt;0.000033&gt;
+16:23:19.803254 sendto(4, &quot;\2\0\0\0\v\0\0\0\7\0\0\0passwd\0&quot;, 19, MSG_NOSIGNAL, NULL, 0) = 19 &lt;0.000022&gt;
+16:23:19.803309 poll([&#123;fd=4, events=POLLIN|POLLERR|POLLHUP&#125;], 1, 5000) = 1 ([&#123;fd=4, revents=POLLIN|POLLHUP&#125;]) &lt;0.000020&gt;
+16:23:19.803358 recvmsg(4, &#123;msg_name(0)=NULL, msg_iov(2)=[&#123;&quot;passwd\0&quot;, 7&#125;, &#123;&quot;\310O\3\0\0\0\0\0&quot;, 8&#125;], msg_controllen=20, &#123;cmsg_len=20, cmsg_level=SOL_SOCKET, cmsg_type=SCM_RIGHTS, &#123;5&#125;&#125;, msg_flags=MSG_CMSG_CLOEXEC&#125;, MSG_CMSG_CLOEXEC) = 15 &lt;0.000021&gt;
+16:23:19.803425 mmap(NULL, 217032, PROT_READ, MAP_SHARED, 5, 0) = 0x7f5d49f66000 &lt;0.000019&gt;
+16:23:19.803472 close(5)                = 0 &lt;0.000016&gt;
+16:23:19.803513 close(4)                = 0 &lt;0.000020&gt;
+16:23:19.803565 socket(PF_LOCAL, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 4 &lt;0.000018&gt;
+16:23:19.803619 connect(4, &#123;sa_family=AF_LOCAL, sun_path=&quot;/var/run/nscd/socket&quot;&#125;, 110) = 0 &lt;0.000026&gt;
+16:23:19.803678 sendto(4, &quot;\2\0\0\0\f\0\0\0\6\0\0\0group\0&quot;, 18, MSG_NOSIGNAL, NULL, 0) = 18 &lt;0.000022&gt;
+16:23:19.803726 poll([&#123;fd=4, events=POLLIN|POLLERR|POLLHUP&#125;], 1, 5000) = 1 ([&#123;fd=4, revents=POLLIN|POLLHUP&#125;]) &lt;0.000019&gt;
+16:23:19.803781 recvmsg(4, &#123;msg_name(0)=NULL, msg_iov(2)=[&#123;&quot;group\0&quot;, 6&#125;, &#123;&quot;\310O\3\0\0\0\0\0&quot;, 8&#125;], msg_controllen=20, &#123;cmsg_len=20, cmsg_level=SOL_SOCKET, cmsg_type=SCM_RIGHTS, &#123;5&#125;&#125;, msg_flags=MSG_CMSG_CLOEXEC&#125;, MSG_CMSG_CLOEXEC) = 14 &lt;0.000020&gt;
+16:23:19.803830 mmap(NULL, 217032, PROT_READ, MAP_SHARED, 5, 0) = 0x7f5d49f31000 &lt;0.000019&gt;
+16:23:19.803875 close(5)                = 0 &lt;0.000017&gt;
+16:23:19.803917 close(4)                = 0 &lt;0.000020&gt;
+16:23:19.803964 lstat(&quot;CoreFxPipe_ed0d0282da35423fb53ae3ff488289c3&quot;, &#123;st_dev=makedev(252, 1), st_ino=397727, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/22-12:16:43, st_mtime=2020/10/22-12:16:43, st_ctime=2020/10/22-12:16:43&#125;) = 0 &lt;0.000019&gt;
+16:23:19.804025 lgetxattr(&quot;CoreFxPipe_ed0d0282da35423fb53ae3ff488289c3&quot;, &quot;security.selinux&quot;, 0x14badd0, 255) = -1 ENODATA (No data available) &lt;0.000020&gt;
+16:23:19.804074 getxattr(&quot;CoreFxPipe_ed0d0282da35423fb53ae3ff488289c3&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.804119 getxattr(&quot;CoreFxPipe_ed0d0282da35423fb53ae3ff488289c3&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.804164 lstat(&quot;remote-file-71752ccfe2464e99&quot;, &#123;st_dev=makedev(252, 1), st_ino=790291, st_mode=S_IFDIR|0755, st_nlink=3, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=2020/10/16-19:55:57, st_mtime=2020/10/16-19:55:57, st_ctime=2020/10/16-19:55:57&#125;) = 0 &lt;0.000020&gt;
+16:23:19.804228 lgetxattr(&quot;remote-file-71752ccfe2464e99&quot;, &quot;security.selinux&quot;, 0x14bae10, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.804272 getxattr(&quot;remote-file-71752ccfe2464e99&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.804316 getxattr(&quot;remote-file-71752ccfe2464e99&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.804361 lstat(&quot;vscode-ipc-97bbdce4-9619-40a6-a994-989d4f0e938c.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397722, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/25-13:06:01, st_mtime=2020/10/25-13:06:01, st_ctime=2020/10/25-13:06:01&#125;) = 0 &lt;0.000018&gt;
+16:23:19.804425 lgetxattr(&quot;vscode-ipc-97bbdce4-9619-40a6-a994-989d4f0e938c.sock&quot;, &quot;security.selinux&quot;, 0x14bae40, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.804471 getxattr(&quot;vscode-ipc-97bbdce4-9619-40a6-a994-989d4f0e938c.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.804516 getxattr(&quot;vscode-ipc-97bbdce4-9619-40a6-a994-989d4f0e938c.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.804562 lstat(&quot;CoreFxPipe_5930c28ae6364601939b715025fe05e5&quot;, &#123;st_dev=makedev(252, 1), st_ino=397716, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/22-12:16:22, st_mtime=2020/10/22-12:16:22, st_ctime=2020/10/22-12:16:22&#125;) = 0 &lt;0.000018&gt;
+16:23:19.804614 lgetxattr(&quot;CoreFxPipe_5930c28ae6364601939b715025fe05e5&quot;, &quot;security.selinux&quot;, 0x14bae80, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.804659 getxattr(&quot;CoreFxPipe_5930c28ae6364601939b715025fe05e5&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.804703 getxattr(&quot;CoreFxPipe_5930c28ae6364601939b715025fe05e5&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.804748 lstat(&quot;vscode-ipc-f2bf78a8-8e5b-4433-9c38-2479e8d68fac.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397699, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/21-22:45:56, st_mtime=2020/10/21-22:45:56, st_ctime=2020/10/21-22:45:56&#125;) = 0 &lt;0.000019&gt;
+16:23:19.804801 lgetxattr(&quot;vscode-ipc-f2bf78a8-8e5b-4433-9c38-2479e8d68fac.sock&quot;, &quot;security.selinux&quot;, 0x14baec0, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.804847 getxattr(&quot;vscode-ipc-f2bf78a8-8e5b-4433-9c38-2479e8d68fac.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.804892 getxattr(&quot;vscode-ipc-f2bf78a8-8e5b-4433-9c38-2479e8d68fac.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.804937 lstat(&quot;agent_cmd.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=393220, st_mode=S_IFSOCK|0777, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/09/14-15:51:40, st_mtime=2020/09/14-15:51:40, st_ctime=2020/09/14-15:51:40&#125;) = 0 &lt;0.000018&gt;
+16:23:19.804993 lgetxattr(&quot;agent_cmd.sock&quot;, &quot;security.selinux&quot;, 0x14baf00, 255) = -1 ENODATA (No data available) &lt;0.000019&gt;
+16:23:19.805042 getxattr(&quot;agent_cmd.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.805087 getxattr(&quot;agent_cmd.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.805132 lstat(&quot;vscode-ipc-002508c6-7968-4fac-954b-85c09bdf1287.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397726, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/22-12:16:42, st_mtime=2020/10/22-12:16:42, st_ctime=2020/10/22-12:16:42&#125;) = 0 &lt;0.000019&gt;
+16:23:19.805187 lgetxattr(&quot;vscode-ipc-002508c6-7968-4fac-954b-85c09bdf1287.sock&quot;, &quot;security.selinux&quot;, 0x14baf20, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.805232 getxattr(&quot;vscode-ipc-002508c6-7968-4fac-954b-85c09bdf1287.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.805277 getxattr(&quot;vscode-ipc-002508c6-7968-4fac-954b-85c09bdf1287.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.805324 lstat(&quot;vscode-ipc-10e12dad-79e0-483b-b3cc-817a36c00066.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397717, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/16-20:00:04, st_mtime=2020/10/16-20:00:04, st_ctime=2020/10/16-20:00:04&#125;) = 0 &lt;0.000018&gt;
+16:23:19.805378 lgetxattr(&quot;vscode-ipc-10e12dad-79e0-483b-b3cc-817a36c00066.sock&quot;, &quot;security.selinux&quot;, 0x14baf60, 255) = -1 ENODATA (No data available) &lt;0.000025&gt;
+16:23:19.805431 getxattr(&quot;vscode-ipc-10e12dad-79e0-483b-b3cc-817a36c00066.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.805476 getxattr(&quot;vscode-ipc-10e12dad-79e0-483b-b3cc-817a36c00066.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.805522 lstat(&quot;VSFeedbackVSRTCLogs&quot;, &#123;st_dev=makedev(252, 1), st_ino=790295, st_mode=S_IFDIR|0755, st_nlink=2, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=2020/10/16-19:55:57, st_mtime=2020/10/25-13:06:04, st_ctime=2020/10/25-13:06:04&#125;) = 0 &lt;0.000018&gt;
+16:23:19.805574 lgetxattr(&quot;VSFeedbackVSRTCLogs&quot;, &quot;security.selinux&quot;, 0x14bafa0, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.805618 getxattr(&quot;VSFeedbackVSRTCLogs&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.805662 getxattr(&quot;VSFeedbackVSRTCLogs&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.805707 lstat(&quot;vscode-git-c7c751cafd.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397694, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/16-20:00:05, st_mtime=2020/10/16-20:00:05, st_ctime=2020/10/16-20:00:05&#125;) = 0 &lt;0.000018&gt;
+16:23:19.805759 lgetxattr(&quot;vscode-git-c7c751cafd.sock&quot;, &quot;security.selinux&quot;, 0x14bafc0, 255) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.805803 getxattr(&quot;vscode-git-c7c751cafd.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.805846 getxattr(&quot;vscode-git-c7c751cafd.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.805891 lstat(&quot;vscode-git-ec20fec18d.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397709, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/21-22:45:57, st_mtime=2020/10/21-22:45:57, st_ctime=2020/10/21-22:45:57&#125;) = 0 &lt;0.000018&gt;
+16:23:19.805943 lgetxattr(&quot;vscode-git-ec20fec18d.sock&quot;, &quot;security.selinux&quot;, 0x14baff0, 255) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.805987 getxattr(&quot;vscode-git-ec20fec18d.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.806031 getxattr(&quot;vscode-git-ec20fec18d.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.806076 lstat(&quot;2dm-cpp&quot;, &#123;st_dev=makedev(252, 1), st_ino=529486, st_mode=S_IFDIR|0755, st_nlink=3, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=2020/08/12-14:26:29, st_mtime=2020/08/12-14:26:47, st_ctime=2020/08/22-15:16:32&#125;) = 0 &lt;0.000019&gt;
+16:23:19.806133 lgetxattr(&quot;2dm-cpp&quot;, &quot;security.selinux&quot;, 0x14bb020, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.806177 getxattr(&quot;2dm-cpp&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.806220 getxattr(&quot;2dm-cpp&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.806265 lstat(&quot;CoreFxPipe_b21e1bd335c04731bec235700fdf311c&quot;, &#123;st_dev=makedev(252, 1), st_ino=397721, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/21-22:46:46, st_mtime=2020/10/21-22:46:46, st_ctime=2020/10/21-22:46:46&#125;) = 0 &lt;0.000019&gt;
+16:23:19.806320 lgetxattr(&quot;CoreFxPipe_b21e1bd335c04731bec235700fdf311c&quot;, &quot;security.selinux&quot;, 0x14bb040, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.806363 getxattr(&quot;CoreFxPipe_b21e1bd335c04731bec235700fdf311c&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.806414 getxattr(&quot;CoreFxPipe_b21e1bd335c04731bec235700fdf311c&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.806460 lstat(&quot;CoreFxPipe_48e5ec03088b41648d9c0d523593b342&quot;, &#123;st_dev=makedev(252, 1), st_ino=394050, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/16-20:00:02, st_mtime=2020/10/16-20:00:02, st_ctime=2020/10/16-20:00:02&#125;) = 0 &lt;0.000018&gt;
+16:23:19.806511 lgetxattr(&quot;CoreFxPipe_48e5ec03088b41648d9c0d523593b342&quot;, &quot;security.selinux&quot;, 0x14bb080, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.806555 getxattr(&quot;CoreFxPipe_48e5ec03088b41648d9c0d523593b342&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.806599 getxattr(&quot;CoreFxPipe_48e5ec03088b41648d9c0d523593b342&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.806643 lstat(&quot;tencent_sec_webfilter_qzhttp&quot;, &#123;st_dev=makedev(252, 1), st_ino=393245, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/07/28-20:55:43, st_mtime=2020/07/28-20:55:43, st_ctime=2020/10/25-16:22:05&#125;) = 0 &lt;0.000018&gt;
+16:23:19.806694 lgetxattr(&quot;tencent_sec_webfilter_qzhttp&quot;, &quot;security.selinux&quot;, 0x14bb0c0, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.806738 getxattr(&quot;tencent_sec_webfilter_qzhttp&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.806780 getxattr(&quot;tencent_sec_webfilter_qzhttp&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.806824 lstat(&quot;CoreFxPipe_dee8ac007268482d9f505cd276418680&quot;, &#123;st_dev=makedev(252, 1), st_ino=397730, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/23-09:53:47, st_mtime=2020/10/23-09:53:47, st_ctime=2020/10/23-09:53:47&#125;) = 0 &lt;0.000017&gt;
+16:23:19.806877 lgetxattr(&quot;CoreFxPipe_dee8ac007268482d9f505cd276418680&quot;, &quot;security.selinux&quot;, 0x14bb0f0, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.806920 getxattr(&quot;CoreFxPipe_dee8ac007268482d9f505cd276418680&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.806964 getxattr(&quot;CoreFxPipe_dee8ac007268482d9f505cd276418680&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.807009 lstat(&quot;vscode-git-11043de042.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397715, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/22-12:16:21, st_mtime=2020/10/22-12:16:21, st_ctime=2020/10/22-12:16:21&#125;) = 0 &lt;0.000018&gt;
+16:23:19.807060 lgetxattr(&quot;vscode-git-11043de042.sock&quot;, &quot;security.selinux&quot;, 0x14bb130, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.807103 getxattr(&quot;vscode-git-11043de042.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.807156 getxattr(&quot;vscode-git-11043de042.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000019&gt;
+16:23:19.807208 lstat(&quot;clr-debug-pipe-26492-759628703-out&quot;, &#123;st_dev=makedev(252, 1), st_ino=397728, st_mode=S_IFIFO|0700, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/25-13:06:02, st_mtime=2020/10/25-13:06:02, st_ctime=2020/10/25-13:06:02&#125;) = 0 &lt;0.000019&gt;
+16:23:19.807261 lgetxattr(&quot;clr-debug-pipe-26492-759628703-out&quot;, &quot;security.selinux&quot;, 0x14bb160, 255) = -1 ENODATA (No data available) &lt;0.000019&gt;
+16:23:19.807306 getxattr(&quot;clr-debug-pipe-26492-759628703-out&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.807349 getxattr(&quot;clr-debug-pipe-26492-759628703-out&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.807402 lstat(&quot;CoreFxPipe_ae926d7207da472b82db82cc029fec6d&quot;, &#123;st_dev=makedev(252, 1), st_ino=397724, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/16-20:00:05, st_mtime=2020/10/16-20:00:05, st_ctime=2020/10/16-20:00:05&#125;) = 0 &lt;0.000019&gt;
+16:23:19.807456 lgetxattr(&quot;CoreFxPipe_ae926d7207da472b82db82cc029fec6d&quot;, &quot;security.selinux&quot;, 0x14bb190, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.807500 getxattr(&quot;CoreFxPipe_ae926d7207da472b82db82cc029fec6d&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.807543 getxattr(&quot;CoreFxPipe_ae926d7207da472b82db82cc029fec6d&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.807588 lstat(&quot;dotnet-diagnostic-26492-759628703-socket&quot;, &#123;st_dev=makedev(252, 1), st_ino=397729, st_mode=S_IFSOCK|0600, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/25-13:06:02, st_mtime=2020/10/25-13:06:02, st_ctime=2020/10/25-13:06:02&#125;) = 0 &lt;0.000018&gt;
+16:23:19.807640 lgetxattr(&quot;dotnet-diagnostic-26492-759628703-socket&quot;, &quot;security.selinux&quot;, 0x14bb1d0, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.807683 getxattr(&quot;dotnet-diagnostic-26492-759628703-socket&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.807727 getxattr(&quot;dotnet-diagnostic-26492-759628703-socket&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.807772 lstat(&quot;vscode-ipc-a63d8082-4ee6-4be6-b5fe-64ea13d709a9.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397719, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/21-22:46:45, st_mtime=2020/10/21-22:46:45, st_ctime=2020/10/21-22:46:45&#125;) = 0 &lt;0.000018&gt;
+16:23:19.807826 lgetxattr(&quot;vscode-ipc-a63d8082-4ee6-4be6-b5fe-64ea13d709a9.sock&quot;, &quot;security.selinux&quot;, 0x14bb210, 255) = -1 ENODATA (No data available) &lt;0.000019&gt;
+16:23:19.807872 getxattr(&quot;vscode-ipc-a63d8082-4ee6-4be6-b5fe-64ea13d709a9.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.807916 getxattr(&quot;vscode-ipc-a63d8082-4ee6-4be6-b5fe-64ea13d709a9.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.807961 lstat(&quot;CoreFxPipe_06df3c7e0668454db620c7fbbd6131d8&quot;, &#123;st_dev=makedev(252, 1), st_ino=397713, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/21-22:45:57, st_mtime=2020/10/21-22:45:57, st_ctime=2020/10/21-22:45:57&#125;) = 0 &lt;0.000019&gt;
+16:23:19.808014 lgetxattr(&quot;CoreFxPipe_06df3c7e0668454db620c7fbbd6131d8&quot;, &quot;security.selinux&quot;, 0x14bb250, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.808058 getxattr(&quot;CoreFxPipe_06df3c7e0668454db620c7fbbd6131d8&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.808101 getxattr(&quot;CoreFxPipe_06df3c7e0668454db620c7fbbd6131d8&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.808147 lstat(&quot;vscode-ipc-c30835c7-7d50-43fb-b251-c77924fa4d78.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397695, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/16-19:58:54, st_mtime=2020/10/16-19:58:54, st_ctime=2020/10/16-19:58:54&#125;) = 0 &lt;0.000018&gt;
+16:23:19.808206 lgetxattr(&quot;vscode-ipc-c30835c7-7d50-43fb-b251-c77924fa4d78.sock&quot;, &quot;security.selinux&quot;, 0x14bb290, 255) = -1 ENODATA (No data available) &lt;0.000019&gt;
+16:23:19.808252 getxattr(&quot;vscode-ipc-c30835c7-7d50-43fb-b251-c77924fa4d78.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.808297 getxattr(&quot;vscode-ipc-c30835c7-7d50-43fb-b251-c77924fa4d78.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.808343 lstat(&quot;CoreFxPipe_c3805b7eebb541a78564ec0955e064c9&quot;, &#123;st_dev=makedev(252, 1), st_ino=397723, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/25-13:06:02, st_mtime=2020/10/25-13:06:02, st_ctime=2020/10/25-13:06:02&#125;) = 0 &lt;0.000018&gt;
+16:23:19.808394 lgetxattr(&quot;CoreFxPipe_c3805b7eebb541a78564ec0955e064c9&quot;, &quot;security.selinux&quot;, 0x14bb2d0, 255) = -1 ENODATA (No data available) &lt;0.000020&gt;
+16:23:19.808451 getxattr(&quot;CoreFxPipe_c3805b7eebb541a78564ec0955e064c9&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.808495 getxattr(&quot;CoreFxPipe_c3805b7eebb541a78564ec0955e064c9&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.808539 lstat(&quot;vscode-ipc-0a1b200d-c94a-4e59-aed6-d916fbb25a30.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397718, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/23-09:53:44, st_mtime=2020/10/23-09:53:44, st_ctime=2020/10/23-09:53:44&#125;) = 0 &lt;0.000018&gt;
+16:23:19.808591 lgetxattr(&quot;vscode-ipc-0a1b200d-c94a-4e59-aed6-d916fbb25a30.sock&quot;, &quot;security.selinux&quot;, 0x14bb310, 255) = -1 ENODATA (No data available) &lt;0.000017&gt;
+16:23:19.808635 getxattr(&quot;vscode-ipc-0a1b200d-c94a-4e59-aed6-d916fbb25a30.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.808679 getxattr(&quot;vscode-ipc-0a1b200d-c94a-4e59-aed6-d916fbb25a30.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.808722 lstat(&quot;strace_ll.log&quot;, &#123;st_dev=makedev(252, 1), st_ino=397732, st_mode=S_IFREG|0644, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=88, st_size=43192, st_atime=2020/10/25-16:11:29, st_mtime=2020/10/25-16:23:19, st_ctime=2020/10/25-16:23:19&#125;) = 0 &lt;0.000017&gt;
+16:23:19.808773 lgetxattr(&quot;strace_ll.log&quot;, &quot;security.selinux&quot;, 0x14bb350, 255) = -1 ENODATA (No data available) &lt;0.000018&gt;
+16:23:19.808815 getxattr(&quot;strace_ll.log&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000033&gt;
+16:23:19.808889 getxattr(&quot;strace_ll.log&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000027&gt;
+16:23:19.808960 lstat(&quot;vscode-ipc-b2570fda-2742-4171-b21d-c3e7cb122f4e.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=393244, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/16-19:44:01, st_mtime=2020/10/16-19:44:01, st_ctime=2020/10/16-19:44:01&#125;) = 0 &lt;0.000027&gt;
+16:23:19.809034 lgetxattr(&quot;vscode-ipc-b2570fda-2742-4171-b21d-c3e7cb122f4e.sock&quot;, &quot;security.selinux&quot;, 0x14bb370, 255) = -1 ENODATA (No data available) &lt;0.000023&gt;
+16:23:19.809083 getxattr(&quot;vscode-ipc-b2570fda-2742-4171-b21d-c3e7cb122f4e.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.809122 getxattr(&quot;vscode-ipc-b2570fda-2742-4171-b21d-c3e7cb122f4e.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.809162 lstat(&quot;commandnotfound&quot;, &#123;st_dev=makedev(252, 1), st_ino=1054125, st_mode=S_IFDIR|0755, st_nlink=2, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=2020/10/23-20:09:11, st_mtime=2020/10/23-20:09:11, st_ctime=2020/10/23-20:09:11&#125;) = 0 &lt;0.000015&gt;
+16:23:19.809211 lgetxattr(&quot;commandnotfound&quot;, &quot;security.selinux&quot;, 0x14bb3b0, 255) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.809249 getxattr(&quot;commandnotfound&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.809291 getxattr(&quot;commandnotfound&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000024&gt;
+16:23:19.809341 lstat(&quot;mysql.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397689, st_mode=S_IFSOCK|0777, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/08/08-20:20:47, st_mtime=2020/08/08-20:20:47, st_ctime=2020/08/08-20:20:47&#125;) = 0 &lt;0.000016&gt;
+16:23:19.809388 lgetxattr(&quot;mysql.sock&quot;, &quot;security.selinux&quot;, 0x14bb3d0, 255) = -1 ENODATA (No data available) &lt;0.000020&gt;
+16:23:19.809430 getxattr(&quot;mysql.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.809468 getxattr(&quot;mysql.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.809526 lstat(&quot;vsonline_logs&quot;, &#123;st_dev=makedev(252, 1), st_ino=790298, st_mode=S_IFDIR|0755, st_nlink=2, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=2020/10/16-19:56:00, st_mtime=2020/10/16-19:56:00, st_ctime=2020/10/16-19:56:00&#125;) = 0 &lt;0.000020&gt;
+16:23:19.809576 lgetxattr(&quot;vsonline_logs&quot;, &quot;security.selinux&quot;, 0x14bb3f0, 255) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.809613 getxattr(&quot;vsonline_logs&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.809651 getxattr(&quot;vsonline_logs&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.809690 lstat(&quot;vscode-git-c117eb3d8d.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=395721, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/16-19:44:01, st_mtime=2020/10/16-19:44:01, st_ctime=2020/10/16-19:44:01&#125;) = 0 &lt;0.000025&gt;
+16:23:19.809745 lgetxattr(&quot;vscode-git-c117eb3d8d.sock&quot;, &quot;security.selinux&quot;, 0x14bb410, 255) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.809792 getxattr(&quot;vscode-git-c117eb3d8d.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.809829 getxattr(&quot;vscode-git-c117eb3d8d.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.809867 lstat(&quot;clr-debug-pipe-26492-759628703-in&quot;, &#123;st_dev=makedev(252, 1), st_ino=397725, st_mode=S_IFIFO|0700, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/25-13:06:02, st_mtime=2020/10/25-13:06:02, st_ctime=2020/10/25-13:06:02&#125;) = 0 &lt;0.000017&gt;
+16:23:19.809918 lgetxattr(&quot;clr-debug-pipe-26492-759628703-in&quot;, &quot;security.selinux&quot;, 0x14bb440, 255) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.809956 getxattr(&quot;clr-debug-pipe-26492-759628703-in&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000022&gt;
+16:23:19.810002 getxattr(&quot;clr-debug-pipe-26492-759628703-in&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.810041 lstat(&quot;appInsights-nodeAIF-d9b70cd4-b9f9-4d70-929b-a071c400b217&quot;, &#123;st_dev=makedev(252, 1), st_ino=657223, st_mode=S_IFDIR|0755, st_nlink=2, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=2020/10/16-20:26:05, st_mtime=2020/10/23-22:00:00, st_ctime=2020/10/23-22:00:00&#125;) = 0 &lt;0.000016&gt;
+16:23:19.810087 lgetxattr(&quot;appInsights-nodeAIF-d9b70cd4-b9f9-4d70-929b-a071c400b217&quot;, &quot;security.selinux&quot;, 0x14bb470, 255) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.810127 getxattr(&quot;appInsights-nodeAIF-d9b70cd4-b9f9-4d70-929b-a071c400b217&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.810165 getxattr(&quot;appInsights-nodeAIF-d9b70cd4-b9f9-4d70-929b-a071c400b217&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.810204 lstat(&quot;vscode-ipc-d936b95b-060d-4421-bb97-bd949105a3d4.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397714, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/22-12:16:20, st_mtime=2020/10/22-12:16:20, st_ctime=2020/10/22-12:16:20&#125;) = 0 &lt;0.000015&gt;
+16:23:19.810249 lgetxattr(&quot;vscode-ipc-d936b95b-060d-4421-bb97-bd949105a3d4.sock&quot;, &quot;security.selinux&quot;, 0x14bb4c0, 255) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.810291 getxattr(&quot;vscode-ipc-d936b95b-060d-4421-bb97-bd949105a3d4.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.810330 getxattr(&quot;vscode-ipc-d936b95b-060d-4421-bb97-bd949105a3d4.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.810370 lstat(&quot;vscode-ipc-aef7e716-f3da-4ac2-a1c8-cac882fdfdea.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397693, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/16-19:45:17, st_mtime=2020/10/16-19:45:17, st_ctime=2020/10/16-19:45:17&#125;) = 0 &lt;0.000015&gt;
+16:23:19.810424 lgetxattr(&quot;vscode-ipc-aef7e716-f3da-4ac2-a1c8-cac882fdfdea.sock&quot;, &quot;security.selinux&quot;, 0x14bb500, 255) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.810462 getxattr(&quot;vscode-ipc-aef7e716-f3da-4ac2-a1c8-cac882fdfdea.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.810500 getxattr(&quot;vscode-ipc-aef7e716-f3da-4ac2-a1c8-cac882fdfdea.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.810538 lstat(&quot;vscode-typescript0&quot;, &#123;st_dev=makedev(252, 1), st_ino=657451, st_mode=S_IFDIR|0755, st_nlink=2, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=4096, st_atime=2020/10/02-11:37:09, st_mtime=2020/10/24-02:55:53, st_ctime=2020/10/24-02:55:53&#125;) = 0 &lt;0.000016&gt;
+16:23:19.810585 lgetxattr(&quot;vscode-typescript0&quot;, &quot;security.selinux&quot;, 0x14bb540, 255) = -1 ENODATA (No data available) &lt;0.000021&gt;
+16:23:19.810628 getxattr(&quot;vscode-typescript0&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.810665 getxattr(&quot;vscode-typescript0&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.810703 lstat(&quot;vscode-git-1bf11324be.sock&quot;, &#123;st_dev=makedev(252, 1), st_ino=397720, st_mode=S_IFSOCK|0755, st_nlink=1, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=0, st_size=0, st_atime=2020/10/25-13:06:02, st_mtime=2020/10/25-13:06:02, st_ctime=2020/10/25-13:06:02&#125;) = 0 &lt;0.000015&gt;
+16:23:19.810748 lgetxattr(&quot;vscode-git-1bf11324be.sock&quot;, &quot;security.selinux&quot;, 0x14bb560, 255) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.810787 getxattr(&quot;vscode-git-1bf11324be.sock&quot;, &quot;system.posix_acl_access&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000015&gt;
+16:23:19.810824 getxattr(&quot;vscode-git-1bf11324be.sock&quot;, &quot;system.posix_acl_default&quot;, 0x0, 0) = -1 ENODATA (No data available) &lt;0.000016&gt;
+16:23:19.810863 getdents(3, &#123;&#125;, 32768)  = 0 &lt;0.000015&gt;
+16:23:19.810900 close(3)                = 0 &lt;0.000018&gt;
+16:23:19.810988 open(&quot;/usr/share/locale/zh_CN.UTF-8/LC_MESSAGES/coreutils.mo&quot;, O_RDONLY) = -1 ENOENT (No such file or directory) &lt;0.000016&gt;
+16:23:19.811027 open(&quot;/usr/share/locale/zh_CN.utf8/LC_MESSAGES/coreutils.mo&quot;, O_RDONLY) = -1 ENOENT (No such file or directory) &lt;0.000022&gt;
+16:23:19.811071 open(&quot;/usr/share/locale/zh_CN/LC_MESSAGES/coreutils.mo&quot;, O_RDONLY) = 3 &lt;0.000017&gt;
+16:23:19.811108 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=76447, st_mode=S_IFREG|0644, st_nlink=2, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=376, st_size=190751, st_atime=2017/02/10-14:16:51, st_mtime=2017/02/10-14:16:51, st_ctime=2018/08/22-18:53:06&#125;) = 0 &lt;0.000015&gt;
+16:23:19.811173 mmap(NULL, 190751, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f5d49f02000 &lt;0.000017&gt;
+16:23:19.811212 close(3)                = 0 &lt;0.000015&gt;
+16:23:19.811270 fstat(1, &#123;st_dev=makedev(0, 10), st_ino=12, st_mode=S_IFCHR|0620, st_nlink=1, st_uid=0, st_gid=5, st_blksize=1024, st_blocks=0, st_rdev=makedev(136, 9), st_atime=2020/10/25-16:23:19, st_mtime=2020/10/25-16:23:19, st_ctime=2020/10/25-14:22:45&#125;) = 0 &lt;0.000015&gt;
+16:23:19.811316 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f5d49fdc000 &lt;0.000017&gt;
+16:23:19.811358 write(1, &quot;\346\200\273\347\224\250\351\207\217 72\n&quot;, 13) = 13 &lt;0.000043&gt;
+16:23:19.811443 open(&quot;/etc/localtime&quot;, O_RDONLY|O_CLOEXEC) = 3 &lt;0.000021&gt;
+16:23:19.811490 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000015&gt;
+16:23:19.811540 fstat(3, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000014&gt;
+16:23:19.811585 mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f5d49fdb000 &lt;0.000016&gt;
+16:23:19.811623 read(3, &quot;TZif2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\2\0\0\0\2\0\0\0\0&quot;..., 4096) = 388 &lt;0.000023&gt;
+16:23:19.811675 lseek(3, -240, SEEK_CUR) = 148 &lt;0.000016&gt;
+16:23:19.811712 read(3, &quot;TZif2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3\0\0\0\3\0\0\0\0&quot;..., 4096) = 240 &lt;0.000016&gt;
+16:23:19.811751 close(3)                = 0 &lt;0.000018&gt;
+16:23:19.811789 munmap(0x7f5d49fdb000, 4096) = 0 &lt;0.000020&gt;
+16:23:19.811851 write(1, &quot;drwxr-xr-x 3 root root  4096 8\346\234&quot;..., 52) = 52 &lt;0.000027&gt;
+16:23:19.811905 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000020&gt;
+16:23:19.811959 write(1, &quot;srwxrwxrwx 1 root root     0 9\346\234&quot;..., 59) = 59 &lt;0.000025&gt;
+16:23:19.812010 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.812061 write(1, &quot;drwxr-xr-x 2 root root  4096 10\346&quot;..., 101) = 101 &lt;0.000024&gt;
+16:23:19.812122 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000022&gt;
+16:23:19.812190 write(1, &quot;prwx------ 1 root root     0 10\346&quot;..., 78) = 78 &lt;0.000026&gt;
+16:23:19.812240 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.812290 write(1, &quot;prwx------ 1 root root     0 10\346&quot;..., 79) = 79 &lt;0.000024&gt;
+16:23:19.812339 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.812390 write(1, &quot;drwxr-xr-x 2 root root  4096 10\346&quot;..., 60) = 60 &lt;0.000025&gt;
+16:23:19.812450 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000018&gt;
+16:23:19.812502 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 88) = 88 &lt;0.000025&gt;
+16:23:19.812553 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.812601 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 88) = 88 &lt;0.000024&gt;
+16:23:19.812651 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000018&gt;
+16:23:19.812702 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 88) = 88 &lt;0.000025&gt;
+16:23:19.812755 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000018&gt;
+16:23:19.812809 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 88) = 88 &lt;0.000025&gt;
+16:23:19.812861 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.812910 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 88) = 88 &lt;0.000024&gt;
+16:23:19.812958 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.813007 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 88) = 88 &lt;0.000024&gt;
+16:23:19.813055 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.813105 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 88) = 88 &lt;0.000024&gt;
+16:23:19.813153 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.813206 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 88) = 88 &lt;0.000024&gt;
+16:23:19.813254 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.813304 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 95) = 95 &lt;0.000024&gt;
+16:23:19.813351 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.813406 write(1, &quot;srw------- 1 root root     0 10\346&quot;..., 85) = 85 &lt;0.000025&gt;
+16:23:19.813458 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.813510 write(1, &quot;srwxrwxrwx 1 root root     0 8\346\234&quot;..., 55) = 55 &lt;0.000024&gt;
+16:23:19.813559 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000019&gt;
+16:23:19.813610 write(1, &quot;drwxr-xr-x 3 root root  4096 10\346&quot;..., 73) = 73 &lt;0.000024&gt;
+16:23:19.813658 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.813707 write(1, &quot;-rw-r--r-- 1 root root 43192 10\346&quot;..., 58) = 58 &lt;0.000024&gt;
+16:23:19.813754 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000019&gt;
+16:23:19.813806 write(1, &quot;-rw-r--r-- 1 root root     0 7\346\234&quot;..., 73) = 73 &lt;0.000025&gt;
+16:23:19.813854 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.813905 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 71) = 71 &lt;0.000026&gt;
+16:23:19.813955 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.814003 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 71) = 71 &lt;0.000024&gt;
+16:23:19.814050 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000018&gt;
+16:23:19.814098 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 71) = 71 &lt;0.000023&gt;
+16:23:19.814145 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000019&gt;
+16:23:19.814197 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 71) = 71 &lt;0.000023&gt;
+16:23:19.814245 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000018&gt;
+16:23:19.814297 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 71) = 71 &lt;0.000024&gt;
+16:23:19.814345 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000018&gt;
+16:23:19.814393 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 97) = 97 &lt;0.000026&gt;
+16:23:19.814453 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.814503 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 97) = 97 &lt;0.000024&gt;
+16:23:19.814553 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.814608 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 97) = 97 &lt;0.000024&gt;
+16:23:19.814655 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000016&gt;
+16:23:19.814703 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 97) = 97 &lt;0.000024&gt;
+16:23:19.814750 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000016&gt;
+16:23:19.814798 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 97) = 97 &lt;0.000025&gt;
+16:23:19.814848 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.814898 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 97) = 97 &lt;0.000024&gt;
+16:23:19.814945 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000016&gt;
+16:23:19.814995 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 97) = 97 &lt;0.000024&gt;
+16:23:19.815045 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000018&gt;
+16:23:19.815094 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 97) = 97 &lt;0.000024&gt;
+16:23:19.815177 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000021&gt;
+16:23:19.815242 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 97) = 97 &lt;0.000024&gt;
+16:23:19.815291 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000019&gt;
+16:23:19.815344 write(1, &quot;srwxr-xr-x 1 root root     0 10\346&quot;..., 97) = 97 &lt;0.000024&gt;
+16:23:19.815393 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.815450 write(1, &quot;drwxr-xr-x 2 root root  4096 10\346&quot;..., 63) = 63 &lt;0.000024&gt;
+16:23:19.815498 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000017&gt;
+16:23:19.815545 write(1, &quot;drwxr-xr-x 2 root root  4096 10\346&quot;..., 64) = 64 &lt;0.000025&gt;
+16:23:19.815596 stat(&quot;/etc/localtime&quot;, &#123;st_dev=makedev(252, 1), st_ino=1875, st_mode=S_IFREG|0644, st_nlink=5, st_uid=0, st_gid=0, st_blksize=4096, st_blocks=8, st_size=388, st_atime=2018/06/19-15:11:03, st_mtime=2016/12/05-14:43:44, st_ctime=2018/06/19-15:11:01&#125;) = 0 &lt;0.000018&gt;
+16:23:19.815646 write(1, &quot;drwxr-xr-x 2 root root  4096 10\346&quot;..., 58) = 58 &lt;0.000024&gt;
+16:23:19.815698 close(1)                = 0 &lt;0.000015&gt;
+16:23:19.815734 munmap(0x7f5d49fdc000, 4096) = 0 &lt;0.000019&gt;
+16:23:19.815774 close(2)                = 0 &lt;0.000015&gt;
+16:23:19.815823 exit_group(0)           = ?
+16:23:19.815922 +++ exited with 0 +++</code></pre>
+<p>我们可以看到在 152 行可以看到执行了 poll 系统调用，去等对端回送数据。而如果操作的是物理机，那么其实也就是 opendir 、write 再加上鉴权那几个系统调用。</p>
+
+      
+       
+    </div>
+</article>
+
+
+<p>
+    <a  class="dashang" onclick="dashangToggle()">💰</a>
+</p>
+
+
+
+
+    <div id="comments"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+<script type="text/javascript">
+    $.getScript('/js/gitalk.js', function () {
+        var gitalk = new Gitalk({
+            clientID: '0dad8455e8835477a625',
+            clientSecret: 'e736f5ff204f7b5f20321e3c558be7b8001efef5',
+            repo: 'noahyzhang.github.io',
+            owner: 'noahyzhang',
+            admin: ['noahyzhang'],
+            id: decodeURI(location.pathname),
+            distractionFreeMode: 'true',
+            language: 'zh-CN',
+            perPage: parseInt('10',10)
+        })
+        gitalk.render('comments')
+    })
+</script>
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2016-2020 noahyzhang
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+<div class="hide_box" onclick="dashangToggle()"></div>
+<div class="shang_box">
+    <a class="shang_close"  onclick="dashangToggle()">×</a>
+    <div class="shang_tit">
+        <p>Help us with donation</p>
+    </div>
+    <div class="shang_payimg">
+        <div class="pay_img">
+            <img src="/img/alipay.jpg" class="alipay" title="扫码支持">
+            <img src="/img/weixin.jpg" class="weixin" title="扫码支持">
+        </div>
+    </div>
+    <div class="shang_payselect">
+        <span><label><input type="radio" name="pay" checked value="alipay">alipay</label></span><span><label><input type="radio" name="pay" value="weixin">weixin</label></span>
+    </div>
+</div>
+
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+        $("input[name=pay]").on("click", function () {
+            if($("input[name=pay]:checked").val()=="weixin"){
+                $(".shang_box .shang_payimg .pay_img").addClass("weixin_img");
+            } else {
+                $(".shang_box .shang_payimg .pay_img").removeClass("weixin_img");
+            }
+        })
+        
+
+        /*高亮代码块行号*/
+        
+        $('pre code').each(function(){
+            var lines = $(this).text().trim().split('\n').length, widther='';
+            if (lines>99) {
+                widther = 'widther'
+            }
+            var $numbering = $('<ul/>').addClass('pre-numbering ' + widther).attr("unselectable","on");
+            $(this).addClass('has-numbering ' + widther)
+                    .parent()
+                    .append($numbering);
+            for(var i=1;i<=lines;i++){
+                $numbering.append($('<li/>').text(i));
+            }
+        });
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+    function dashangToggle() {
+        $(".shang_box").fadeToggle();
+        $(".hide_box").fadeToggle();
+    }
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<style>
+    pre{
+        position: relative;
+        margin-bottom: 24px;
+        border-radius: 10px;
+        border: 1px solid #e2dede;
+        background: #FFF;
+        overflow: hidden;
+    }
+    code.has-numbering{
+        margin-left: 30px;
+    }
+    code.has-numbering.widther{
+        margin-left: 35px;
+    }
+    .pre-numbering{
+        margin: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        padding: 0.5em 3px 0.7em 5px;
+        border-right: 1px solid #C3CCD0;
+        text-align: right;
+        color: #AAA;
+        background-color: #fafafa;
+    }
+    .pre-numbering.widther {
+        width: 35px;
+    }
+</style>
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+<div id="musicMouseDrag" style="position:fixed; z-index: 9999; bottom: 0; right: 0;">
+    <div id="musicDragArea" style="position: absolute; top: 0; left: 0; width: 100%;height: 10px;cursor: move; z-index: 10;"></div>
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1293886117&auto=1&height=66"></iframe>
+<script>
+    var $DOC = $(document)
+    $('#musicMouseDrag').on ('mousedown', function (e) {
+      // 阻止文本选中
+      $DOC.bind ("selectstart", function () {
+        return false;
+      });
+      $('#musicDragArea').css ('height', '100%');
+      var $moveTarget = $('#musicMouseDrag');
+      $moveTarget.css ('border', '1px dashed grey')
+      var div_x = e.pageX - $moveTarget.offset ().left;
+      var div_y = e.pageY - $moveTarget.offset ().top;
+      $DOC.on ('mousemove', function (e) {
+        var targetX = e.pageX - div_x;
+        var targetY = e.pageY - div_y;
+        targetX = targetX < 0 ? 0 : (targetX + $moveTarget.outerWidth () >= window.innerWidth) ? window.innerWidth - $moveTarget.outerWidth () : targetX;
+        targetY = targetY < 0 ? 0 : (targetY + $moveTarget.outerHeight () >= window.innerHeight) ? window.innerHeight - $moveTarget.outerHeight () : targetY;
+        $moveTarget.css ({'left': targetX + 'px', 'top': targetY + 'px', 'bottom': 'inherit', 'right': 'inherit'})
+      }).on ('mouseup', function () {
+        $DOC.unbind ("selectstart");
+        $DOC.off ('mousemove')
+        $DOC.off ('mouseup')
+        $moveTarget.css ('border', 'none')
+        $('#musicDragArea').css ('height', '10px');
+      })
+    })
+</script>
+</div>
+
+</html>

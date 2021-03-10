@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>about | Zhangxiaoyi&#39;s Blog</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="about | Zhangxiaoyi&#39;s Blog">
+  <title>linux下load不到共享库 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" load ">
+  <meta name="description" content="linux下load不到共享库 | Zhangxiaoyi&#39;s Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
 <meta property="og:type" content="website">
@@ -805,24 +805,39 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+        <article id="post-linux/load不到共享库" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">about</h1>
+        <h1 class="article-title">linux下load不到共享库</h1>
     
     <div class="article-meta">
         
         
         
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="linux">linux</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">load</a>
+            
+        </span>
         
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2020-10-06 15:52:54'>2020-10-06 13:28</time>
+            Created At : <time class="date" title='Updated At: 2021-03-10 23:13:55'>2021-03-07 21:11</time>
         
     </div>
     <div class="article-meta">
         
-        <span>Count:14</span>
+        <span>Count:687</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -852,7 +867,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#load%E4%B8%8D%E5%88%B0%E5%85%B1%E4%BA%AB%E5%BA%93"><span class="toc-text">load不到共享库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-text">问题描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3"><span class="toc-text">问题解决</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A9%E5%B1%95"><span class="toc-text">扩展</span></a></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -868,7 +883,34 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>欢迎和我探讨有趣的事情<br>WX: 13572252156<br>QQ: 1251108673</p>
+        <h2 id="load不到共享库"><a href="#load不到共享库" class="headerlink" title="load不到共享库"></a>load不到共享库</h2><h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>我在开发机上写好了代码，引用了jsoncpp库和curl库。新手直接将两个库放在了/usr/local/lib下，并且makefile写的是/usr/local/lib，使用的动态编译。然后将编译好的二进制文件打包到运维机器上，启动运行时，出现</p>
+<p><code>lcw: error while loading shared libraries: libjson.so.0: cannot open shared object file: No such file or directory</code></p>
+<h3 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h3><ul>
+<li>我意识到我运维机器上根本没有装这两个库。于是打包二进制文件的时候带上两个库，并且makefile库位置。</li>
+<li>放在运维机器上再次运行的时候又出现了刚才的问题。于是，我想可能是执行调用该共享库的时候，程序按照默认共享库路径找不到该共享库文件。</li>
+<li>将共享库路径添加到 /etc/ld.so.conf 并且ldconfig 之后，程序运行成功。<h3 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h3></li>
+</ul>
+<p>这种问题一般有两种原因</p>
+<ol>
+<li>操作系统里面的确没有该共享库(lib* .so. * ) 文件，或者共享库版本不对。</li>
+<li>已经安装了该共享库，但是执行需要调用该共享库程序的时候，程序按照默认的共享路径找不到该共享库文件<br>介绍一个命令</li>
+</ol>
+<ul>
+<li>ldconfig：主要是在默认搜寻目录(/lib和/usr/lib) 以及动态库配置文件(/etc/ld.so.conf) 内所列的目录下，搜索可共享的动态链接库(格式 lib*.so. * )，进而创建出动态装入程序 (ld.so) 所需的连接和缓存文件。缓存文件默认为 /etc/ld.so.cach，此文件保存已排好序的动态链接库名字列表。</li>
+</ul>
+<ol>
+<li>如果那个库本来在 /lib或者 /usr/lib 下，则只需要执行下 ldconfig 命令更新一下动态装入程序。</li>
+<li>如果共享库文件安装在了比如： /use/local/lib 下或者其他”非 /lib 或 非 /usr/lib” 目录下，那么执行ldconfig命令前，还要把新共享库加入到共享库配置文件 /etc/ld.so.conf 中。如下</li>
+</ol>
+<pre><code>cat /etc/ld.so.conf
+echo &quot;/usr/local/lib&quot; &gt;&gt; /etc/ld.so.conf
+ldconfig</code></pre>
+<ol start="3">
+<li>如果共享库文件安装到了其他“非 /lib 或者 非 /usr/lib” 目录下，但是又不想在 /etc/ld.so.conf 中加路径(或者是没有权限加路径)，那就可以export 一个全局变量 LD_LIBRARY_PATH，然后运行程序的时候就会去这个目录中找共享库。</li>
+</ol>
+<p>LD_LIBRARY_PATH 告诉loader 在那个目录中可以找到共享库。可以设置多个目录，这些目录用冒号分割。</p>
+<pre><code>export LD_LIBRARY_PATH=/usr/local/mysql/lib:$LD_LIBRARY_PATH</code></pre>
+<p>这中方法只能临时使用，用于当前客户端当前客户。</p>
 
       
        

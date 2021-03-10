@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>about | Zhangxiaoyi&#39;s Blog</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="about | Zhangxiaoyi&#39;s Blog">
+  <title>mysql磁盘存储 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" 存储 ">
+  <meta name="description" content="mysql磁盘存储 | Zhangxiaoyi&#39;s Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
 <meta property="og:type" content="website">
@@ -805,24 +805,39 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+        <article id="post-数据库/mysql磁盘存储浅析" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">about</h1>
+        <h1 class="article-title">mysql磁盘存储</h1>
     
     <div class="article-meta">
         
         
         
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="数据库">数据库</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color3">存储</a>
+            
+        </span>
         
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2020-10-06 15:52:54'>2020-10-06 13:28</time>
+            Created At : <time class="date" title='Updated At: 2021-03-10 23:13:55'>2021-03-07 20:19</time>
         
     </div>
     <div class="article-meta">
         
-        <span>Count:14</span>
+        <span>Count:996</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -852,7 +867,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Mysql%E7%A3%81%E7%9B%98%E5%AD%98%E5%82%A8"><span class="toc-text">Mysql磁盘存储</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#frm%E3%80%81ibd%E6%96%87%E4%BB%B6"><span class="toc-text">frm、ibd文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Innodb%E7%9A%84%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F%E5%92%8C%E8%A1%8C%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F"><span class="toc-text">Innodb的文件存储格式和行存储格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%A8%E7%A9%BA%E9%97%B4"><span class="toc-text">表空间</span></a></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -868,7 +883,20 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>欢迎和我探讨有趣的事情<br>WX: 13572252156<br>QQ: 1251108673</p>
+        <h2 id="Mysql磁盘存储"><a href="#Mysql磁盘存储" class="headerlink" title="Mysql磁盘存储"></a>Mysql磁盘存储</h2><p>Mysql 的数据的访问和持久化都需要磁盘来当作存储工具</p>
+<h3 id="frm、ibd文件"><a href="#frm、ibd文件" class="headerlink" title="frm、ibd文件"></a>frm、ibd文件</h3><p>在mysql中当我们创建表的时候，mysql可以帮助创建一个 .frm 文件和 .ibd 文件。 其中 .frm 文件是描述表结构定义的文件，而 .ibd 文件是 Innodb 引擎特有的，用于记录 Innodb 表的数据。<br>一般这两个文件存在于Mysql的data目录下。而且文件名就是创建的表名。</p>
+<h3 id="Innodb的文件存储格式和行存储格式"><a href="#Innodb的文件存储格式和行存储格式" class="headerlink" title="Innodb的文件存储格式和行存储格式"></a>Innodb的文件存储格式和行存储格式</h3><p>Innodb中的表是分文件存储的，表中的数据都是按照一定的格式存储在文件中的。<br>Innodb的文件格式由参数 innodb_file_format 指定。可以使用 <code>show variables like &#39;innodb_file_format&#39;;</code> 查看<br>Antelope文件格式是较早的，它支持的行存储格式为：Compact、Redundant<br>Barracuda 是新的文件存储格式，它兼容Antelope，它支持的行存储格式：Compressed、Dynamic</p>
+<p>Innodb表的行存储格式由参数 innodb_default_row_format 指定，行存储格式表明了表中的每行数据是如何存储在文件中的，不同存储格式有不同的优缺点，也适合不同的场景，也会决定数据库的使用性能。<br>例如，使用 Compressed 这种格式可以使行记录有更高的压缩比，如果一个物理页能存放的行记录越多，它的索引或记录查找会更快，内存消耗也会更小，但是压缩数据本身也会带回额外的系统开销。</p>
+<p>注意一点，在迁移数据库的时候，需要关注源实例和目标实例之间行存储格式是否匹配。比如你有一个 MyISAM 的表要迁移到 InnoDB 上，并且 MyISAM 表的 Row Format 为默认值 Fixed ，此时需要改成 Dynamic ，因为这两种格式对变长字段如 varchar/blob/text 等的处理是不一致的。</p>
+<h3 id="表空间"><a href="#表空间" class="headerlink" title="表空间"></a>表空间</h3><p>InnoDB 每个表都有自己独立的文件，其实是用到了它的默认行为，即使用独立表空间，它由参数 innodb_file_per_table 控制。事实上 InnoDB 包含多种表空间类型，包括系统表空间 ( System TableSpace )，独立表空间 ( File-Per-Table TableSpace ) 和通用表空间 ( General TableSpace ) 等。</p>
+<p>系统表空间存储了 InnoDB 的数据字典（元数据信息），系统表，双写缓冲区 ( doublewrite buffer )，Change Buffer 等。如果将参数 innodb_file_per_table 置为 OFF ，即所有的表数据都存储在系统表空间中。但是在使用 InnoDB 时，更推荐的方法是将 innodb_file_per_table 置为 ON，即使用独立表空间，它有如下几个好处：</p>
+<ol>
+<li>当使用 Truncate Table 和 Drop Table 命令删除表时，系统会直接删除表的数据文件，即回收物理空间。而使用系统表空间则无法回收这些物理空间；</li>
+<li>和上面类似，当使用重建表的语法时，如 OPTIMIZE TABLE 或者 ALTER TABLE ENGINE = InnoDB 时，系统也能够回收物理空间；</li>
+<li>可以单独将某个表指定到对应的存储位置，这个存储位置可以不在 MySQL 的数据目录下。比如你想使用 RAID 或者 SSD 来存储某个表，当你使用独立表空间时，就可以通过 CREATE TABLE … DATA DIRECTORY 这个语法来实现。</li>
+</ol>
+<p>使用独立表空间也有一些潜在的问题。例如，每个表都有自己的单独的文件，容易造成物理空间的浪费，如果数据库有很多小表的话，这种空间浪费也会比较明显。通用表空间 ( General TableSpace ) 可以缓解这个问题。通用表空间可以认为是 all-in-one (系统表空间) 和 file-per-table 的一个折中，它允许你使用 CREATE TABLESPACE 语法创建一个大的空间，然后你可以向这个空间中添加一些表的数据文件进行存储，这些表的数据文件是共享存储空间的。</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/99469827">https://zhuanlan.zhihu.com/p/99469827</a> </p>
 
       
        

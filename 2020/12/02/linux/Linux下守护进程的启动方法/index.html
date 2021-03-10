@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>about | Zhangxiaoyi&#39;s Blog</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="about | Zhangxiaoyi&#39;s Blog">
+  <title>Linux下守护进程的启动方法 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" 守护进程 ">
+  <meta name="description" content="Linux下守护进程的启动方法 | Zhangxiaoyi&#39;s Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
 <meta property="og:type" content="website">
@@ -805,24 +805,39 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+        <article id="post-linux/Linux下守护进程的启动方法" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">about</h1>
+        <h1 class="article-title">Linux下守护进程的启动方法</h1>
     
     <div class="article-meta">
         
         
         
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="linux">linux</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">守护进程</a>
+            
+        </span>
         
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2020-10-06 15:52:54'>2020-10-06 13:28</time>
+            Created At : <time class="date" title='Updated At: 2021-03-10 23:13:55'>2020-12-02 16:19</time>
         
     </div>
     <div class="article-meta">
         
-        <span>Count:14</span>
+        <span>Count:572</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -852,7 +867,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux%E4%B8%8B%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%90%AF%E5%8A%A8%E6%96%B9%E6%B3%95"><span class="toc-text">Linux下守护进程的启动方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E3%80%81SIGHUP%E4%BF%A1%E5%8F%B7"><span class="toc-text">一、SIGHUP信号</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8C%E3%80%81disown%E5%91%BD%E4%BB%A4"><span class="toc-text">二、disown命令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%89%E3%80%81nohup"><span class="toc-text">三、nohup</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%85%B6%E4%BB%96"><span class="toc-text">四、其他</span></a></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -868,7 +883,52 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>欢迎和我探讨有趣的事情<br>WX: 13572252156<br>QQ: 1251108673</p>
+        <h3 id="Linux下守护进程的启动方法"><a href="#Linux下守护进程的启动方法" class="headerlink" title="Linux下守护进程的启动方法"></a>Linux下守护进程的启动方法</h3><p>守护进程类似于内核进程一样，是一直在后台运行的进程。“前台任务”和“后台任务”的本质区别就是：是否继承了标准输入。</p>
+<h4 id="一、SIGHUP信号"><a href="#一、SIGHUP信号" class="headerlink" title="一、SIGHUP信号"></a>一、SIGHUP信号</h4><p>用户退出session之后，“后台任务”是否还会继续，取决于一个参数。</p>
+<ol>
+<li>用户准备退出session</li>
+<li>系统向该 session 发送SIGHUP信号</li>
+<li>session将SIGHUP信号发送所有子进程</li>
+<li>子进程收到SIGHUP信号后，自动退出</li>
+</ol>
+<p>因此，“前台进程”会随着session 的退出而退出。“后台进程”的退出由shell的 huponexit 参数决定。</p>
+<p><code>shopt | grep huponexit</code></p>
+<p>huponexit 的值为 off，代表session退出时，不会把 SIGHUP 信号发给“后台任务”。所以一般来说，后台任务不会随着session一起退出</p>
+<h4 id="二、disown命令"><a href="#二、disown命令" class="headerlink" title="二、disown命令"></a>二、disown命令</h4><p>如果有的系统的 huponexit 参数是 on，那么就会随着session的退出而退出。</p>
+<p>disown命令可以将指定的任务从“后台任务”列表中移除。这样session退出就不会给他发送SIGHUP信号了。</p>
+<pre><code>./process &amp;
+jobs -l
+disown
+jobs -l</code></pre>
+<p>可以查看到 process 进程被移出了“后台任务”。</p>
+<pre><code># 移出最近一个正在执行的后台任务
+$ disown
+
+# 移出所有正在执行的后台任务
+$ disown -r
+
+# 移出所有后台任务
+$ disown -a
+
+# 不移出后台任务，但是让它们不会收到SIGHUP信号
+$ disown -h
+
+# 根据jobId，移出指定的后台任务
+$ disown %2
+$ disown -h %2</code></pre>
+<p>但是disown 命令也是有小瑕疵的，如果后台进程和标准I/O有交互，“后台任务”的标准I/O继承当前的session，如果当前session退出之后，后台任务就不能与标准I/O进行交互。因此需要这样执行</p>
+<pre><code>./process 1&gt;output.log 2&gt;err.log &lt;/dev/null &amp;
+disown</code></pre>
+<h4 id="三、nohup"><a href="#三、nohup" class="headerlink" title="三、nohup"></a>三、nohup</h4><p>nohup命令所做的事情</p>
+<ol>
+<li>阻止SIGHUP信号发送到这个进程</li>
+<li>关闭标准输入。该进程不再能够接收任何输入，即使运行在前台</li>
+<li>重定向标准输入和标准错误到文件 nohup.out</li>
+</ol>
+<p><code>nohup ./process &amp;</code></p>
+<p>nohup 命令实际上将子进程与它所在的session分离了，但是还需要 &amp; 符</p>
+<h4 id="四、其他"><a href="#四、其他" class="headerlink" title="四、其他"></a>四、其他</h4><p>还有其他很多办法命令。</p>
+<p>screen、tmux、systemd 等，后面补上。</p>
 
       
        

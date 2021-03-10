@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>about | Zhangxiaoyi&#39;s Blog</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="about | Zhangxiaoyi&#39;s Blog">
+  <title>curl命令与其API的使用 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" curl ">
+  <meta name="description" content="curl命令与其API的使用 | Zhangxiaoyi&#39;s Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
 <meta property="og:type" content="website">
@@ -805,24 +805,39 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+        <article id="post-组件学习/curl命令与其API的使用" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">about</h1>
+        <h1 class="article-title">curl命令与其API的使用</h1>
     
     <div class="article-meta">
         
         
         
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="组件学习">组件学习</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">curl</a>
+            
+        </span>
         
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2020-10-06 15:52:54'>2020-10-06 13:28</time>
+            Created At : <time class="date" title='Updated At: 2021-03-10 23:13:55'>2020-11-01 18:19</time>
         
     </div>
     <div class="article-meta">
         
-        <span>Count:14</span>
+        <span>Count:1k</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -852,7 +867,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-curl-%E5%91%BD%E4%BB%A4%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">1. curl 命令的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%82%E6%95%B0-d"><span class="toc-text">参数 -d</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%82%E6%95%B0-%E2%80%93data-urlencode"><span class="toc-text">参数 –data-urlencode</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%82%E6%95%B0-H"><span class="toc-text">参数 -H</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%82%E6%95%B0-o"><span class="toc-text">参数 -o</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-libcurl-%E5%BA%93%E7%9A%84%E5%AE%89%E8%A3%85"><span class="toc-text">2. libcurl 库的安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-libcurl-%E5%BA%93%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">3. libcurl 库的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-linux-%E4%BD%BF%E7%94%A8-libcurl-a-%E5%9C%A8%E9%93%BE%E6%8E%A5%E7%9A%84%E6%97%B6%E5%80%99%E6%8A%A5%E9%94%99"><span class="toc-text">4. linux 使用 libcurl.a 在链接的时候报错</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -868,7 +883,121 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>欢迎和我探讨有趣的事情<br>WX: 13572252156<br>QQ: 1251108673</p>
+        <h3 id="1-curl-命令的使用"><a href="#1-curl-命令的使用" class="headerlink" title="1. curl 命令的使用"></a>1. curl 命令的使用</h3><p>curl 不到任何参数的时候，就是一般的 get 请求。curl 的参数很多，我只列举常用的。</p>
+<h5 id="参数-d"><a href="#参数-d" class="headerlink" title="参数 -d"></a>参数 -d</h5><p>-d：用于发送 POST 请求的数据体。</p>
+<pre><code class="shell">$ curl -d&#39;login=emma＆password=123&#39;-X POST https://google.com/login
+# 或者
+$ curl -d &#39;login=emma&#39; -d &#39;password=123&#39; -X POST  https://google.com/login</code></pre>
+<p>使用 -d 参数之后，HTTP 请求会自动加上标头 Content-Type : application/x-www-form-urlencoded。并且会自动将请求转为 POST 方法，因为可以省略 -X POST。 -d 参数甚至可以读取本地文件的数据，向服务器发送。</p>
+<pre><code class="shell">curl -d &#39;@data.txt&#39; http://google.com</code></pre>
+<h5 id="参数-–data-urlencode"><a href="#参数-–data-urlencode" class="headerlink" title="参数 –data-urlencode"></a>参数 –data-urlencode</h5><p>–data-urlencode 参数等同于 -d ，发送 POST 请求的数据体，区别在于会自动发送的数据进行URL编码</p>
+<pre><code class="shell">curl --data-urlencode &#39;comment=hello world 123&#39; https://google.com/login</code></pre>
+<p>发送的数据 空格数字都会URL编码</p>
+<h5 id="参数-H"><a href="#参数-H" class="headerlink" title="参数 -H"></a>参数 -H</h5><p>-H 参数添加 HTTP 请求的标头</p>
+<pre><code class="shell">curl -H &#39;Accept-Language: en-US&#39; https://google.com
+curl -H &#39;Accept-Language: en-US&#39; -H &#39;Secret-Message: xyzzy&#39; https://google.com</code></pre>
+<h5 id="参数-o"><a href="#参数-o" class="headerlink" title="参数 -o"></a>参数 -o</h5><p>-o 参数将服务器的回应保存成文件，等同于 wget 命令</p>
+<pre><code class="shell">curl -o tmp.html https://www.tmp.com</code></pre>
+<p>将 <a target="_blank" rel="noopener" href="http://www.tmp.com/">www.tmp.com</a> 保存成 tmp.log 文件</p>
+<blockquote>
+<p>更多有用的curl 参数参考：<a target="_blank" rel="noopener" href="https://catonmat.net/cookbooks/curl">https://catonmat.net/cookbooks/curl</a></p>
+</blockquote>
+<h3 id="2-libcurl-库的安装"><a href="#2-libcurl-库的安装" class="headerlink" title="2. libcurl 库的安装"></a>2. libcurl 库的安装</h3><p> curl 命令底层使用的就是 libcurl 库。因此如果要使用代码来解决 使用curl 的场景，如发送web 请求。这是就要用到 libcurl 库</p>
+<pre><code class="shell">1. 进入安装的目录  cd /usr/local
+2. 下载curl源码     wget https://curl.haxx.se/download/curl-7.53.0.tar.gz
+3. 解压curl包         tar -xzvf curl-7.53.0.tar.gz
+4. 进入curl安装目录 cd /usr/local/curl-7.53.0
+5. 编译安装             ./configure &amp;&amp; make &amp;&amp; make install
+6. 检查是否安装成功  curl --version</code></pre>
+<p>libcurl 库的头文件，检查一下是否在 /usr/local/include/curl 下了，或者 /usr/include/curl 下了。否则将其添加到库链接目录中</p>
+<p>检查一下 libcurl.so 或者 libcurl.a 文件是否存在与 /usr/local/lib 或者 /usr/lib 下了，没有的话就手动放一下。</p>
+<p>在 /usr/local/curl-7.53.0/docs/example 下，可以看到 libcurl 的示例代码，还有 README 文件。可以学习一下。</p>
+<h3 id="3-libcurl-库的使用"><a href="#3-libcurl-库的使用" class="headerlink" title="3. libcurl 库的使用"></a>3. libcurl 库的使用</h3><p>我自己简单的使用 API 封装了一个使用 libcurl 的类</p>
+<pre><code class="c++">#ifndef COMM_HTTP_H
+#define COMM_HTTP_H
+
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;iostream&gt;
+#include &lt;curl/curl.h&gt;
+#include &lt;json/json.h&gt;
+#include &lt;string.h&gt;
+
+namespace COMM_HTTP&#123;
+
+    class Http
+    &#123;
+    public:
+        Http();
+        ~Http();
+        static size_t WriteCallback(char *contents, size_t size, size_t nmemb, void *userp);
+        bool HttpPostRequest(const std::string&amp; HttpUrl,const std::string&amp; HttpParam,std::string&amp; HttpResponse,std::string&amp; ErrMsg);
+
+    private:
+        CURL* curl;
+        struct curl_slist* CurlHeaders;
+    &#125;;
+
+    COMM_HTTP::Http::Http()
+        : curl(NULL),
+        CurlHeaders(NULL)
+    &#123;&#125;
+
+    COMM_HTTP::Http::~Http()
+    &#123;&#125;
+
+    size_t COMM_HTTP::Http::WriteCallback(char *contents, size_t size, size_t nmemb, void *userp) &#123;
+        ((std::string*)userp)-&gt;append((char*)contents, size * nmemb);
+        return size * nmemb;
+    &#125;
+
+    bool COMM_HTTP::Http::HttpPostRequest(const std::string&amp; HttpUrl,const std::string&amp; HttpParam,std::string&amp; HttpResponse,std::string&amp; ErrMsg)
+    &#123;
+        /* In windows, this will init the winsock stuff */
+        curl_global_init(CURL_GLOBAL_ALL);
+        // for (std::vector&lt;std::string&gt;::const_iterator iter = HttpHeaders.begin();iter != HttpHeaders.end();iter++)
+        // &#123;
+        //     CurlHeaders = curl_slist_append(CurlHeaders, iter-&gt;c_str());
+        // &#125;
+        curl_slist_append(CurlHeaders, &quot;Accept: application/json&quot;);
+        curl_slist_append(CurlHeaders, &quot;Content-Type: application/json&quot;);
+        curl_slist_append(CurlHeaders, &quot;charset: utf-8&quot;);
+        curl = curl_easy_init();
+        if (curl)
+        &#123;
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, CurlHeaders);
+            curl_easy_setopt(curl, CURLOPT_NOSIGNAL,1L);
+            curl_easy_setopt(curl, CURLOPT_POST, 1L);
+            curl_easy_setopt(curl, CURLOPT_URL, HttpUrl.c_str());
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, HttpParam.c_str());
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, Http::WriteCallback);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &amp;HttpResponse);
+            CURLcode ResCode = curl_easy_perform(curl);
+            if (ResCode != CURLE_OK)
+            &#123;
+                // std::cout &lt;&lt; &quot;curl_easy_perform failed, ResCode: &quot; &lt;&lt; ResCode &lt;&lt; &quot;,&quot; &lt;&lt; curl_easy_strerror(ResCode) &lt;&lt; std::endl;
+                ErrMsg = &quot;curl_easy_perform failed, msg: &quot; + (std::string)curl_easy_strerror(ResCode);
+                return false;
+            &#125;
+            curl_easy_cleanup(curl);
+            curl_slist_free_all(CurlHeaders);
+        &#125;else&#123;
+            // std::cout &lt;&lt; &quot;curl init failed!&quot; &lt;&lt; std::endl;
+            ErrMsg = &quot;curl_easy_init failed&quot;;
+            return false;
+        &#125;
+        curl_global_cleanup();
+        return true;
+    &#125;
+
+&#125;
+
+#endif //COMM_HTTP_H</code></pre>
+<p>函数 HttpPostRequest 可以向 Web 发送 POST 请求，并且接收 WEB 的响应，并且保存在 参数 HttpResponse 里面，最后 ErrMsg 是错误信息。</p>
+<h3 id="4-linux-使用-libcurl-a-在链接的时候报错"><a href="#4-linux-使用-libcurl-a-在链接的时候报错" class="headerlink" title="4. linux 使用 libcurl.a 在链接的时候报错"></a>4. linux 使用 libcurl.a 在链接的时候报错</h3><p>在编译的时候，发现加上 libcurl.a 后，编译报错，而且大多数是引用失败。</p>
+<p>其实 libcurl 在链接的时候还需要依赖别的库，加上即可。 </p>
+<pre><code>-lidn -lrt -lcrypto -lssl ./lib/libcurl.a</code></pre>
+<p><strong>插言，后面有机会要剖析一下curl 的源码</strong></p>
 
       
        

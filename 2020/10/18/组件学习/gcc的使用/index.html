@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>about | Zhangxiaoyi&#39;s Blog</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="about | Zhangxiaoyi&#39;s Blog">
+  <title>gcc的使用 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" gcc ">
+  <meta name="description" content="gcc的使用 | Zhangxiaoyi&#39;s Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
 <meta property="og:type" content="website">
@@ -805,24 +805,39 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+        <article id="post-组件学习/gcc的使用" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">about</h1>
+        <h1 class="article-title">gcc的使用</h1>
     
     <div class="article-meta">
         
         
         
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="组件学习">组件学习</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color4">gcc</a>
+            
+        </span>
         
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2020-10-06 15:52:54'>2020-10-06 13:28</time>
+            Created At : <time class="date" title='Updated At: 2021-03-10 23:13:55'>2020-10-18 19:54</time>
         
     </div>
     <div class="article-meta">
         
-        <span>Count:14</span>
+        <span>Count:885</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -852,7 +867,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#gcc-%E5%9C%A8%E6%89%A7%E8%A1%8C%E7%BC%96%E8%AF%91%E5%B7%A5%E4%BD%9C%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%8C%E6%80%BB%E5%85%B1%E9%9C%80%E8%A6%814%E6%AD%A5%EF%BC%9A"><span class="toc-text">gcc 在执行编译工作的时候，总共需要4步：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0"><span class="toc-text">参数</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -868,7 +883,37 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>欢迎和我探讨有趣的事情<br>WX: 13572252156<br>QQ: 1251108673</p>
+        <p>在windows 下动态链接库是以 .dll 后缀的文件，linux 是以 .so 为后缀的文件。</p>
+<h3 id="gcc-在执行编译工作的时候，总共需要4步："><a href="#gcc-在执行编译工作的时候，总共需要4步：" class="headerlink" title="gcc 在执行编译工作的时候，总共需要4步："></a>gcc 在执行编译工作的时候，总共需要4步：</h3><ol>
+<li>预处理。生成.i 的文件【预处理器】</li>
+<li>将预处理后的文件转换成汇编语言，生成 .s 文件【编译器】</li>
+<li>将汇编变为目标代码，生成 .o 文件【汇编器】</li>
+<li>连接目标代码，生成可执行程序。【链接器】</li>
+</ol>
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><ol>
+<li>-c：进行预处理、编译、和汇编。也就是把程序作成 obj 文件</li>
+<li>-S：进行预处理、编译，把文件编译成汇编代码</li>
+<li>-E：进行预处理。不生成文件，因此需要重定向到一个输出文件里面。 Gcc -E hello.c &gt; hello.txt</li>
+<li>-o：制定目标名称。</li>
+<li>-include file：包含某个代码，简单来说，就是便以某个文件，需要另一个文件的时候，就可以用它设定，功能就相当于代码中使用#include<filename>。 gcc hello.c -include /root/hello.h</li>
+<li>-Idir：在使用“ #include “file” ”的时候，gcc 会在当前目录查找你所制定的头文件，如果没有找到，便回到默认的头文件目录找。如果使用 -I 制定了目录，他会先在你所制定的目录查找，然后再按常规的顺序去找。对于 #include<file> ，gcc/g++ 会到 -I 制定的目录查找，查找不到，然后将到系统的默认的头文件目录查找。</li>
+<li>-idirafter dir：在 -I 的目录里面查找失败，就到这个目录里面查找</li>
+<li>-C：在预处理的时候，不删除注释信息，一般和 -E 使用，有时候分析程序，这个很方便</li>
+<li>-M：生成文件关联的信息。包含目标文件所依赖的所有源代码。</li>
+<li>-MM：和-M 一样，但是它将忽略由#include<file> 造成的依赖。</li>
+<li>-MD：和 -M 相同，但是输出将导入到 .d 文件里面</li>
+<li>-MMD：和-MM 相同，但是输出将导入到 .d 文件里面</li>
+<li>-llibrary：指定编译的时候使用的库。 gcc -lcurses hello.c ：使用 ncurses 库编译程序。</li>
+<li>-Ldir：指定编译的时候，搜索库的路径。比如自己的库，可以用它指定目录，不然编译器将只在标准库的目录找。这个dir 就是目录的名称</li>
+<li>-O0、-O1、-O2、-O3：编译器的优化选项的4个级别，-O0表示没有优化，-O1为默认值、-O3优化级别最高</li>
+<li>-g：只是编译器，在编译的时候，产生调试信息，可以使用gdb</li>
+<li>-static：此选项禁止使用动态库，所以编译出来的东西，一般都很大，也不需要什么动态链接库，就可以运行</li>
+<li>-share：此选项尽量使用动态库，所以生成文件比较小，但是需要系统链接动态库。</li>
+<li>-w：不生成任何警告信息</li>
+<li>-Wall：生成所有警告信息</li>
+<li>-fPIC：为了在动态库中生成位置无关的代码。通过全局偏移表（GOT）访问所有常量地址。程序启动时动态加载程序解析GOT条目。</li>
+<li>-fpic：和 -fPIC 相同，区别在于如果链接的可执行文件的GOT大小超过计算机特定的最大大小，则会从链接器收到错误消息，指示 -fpic 不起作用；在这种情况下，请使用 -fPIC 重新编译。GOT 大小根据操作系统的不同而大小不一样，SPARC上为8K，在AArch64 上为28k，x86没有限制。所以一般请使用 -fPIC选项。</li>
+</ol>
 
       
        

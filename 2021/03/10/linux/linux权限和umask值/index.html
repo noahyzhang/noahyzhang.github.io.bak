@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>about | Zhangxiaoyi&#39;s Blog</title>
+  <title>Zhangxiaoyi&#39;s Blog</title>
   <meta name="keywords" content="">
-  <meta name="description" content="about | Zhangxiaoyi&#39;s Blog">
+  <meta name="description" content="Zhangxiaoyi&#39;s Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
 <meta property="og:type" content="website">
@@ -805,9 +805,7 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
-    
-        <h1 class="article-title">about</h1>
+        <article id="post-linux/linux权限和umask值" class="article article-type-post" itemscope itemprop="blogPost">
     
     <div class="article-meta">
         
@@ -817,12 +815,12 @@
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2020-10-06 15:52:54'>2020-10-06 13:28</time>
+            Created At : <time class="date" title='Updated At: 2021-03-10 23:13:55'>2021-03-10 23:08</time>
         
     </div>
     <div class="article-meta">
         
-        <span>Count:14</span>
+        <span>Count:696</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -852,7 +850,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#umask%E5%80%BC"><span class="toc-text">umask值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E7%9A%84%E6%9D%83%E9%99%90%E8%A7%A3%E9%87%8A"><span class="toc-text">目录的权限解释</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#linux-%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%AD%97%E7%AC%A6"><span class="toc-text">linux 文件权限的第一个字符</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -868,7 +866,26 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>欢迎和我探讨有趣的事情<br>WX: 13572252156<br>QQ: 1251108673</p>
+        <h3 id="umask值"><a href="#umask值" class="headerlink" title="umask值"></a>umask值</h3><p>umask值用于设置用户在创建文件时的默认权限，当我们在系统中创建目录或文件时，目录或文件所具有的默认权限就是由umask值决定的。</p>
+<p>对于root用户，系统默认的umask值是0022；对于普通用户，系统默认的umask值是0002。执行umask命令可以查看当前用户的umask值。</p>
+<p>umask值一共有4组数字，其中第1组数字用于定义特殊权限，我们一般不予考虑，与一般权限有关的是后3组数字。</p>
+<p>默认情况下，对于目录，用户所能拥有的最大权限是777；对于文件，用户所能拥有的最大权限是目录的最大权限去掉执行权限，即666。<br>因为x执行权限对于目录是必须的，没有执行权限就无法进入目录，而对于文件则不必默认赋予x执行权限。</p>
+<p>对于root用户，他的umask值是022。<br>当root用户创建目录时，默认的权限就是用最大权限777去掉相应位置的umask值权限，即对于所有者不必去掉任何权限，<br>对于所属组要去掉w权限，对于其他用户也要去掉w权限，所以目录的默认权限就是755；<br>当root用户创建文件时，默认的权限则是用最大权限666去掉相应位置的umask值，即文件的默认权限是644。</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wish123/p/7073114.html">https://www.cnblogs.com/wish123/p/7073114.html</a></p>
+<h3 id="目录的权限解释"><a href="#目录的权限解释" class="headerlink" title="目录的权限解释"></a>目录的权限解释</h3><ul>
+<li>读权限（r）表示可以列出存储在该目录下的文件，即读目录内容列表。这一权限允许Shell使用文件扩展名列出相匹配的文件名。</li>
+<li>写权限（w）表示允许用户从目录中删除或添加新的文件，通常只有文件主才有写权限。</li>
+<li>执行权限（x）表示允许用户在目录中查找，并能用cd命令将工作目录改到该目录。如果一个目录只有读权限，那么只能读取该目录下面的所有文件，不能读取文件的详细信息。即不能用ls -l 查看该目录下的文件的详细信息，只能看到文件名。</li>
+</ul>
+<h3 id="linux-文件权限的第一个字符"><a href="#linux-文件权限的第一个字符" class="headerlink" title="linux 文件权限的第一个字符"></a>linux 文件权限的第一个字符</h3><ul>
+<li>d：表示是一个目录，事实上在ext2fs中，目录是一个特殊的文件。</li>
+<li>－：表示这是一个普通的文件。</li>
+<li>l: 表示这是一个符号链接文件，实际上它指向另一个文件。</li>
+<li>b：块设备文件，例如硬盘的存储设备等。</li>
+<li>c：字符设备文件，如键盘等。</li>
+<li>s：表示是套接字文件，此主要跟网络程序有关。</li>
+<li>p：表示是管道文件。</li>
+</ul>
 
       
        

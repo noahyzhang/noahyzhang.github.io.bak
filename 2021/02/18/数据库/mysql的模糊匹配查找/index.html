@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>about | Zhangxiaoyi&#39;s Blog</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="about | Zhangxiaoyi&#39;s Blog">
+  <title>Mysql模糊匹配查找 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" mysql ">
+  <meta name="description" content="Mysql模糊匹配查找 | Zhangxiaoyi&#39;s Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
 <meta property="og:type" content="website">
@@ -805,24 +805,39 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+        <article id="post-数据库/mysql的模糊匹配查找" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">about</h1>
+        <h1 class="article-title">Mysql模糊匹配查找</h1>
     
     <div class="article-meta">
         
         
         
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="数据库">数据库</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color1">mysql</a>
+            
+        </span>
         
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2020-10-06 15:52:54'>2020-10-06 13:28</time>
+            Created At : <time class="date" title='Updated At: 2021-03-10 23:13:55'>2021-02-18 15:14</time>
         
     </div>
     <div class="article-meta">
         
-        <span>Count:14</span>
+        <span>Count:1.4k</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -852,7 +867,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql%E6%A8%A1%E7%B3%8A%E5%8C%B9%E9%85%8D%E6%9F%A5%E6%89%BE"><span class="toc-text">mysql模糊匹配查找</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SQL-%E5%8C%B9%E9%85%8D%E6%A8%A1%E5%BC%8F"><span class="toc-text">SQL 匹配模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A3%E5%88%99%E6%A8%A1%E5%BC%8F"><span class="toc-text">正则模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#in%E6%9F%A5%E8%AF%A2"><span class="toc-text">in查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#like-contact%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2"><span class="toc-text">like contact模糊查询</span></a></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -868,7 +883,42 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>欢迎和我探讨有趣的事情<br>WX: 13572252156<br>QQ: 1251108673</p>
+        <h2 id="mysql模糊匹配查找"><a href="#mysql模糊匹配查找" class="headerlink" title="mysql模糊匹配查找"></a>mysql模糊匹配查找</h2><h3 id="SQL-匹配模式"><a href="#SQL-匹配模式" class="headerlink" title="SQL 匹配模式"></a>SQL 匹配模式</h3><p>SQL的模式匹配允许你使用“_”匹配任何单个字符，而“%”匹配任意数目字符（包括零个字符）。在MySQL中，SQL的模式缺省是忽略大小写的。</p>
+<ul>
+<li>注意：在你使用SQL模式时，不能使用=或!=；而使用LIKE或NOT LIKE比较操作符。</li>
+<li>语法：SELECT 字段 FROM 表 WHERE 某字段 Like 条件</li>
+<li>其中关于条件，SQL提供了两种匹配模式：<br>  1、百分号（%）：表示任意个或多个字符。可匹配任意类型和长度的字符。<br>  2、下划线（_）：表示任意单个字符。匹配单个任意字符，它常用来限制表达式的字符长度语句：（可以代表一个中文字符）</li>
+</ul>
+<h3 id="正则模式"><a href="#正则模式" class="headerlink" title="正则模式"></a>正则模式</h3><p>正则表达式作用是匹配文本，将一个模式（正则表达式）与一个文本进行比较。<br>MySQL用where子句对正则表达式提供了初步的支持，允许指定用正则表达式过滤SELECT检索出的数据。</p>
+<ol>
+<li>MySQL正则表达式仅仅使SQL语言的一个子集，可以匹配基本的字符、字符串。<br> 例如：<code>select * from wp_posts where post_name REGEXP &#39;hello&#39;;</code> // 可以检索出列post_name中所有包含hello的行</li>
+<li>. 匹配除\n之外的任意单个字符<br> <code>select * from wp_posts where post_name REGEXP &#39;.og&#39;;</code><br> 注：. 是正则表达式中的一个特殊字符。它表示匹配一个字符，因此bog，cog，dog等等都能匹配。<br> 关于大小写的区分：MySQL中正则表达式匹配（从版本3.23.4后）不区分大小写。<br> 如果要区分大小写，应该使用BINARY关键字，例如：where post_name REGEXP BINARY ‘Hello .000’</li>
+<li>^ 匹配字符串开始位置，如查询所有姓王的人名<br> <code>select name from 表名 where name REGEXP &#39;^王&#39;;</code></li>
+<li>$ 匹配字符串结束位置，如查询所有姓名末尾是“明”的人名<br> <code>select name from 表名 where name REGEXP &#39;明$&#39;;</code></li>
+<li>进行OR匹配<br> 搜索两个串之一（或者这个串，或者为另外一个串），使用|作为OR操作符，表示匹配其中之一。可以给出两个以上的OR条件。<br> 例如：<code>select * from products where pro_id REGEXP &#39;1000|2000&#39;;</code> // 1000和2000都能匹配并返回，当然，使用多个|就可以匹配多个串</li>
+<li>[] 匹配任何单一字符，是另一种形式的OR语句，可缩写的OR语句<br> 例如，匹配范围：[0123456789]可以匹配0到9，[1-4][4-9]也是合法的范围。<br> 此外，范围不一定只是数值的，[a-z]匹配任意字母字符。<br> 例如，查询出w/z/s开头的人的人名: <code>SELECT prod_name FROM products WHERE prod_name REGEXP &#39;^[wzs]&#39;;</code></li>
+<li>[^…]匹配不包含在[ ]的字符，如查询出chenmin之外的人名<br> SELECT prod_name FROM products WHERE prod_name REGEXP ‘[^chenmin]’;<br> 注：^的双重用途：在集合中（用[ ]定义），它用来否定该集合。否则，用来指串的开始</li>
+<li>匹配特殊字符使用\进行转义<br> \为前导。即转义，正则表达式内具有特殊意义的所有字符都必须以这种方式转义。<ul>
+<li>\-   表示查找-</li>
+<li>\.   表示查找.</li>
+<li>\f   表示换页</li>
+<li>\n  表示换行</li>
+<li>\r   表示回车</li>
+<li>\t   表示制表</li>
+<li>\v   表示纵向制表</li>
+<li>注：为了匹配\本身，需要使用\\</li>
+</ul>
+</li>
+<li>匹配字符类<br> （1）[:alnum:]    任意字母和数字（同[a-zA-Z0-9]）<br> （2）[:alpha:]     任意字符（同[a-zA-A]）<br> （3）[:blank:]     空格和制表符（同[\t]）<br> （4）[:digit:]       任意数字（同[0-9]）<br> （5）[:lower:]     任意小写字母（同[a-z]）<br> （6）[:upper:]    任意大写字母（同[A-Z]）<br> （7）[:space:]    包括空格在内的任意空白字符（同 [\f\n\t\r\v]）<br> （8）[:cntrl:]       ASCII控制字符（ASCII  0到31和127）<br> （9）[:graph:]    与[“print:]相同，但不包括空格<br> （10）[:print:]     任意可打印字符<br> （11）[:punct:]   既不在 [:alnum:] 又不在 [:cntrl:] 中的任意字符<br> （12）[:xdigit:]  任意十六进制数字（同 [a-fA-F0-9]）</li>
+<li>匹配多个示例，关于重复元字符<ul>
+<li>0个或多个匹配</li>
+</ul>
+<ul>
+<li>1个或多个匹配（等于 {1, }）<br>?         0个或1个匹配（等于 {0, 1}）<br>{n}       指定数目的匹配<br>{n, }     不少于指定数目的匹配<br>{n ,m}    匹配数目的范围（m不超过255）<br>例如：<code>select prod_name from products where prod_name REGEXP &#39;[[:DIGIT:]]&#123;4&#125;&#39;;</code><br>如前所述，[:digit:]匹配任意数字<br>[[:digit:]]{4}匹配连在一起的任意4位数字，当然，上面的例子也可以这样写REGEXP ‘[0-9][0-9][0-9][0-9]’</li>
+</ul>
+</li>
+<li>定位符<br>^         文本的开始<br>$         文本的末尾<br>[[:&lt;:]]   词的开始<br>[[:&gt;:]]   词的结尾<br>注：like匹配整个串，而REGEXP匹配子串。<h3 id="in查询"><a href="#in查询" class="headerlink" title="in查询"></a>in查询</h3>in其实和=类似，区别在于：=后面是一个值。in后面可以是多个值。<br>例1: <code>select * from role where name in(&quot;唐三&quot;);</code> // 即匹配姓名为“唐三”一行数据；<br>例2: <code>select * from role where name in(&quot;唐三&quot;,&quot;唐三藏&quot;);</code> // 即匹配姓名为“唐三”，“唐三藏”一行数据；<br>例3: <code>select * from role where name in(&quot;唐三&quot;,&quot;%行者%&quot;);</code> // 只匹配姓名为“唐三”一行数据；即in查询不支持模糊查询，如示例4<br>例4: <code>select * from role where name in(&quot;%行者%&quot;);</code>  // 无匹配结果<br>注意：in查询不支持模糊查询<h3 id="like-contact模糊查询"><a href="#like-contact模糊查询" class="headerlink" title="like contact模糊查询"></a>like contact模糊查询</h3>CONCAT(str1,str2,…) 函数返回结果为连接参数产生的字符串。<br><code>select * from role where name like contact(&quot;%&quot;,&quot;三&quot;,&quot;%&quot;);</code> // 即匹配姓名为“唐三”，“唐三藏”等类型的数据数据；<br>like contact模糊查询强大的地方在于可以对传进来的参数进行某查询，比如经前端提交上的数据，赋值给参数name，则可以select * from table where name like contact(“%”,${name},”%”)</li>
+</ol>
 
       
        

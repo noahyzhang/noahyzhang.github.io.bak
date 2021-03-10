@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>about | Zhangxiaoyi&#39;s Blog</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="about | Zhangxiaoyi&#39;s Blog">
+  <title>mysql重置密码 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" 重置密码 ">
+  <meta name="description" content="mysql重置密码 | Zhangxiaoyi&#39;s Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
 <meta property="og:type" content="website">
@@ -805,24 +805,39 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+        <article id="post-数据库/mysql重置密码" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">about</h1>
+        <h1 class="article-title">mysql重置密码</h1>
     
     <div class="article-meta">
         
         
         
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="数据库">数据库</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">重置密码</a>
+            
+        </span>
         
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2020-10-06 15:52:54'>2020-10-06 13:28</time>
+            Created At : <time class="date" title='Updated At: 2021-03-10 23:13:55'>2021-03-07 20:19</time>
         
     </div>
     <div class="article-meta">
         
-        <span>Count:14</span>
+        <span>Count:289</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -852,7 +867,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81"><span class="toc-text">mysql重置密码</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -868,7 +883,42 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>欢迎和我探讨有趣的事情<br>WX: 13572252156<br>QQ: 1251108673</p>
+        <h2 id="mysql重置密码"><a href="#mysql重置密码" class="headerlink" title="mysql重置密码"></a>mysql重置密码</h2><p><strong>方法1： 用SET PASSWORD命令</strong></p>
+<p>首先登录MySQL。 </p>
+<p>格式：mysql&gt; set password for 用户名@localhost = password(‘新密码’); </p>
+<p>例子：mysql&gt; set password for root@localhost = password(‘123’); </p>
+<p><strong>方法2：用mysqladmin</strong></p>
+<p>格式：mysqladmin -u用户名 -p旧密码 password 新密码 </p>
+<p>例子：mysqladmin -uroot -p123456 password 123 </p>
+<p><strong>方法3：用UPDATE直接编辑user表</strong></p>
+<p>首先登录MySQL。 </p>
+<p>mysql&gt; use mysql; </p>
+<p>mysql&gt; update user set password=password(‘123’) where user=’root’ and host=’localhost’; </p>
+<p>mysql&gt; flush privileges; </p>
+<p><strong>方法4：在忘记root密码的时候，可以这样</strong></p>
+<p><strong>以windows为例：</strong></p>
+<ol>
+<li><p>关闭正在运行的MySQL服务。 </p>
+</li>
+<li><p>打开DOS窗口，转到mysql\bin目录。 </p>
+</li>
+<li><p>输入mysqld –skip-grant-tables 回车。–skip-grant-tables 的意思是启动MySQL服务的时候跳过权限表认证。 </p>
+</li>
+<li><p>再开一个DOS窗口（因为刚才那个DOS窗口已经不能动了），转到mysql\bin目录。 </p>
+</li>
+<li><p>输入mysql回车，如果成功，将出现MySQL提示符 &gt;。 </p>
+</li>
+<li><p>连接权限数据库： use mysql; 。 </p>
+</li>
+<li><p>改密码：update user set password=password(“123”) where user=”root”;（别忘了最后加分号） 。 </p>
+</li>
+<li><p>刷新权限（必须步骤）：flush privileges;　。 </p>
+</li>
+<li><p>退出 quit。 </p>
+</li>
+<li><p>注销系统，再进入，使用用户名root和刚才设置的新密码123登录。</p>
+</li>
+</ol>
 
       
        

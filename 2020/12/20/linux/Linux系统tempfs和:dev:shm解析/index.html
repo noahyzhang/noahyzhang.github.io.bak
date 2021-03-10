@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>about | Zhangxiaoyi&#39;s Blog</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="about | Zhangxiaoyi&#39;s Blog">
+  <title>Linux系统tempfs和/dev/shm解析 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" tempfs /dev/shm ">
+  <meta name="description" content="Linux系统tempfs和/dev/shm解析 | Zhangxiaoyi&#39;s Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
 <meta property="og:type" content="website">
@@ -805,24 +805,39 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+        <article id="post-linux/Linux系统tempfs和:dev:shm解析" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">about</h1>
+        <h1 class="article-title">Linux系统tempfs和/dev/shm解析</h1>
     
     <div class="article-meta">
         
         
         
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="linux">linux</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color1">tempfs /dev/shm</a>
+            
+        </span>
         
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2020-10-06 15:52:54'>2020-10-06 13:28</time>
+            Created At : <time class="date" title='Updated At: 2021-03-10 23:13:55'>2020-12-20 13:19</time>
         
     </div>
     <div class="article-meta">
         
-        <span>Count:14</span>
+        <span>Count:758</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -852,7 +867,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux%E7%B3%BB%E7%BB%9Ftempfs%E5%92%8C-dev-shm%E8%A7%A3%E6%9E%90"><span class="toc-text">Linux系统tempfs和&#x2F;dev&#x2F;shm解析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81tempfs%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-text">一、tempfs文件系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81-dev-shm%E7%9B%AE%E5%BD%95"><span class="toc-text">二、&#x2F;dev&#x2F;shm目录</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E4%BF%AE%E6%94%B9-dev-shm%E7%9B%AE%E5%BD%95%E5%A4%A7%E5%B0%8F"><span class="toc-text">1.修改&#x2F;dev&#x2F;shm目录大小</span></a></li></ol></li></ol></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -868,7 +883,28 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>欢迎和我探讨有趣的事情<br>WX: 13572252156<br>QQ: 1251108673</p>
+        <h1 id="Linux系统tempfs和-dev-shm解析"><a href="#Linux系统tempfs和-dev-shm解析" class="headerlink" title="Linux系统tempfs和/dev/shm解析"></a>Linux系统tempfs和/dev/shm解析</h1><h2 id="一、tempfs文件系统"><a href="#一、tempfs文件系统" class="headerlink" title="一、tempfs文件系统"></a>一、tempfs文件系统</h2><p>文件系统有两种变体，称为<em>shm</em>和 <em>tmpfs</em>。它们都共享核心功能，并且主要用途不同。内核使用<code>shm</code>为匿名页面创建文件支持，并为<code>shmge()</code>创建的区域提供支持。该文件系统由<code>kern_mount（）</code>挂载这样它就可以在内部安装并且对用户不可见。<code>tmpfs</code>是一个临时文件系统，可以选择将其安装在/tmp/上，以具有基于RAM的快速临时文件系统。<code>tmpfs</code>的第二个用途 是将其安装在 /dev/shm/ 上。tmpfs文件系统中<code>mmap()</code>文件的进程将能够在它们之间共享信息，以作为System V IPC机制的替代方法。</p>
+<p>tempfs是驻留在内存或交换分区中的临时文件系统。将目录挂载为tempfs是加快对其文件访问速度的有效方法。传统的虚拟磁盘是一个块设备，但tempfs是一个文件系统，而不是块设备，只需要安装它，就可以使用了。</p>
+<p>tempfs的用途</p>
+<ul>
+<li>总会有一个内核内部挂载，也许我们看不到，可能用于共享内存等</li>
+<li>这个文件系统的大小可以动态调整</li>
+<li>tempfs因为驻留在内存或者交换分区中，因此它的读写比磁盘要快很多</li>
+<li>有一个缺点：tempfs数据在系统重启后不会保留，因此应该注意根据不同场景做一些恰当的操作</li>
+</ul>
+<h2 id="二、-dev-shm目录"><a href="#二、-dev-shm目录" class="headerlink" title="二、/dev/shm目录"></a>二、/dev/shm目录</h2><p>/dev/shm也是属于tempfs文件系统，存在于内存中。默认情况下，这个目录占用大小是内存大小的一半。但是并不是一直占有内存的一半，如果/dev/shm下没有任何文件，它占有的内存实际就是0字节；如果他最大为2G，现在只存在100M的文件，那剩余的1900M仍然可以被其他程序所使用。同时，他占用的100M内存是不会被系统回收的。</p>
+<p>使用 df -h 命令可以看到/dev/shm目录。使用 df -k /dev/shm 可以看到此目录的大小</p>
+<pre><code>文件系统         1K-块  已用    可用 已用% 挂载点
+tmpfs          8046096     0 8046096    0% /dev/shm</code></pre>
+<h4 id="1-修改-dev-shm目录大小"><a href="#1-修改-dev-shm目录大小" class="headerlink" title="1.修改/dev/shm目录大小"></a>1.修改/dev/shm目录大小</h4><p>默认的最大一般内存的大小可能在某些场景下并不适用，并且默认的innode数量很低一般需要调高一点，可以使用mount命令来管理</p>
+<pre><code>mount -o size=1500M -o nr_inodes=1000000 -o noatime,nodiratime -o remount /dev/shm</code></pre>
+<p>将他的大小调到1.5G，并且将inode数量调到1000000，这意味着大致可以存最多一百万个大小为大约为1K的小文件。</p>
+<p>如果需要永久修改/dev/shm的值，则需要修改/etc/fstab</p>
+<pre><code>tmpfs /dev/shm tmpfs defaults,size=1.5G 0 0  #/etc/fstab中增加该行
+# 保存并关闭文件，为了使更改立即生效，可以重新安装/dev/shm
+mount -o remount /dev/shm
+# 验证是否生效
+df -h</code></pre>
 
       
        

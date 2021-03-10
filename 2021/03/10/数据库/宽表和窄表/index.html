@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>about | Zhangxiaoyi&#39;s Blog</title>
+  <title>Zhangxiaoyi&#39;s Blog</title>
   <meta name="keywords" content="">
-  <meta name="description" content="about | Zhangxiaoyi&#39;s Blog">
+  <meta name="description" content="Zhangxiaoyi&#39;s Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
 <meta property="og:type" content="website">
@@ -805,9 +805,7 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
-    
-        <h1 class="article-title">about</h1>
+        <article id="post-数据库/宽表和窄表" class="article article-type-post" itemscope itemprop="blogPost">
     
     <div class="article-meta">
         
@@ -817,12 +815,12 @@
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2020-10-06 15:52:54'>2020-10-06 13:28</time>
+            Created At : <time class="date" title='Updated At: 2021-03-10 23:13:55'>2021-03-10 23:08</time>
         
     </div>
     <div class="article-meta">
         
-        <span>Count:14</span>
+        <span>Count:359</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -852,7 +850,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%AE%BD%E8%A1%A8"><span class="toc-text">一、宽表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%AA%84%E8%A1%A8"><span class="toc-text">二、窄表</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -868,7 +866,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>欢迎和我探讨有趣的事情<br>WX: 13572252156<br>QQ: 1251108673</p>
+        <h3 id="一、宽表"><a href="#一、宽表" class="headerlink" title="一、宽表"></a>一、宽表</h3><p>（1）宽表：从字面意义上讲就是字段比较多的数据库表。通常是指业务主题相关的指标、维度、属性关联在一起的一张数据库表。由于把不同的内容都放在同一张表存储，宽表已经不符合三范式的模型设计规范，随之带来的主要坏处就是数据的大量冗余，与之相对应的好处就是查询性能的提高与便捷。这种宽表的设计广泛应用于数据挖掘模型训练前的数据准备，通过把相关字段放在同一张表中，可以大大提高数据挖掘模型训练过程中迭代计算时的效率问题。（一句话，空间换时间，便于训练迭代、减少表关联数量，修改少量数据时不需要该多张表）</p>
+<p>（2）“宽表”特点：一个表就是一个class，每个字段就是一个filed，操作简单。但不便扩展。</p>
+<h3 id="二、窄表"><a href="#二、窄表" class="headerlink" title="二、窄表"></a>二、窄表</h3><p>（1）窄表：严格按照数据库设计三范式。尽量减少数据冗余，但是缺点是修改一个数据可能需要修改多张表。</p>
+<p>（2）“窄表”特点：方便扩展，能适应各种复杂的数据结构（树形、继承等），无论有多少配置，都不用修改表结构。但代码逻辑可能需要包装一下。</p>
 
       
        

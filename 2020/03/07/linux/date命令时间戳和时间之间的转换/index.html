@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>about | Zhangxiaoyi&#39;s Blog</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="about | Zhangxiaoyi&#39;s Blog">
+  <title>linux上时间和时间戳之间的转换 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" 时间戳 时间 转换 ">
+  <meta name="description" content="linux上时间和时间戳之间的转换 | Zhangxiaoyi&#39;s Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
 <meta property="og:type" content="website">
@@ -805,24 +805,39 @@
 </aside>
 <div id="post">
     <div class="pjax">
-        <article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+        <article id="post-linux/date命令时间戳和时间之间的转换" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">about</h1>
+        <h1 class="article-title">linux上时间和时间戳之间的转换</h1>
     
     <div class="article-meta">
         
         
         
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="linux">linux</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color5">时间戳 时间 转换</a>
+            
+        </span>
         
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2020-10-06 15:52:54'>2020-10-06 13:28</time>
+            Created At : <time class="date" title='Updated At: 2021-03-10 23:13:55'>2020-03-07 21:11</time>
         
     </div>
     <div class="article-meta">
         
-        <span>Count:14</span>
+        <span>Count:137</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -852,7 +867,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#date%E5%91%BD%E4%BB%A4%E6%97%B6%E9%97%B4%E6%88%B3%E5%92%8C%E6%97%B6%E9%97%B4%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="toc-text">date命令时间戳和时间之间的转换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%A0%BC%E5%BC%8F%E6%97%B6%E9%97%B4%E8%BD%AC%E6%8D%A2%E4%B8%BA%E6%97%B6%E9%97%B4%E6%88%B3"><span class="toc-text">字符串格式时间转换为时间戳</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E6%88%B3%E8%BD%AC%E6%8D%A2%E4%B8%BA%E6%97%B6%E9%97%B4"><span class="toc-text">时间戳转换为时间</span></a></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -868,7 +883,29 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>欢迎和我探讨有趣的事情<br>WX: 13572252156<br>QQ: 1251108673</p>
+        <h2 id="date命令时间戳和时间之间的转换"><a href="#date命令时间戳和时间之间的转换" class="headerlink" title="date命令时间戳和时间之间的转换"></a>date命令时间戳和时间之间的转换</h2><h3 id="字符串格式时间转换为时间戳"><a href="#字符串格式时间转换为时间戳" class="headerlink" title="字符串格式时间转换为时间戳"></a>字符串格式时间转换为时间戳</h3><ul>
+<li>date 把当前的时间转换为时间戳</li>
+</ul>
+<p>date +%s</p>
+<ul>
+<li>date 把带格式的时间转换为时间戳</li>
+</ul>
+<p>$ date -d ‘06/12/2018 07:21:22’ +”%s”</p>
+<p>1528759282</p>
+<p>$ date -d ‘2018-06-12 07:21:22’ +”%s”</p>
+<p>1528759282</p>
+<p>$ date -d “04 June 1989”</p>
+<p>1989年 06月 04日 星期日 00:00:00 CDT</p>
+<h3 id="时间戳转换为时间"><a href="#时间戳转换为时间" class="headerlink" title="时间戳转换为时间"></a>时间戳转换为时间</h3><ul>
+<li>centos上</li>
+</ul>
+<p>$ date -d @1436781720</p>
+<p>2015年 07月 13日 星期一 18:02:00 CST</p>
+<ul>
+<li>macos上</li>
+</ul>
+<p>date -r1436781720</p>
+<p>2015年 7月13日 星期一 18时02分00秒 CST</p>
 
       
        
