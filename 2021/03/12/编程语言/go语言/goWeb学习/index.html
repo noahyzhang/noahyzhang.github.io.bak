@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>go语言Web学习 | Zhangxiaoyi&#39;s Blog</title>
+  <meta name="keywords" content=" go ">
+  <meta name="description" content="go语言Web学习 | Zhangxiaoyi&#39;s Blog">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
+<meta property="og:type" content="website">
+<meta property="og:title" content="about">
+<meta property="og:url" content="http://example.com/about/index.html">
+<meta property="og:site_name" content="Zhangxiaoyi&#39;s Blog">
+<meta property="og:description" content="欢迎和我探讨有趣的事情WX: 13572252156QQ: 1251108673">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-10-06T05:28:23.000Z">
+<meta property="article:modified_time" content="2020-10-06T07:52:54.234Z">
+<meta property="article:author" content="Zhangxiaoyi">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/avatar2.jpg">
+
+<link href="/css/style.css?v=1.1.0" rel="stylesheet">
+
+<link href="/css/hl_theme/atom-light.css?v=1.1.0" rel="stylesheet">
+
+<link href="//cdn.jsdelivr.net/npm/animate.css@4.1.0/animate.min.css" rel="stylesheet">
+
+<script src="//cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="/js/titleTip.js?v=1.1.0" ></script>
+
+<script src="//cdn.jsdelivr.net/npm/highlightjs@9.16.2/highlight.pack.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.1.0" ></script>
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="">
+  <input class="theme_blog_path" value="">
+  <input id="theme_shortcut" value="true" />
+  <input id="theme_highlight_on" value="true" />
+  <input id="theme_code_copy" value="true" />
+</div>
+
+
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/avatar2.jpg" />
+</a>
+<div class="author">
+    <span>Zhangxiaoyi</span>
+</div>
+
+<div class="icon">
+    
+        
+    
+        
+        <a title="github" href="https://github.com/noahyzhang" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-github"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+        <a title="csdn" href="https://blog.csdn.net/qq_40421919" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-csdn"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+        
+        <a title="email" href="mailto:1251108673@qq.com" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-email"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+        <a title="qq" href="http://wpa.qq.com/msgrd?v=3&uin=1251108673&site=qq&menu=yes" target="_blank">
+            
+                <svg class="iconfont-svg" aria-hidden="true">
+                    <use xlink:href="#icon-qq"></use>
+                </svg>
+            
+        </a>
+        
+    
+        
+    
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active" data-rel="All">All<small>(64)</small></div></li>
+    
+        
+            
+            <li><div data-rel="linux">linux<small>(22)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="编程语言">编程语言<small>(11)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="数据库">数据库<small>(16)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="组件学习">组件学习<small>(8)</small></div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="其他">其他<small>(2)</small></div>
+                
+            </li>
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    
+    </div>
+    <div><a class="about  site_url"  href="/about">About</a></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="64">
+<input type="hidden" id="yelog_site_word_count" value="94k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        Links
+        <i class="iconfont icon-left"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+            <li><a target="_blank" href="http://www.zhangxiaoyiya.cn/">叶落阁</a></li>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <div class="right-top">
+        <div id="default-panel">
+            <i class="iconfont icon-search" data-title="搜索 快捷键 i"></i>
+            <div class="right-title">All</div>
+            <i class="iconfont icon-file-tree" data-title="切换到大纲视图 快捷键 w"></i>
+        </div>
+        <div id="search-panel">
+            <i class="iconfont icon-left" data-title="返回"></i>
+            <input id="local-search-input" />
+            <label class="border-line" for="input"></label>
+            <i class="iconfont icon-case-sensitive" data-title="大小写敏感"></i>
+            <i class="iconfont icon-tag" data-title="标签"></i>
+        </div>
+        <div id="outline-panel" style="display: none">
+            <div class="right-title">大纲</div>
+            <i class="iconfont icon-list" data-title="切换到文章列表"></i>
+        </div>
+    </div>
+
+    <div class="tags-list">
+    <input id="tag-search" />
+    <div class="tag-wrapper">
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>/proc/stat</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>c++</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>c++链接</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>curl</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>datetime</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>gcc</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>gdb linux</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>git</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>go</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>ibdata1文件</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>json protobuf</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>linux</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>linux 日志</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>load</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>makefile</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>mysql</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>mysqldump</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>scanf</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>show processlist</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>show slave status</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>syslog日志服务</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tcpdump</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>tempfs /dev/shm</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>vim</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>代理</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>共享内存</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>内存管理</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>删除日志</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>存储</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>守护进程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>导入数据</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>时间戳 时间 转换</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>段错误 core</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>环境变量</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>端口</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>网卡</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>输入中文</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>进程丢失</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>进程状态</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>配置文件</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>重置密码</a>
+            </li>
+        
+    </div>
+
+</div>
+
+    
+    <nav id="title-list-nav">
+        
+        <a  class="All 编程语言 "
+           href="/2021/03/12/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/c++%E8%AF%AD%E8%A8%80/scanf%E4%BD%BF%E7%94%A8%E6%B3%A8%E6%84%8F/"
+           data-tag="scanf"
+           data-author="" >
+            <span class="post-title" title="scanf函数使用注意">scanf函数使用注意</span>
+            <span class="post-date" title="2021-03-12 21:19:17">2021/03/12</span>
+        </a>
+        
+        <a  class="All 编程语言 "
+           href="/2021/03/12/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/go%E8%AF%AD%E8%A8%80/goWeb%E5%AD%A6%E4%B9%A0/"
+           data-tag="go"
+           data-author="" >
+            <span class="post-title" title="go语言Web学习">go语言Web学习</span>
+            <span class="post-date" title="2021-03-12 21:19:17">2021/03/12</span>
+        </a>
+        
+        <a  class="All 编程语言 "
+           href="/2021/03/12/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/go%E8%AF%AD%E8%A8%80/go_protobuf/"
+           data-tag="go"
+           data-author="" >
+            <span class="post-title" title="go语言操作protobuf">go语言操作protobuf</span>
+            <span class="post-date" title="2021-03-12 21:19:17">2021/03/12</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2021/03/12/linux/linux%E4%B8%8Bproc%E8%A7%A3%E6%9E%90/"
+           data-tag="/proc/stat"
+           data-author="" >
+            <span class="post-title" title="/proc/stat解析">/proc/stat解析</span>
+            <span class="post-date" title="2021-03-12 21:11:41">2021/03/12</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2021/03/12/linux/vim%E6%9F%A5%E6%89%BE%E5%AD%97%E7%AC%A6%E4%B8%B2/"
+           data-tag="vim"
+           data-author="" >
+            <span class="post-title" title="vim查找字符串">vim查找字符串</span>
+            <span class="post-date" title="2021-03-12 21:11:41">2021/03/12</span>
+        </a>
+        
+        <a  class="All "
+           href="/2021/03/10/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/c++%E8%AF%AD%E8%A8%80/test/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2021-03-10 23:11:58">2021/03/10</span>
+        </a>
+        
+        <a  class="All "
+           href="/2021/03/10/linux/linux%E6%9D%83%E9%99%90%E5%92%8Cumask%E5%80%BC/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
+        </a>
+        
+        <a  class="All "
+           href="/2021/03/10/linux/iptables%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
+        </a>
+        
+        <a  class="All "
+           href="/2021/03/10/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%9C%AA%E6%80%BB%E7%BB%93Mysql_on_duplicate_key_update/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
+        </a>
+        
+        <a  class="All "
+           href="/2021/03/10/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%AE%BD%E8%A1%A8%E5%92%8C%E7%AA%84%E8%A1%A8/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title=""></span>
+            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2021/03/07/linux/TCP%E5%92%8CUDP%E5%8D%A0%E7%94%A8%E5%90%8C%E4%B8%80%E7%AB%AF%E5%8F%A3/"
+           data-tag="端口"
+           data-author="" >
+            <span class="post-title" title="系统TCP/UDP占用同一端口">系统TCP/UDP占用同一端口</span>
+            <span class="post-date" title="2021-03-07 21:54:54">2021/03/07</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2021/03/07/linux/VM0%E5%92%8CVM8%E5%92%8CVM1%E7%9A%84%E5%8C%BA%E5%88%AB/"
+           data-tag="网卡"
+           data-author="" >
+            <span class="post-title" title="VM0和VM8和VM1的区别">VM0和VM8和VM1的区别</span>
+            <span class="post-date" title="2021-03-07 21:54:54">2021/03/07</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2021/03/07/linux/PATH%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F%E6%80%BB%E7%BB%93/"
+           data-tag="环境变量"
+           data-author="" >
+            <span class="post-title" title="linux中PATH环境变量总结">linux中PATH环境变量总结</span>
+            <span class="post-date" title="2021-03-07 21:11:41">2021/03/07</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2021/03/07/linux/load%E4%B8%8D%E5%88%B0%E5%85%B1%E4%BA%AB%E5%BA%93/"
+           data-tag="load"
+           data-author="" >
+            <span class="post-title" title="linux下load不到共享库">linux下load不到共享库</span>
+            <span class="post-date" title="2021-03-07 21:11:41">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/Mysql%E7%BB%88%E7%AB%AF%E6%97%A0%E6%B3%95%E8%BE%93%E5%85%A5%E4%B8%AD%E6%96%87%E9%97%AE%E9%A2%98/"
+           data-tag="输入中文"
+           data-author="" >
+            <span class="post-title" title="mysql终端无法输入中文问题">mysql终端无法输入中文问题</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql_%E8%A1%A8%E7%A9%BA%E9%97%B4%E4%B8%80%E7%BA%A7ibdata1%E6%96%87%E4%BB%B6%E8%BF%87%E5%A4%A7%E9%97%AE%E9%A2%98/"
+           data-tag="ibdata1文件"
+           data-author="" >
+            <span class="post-title" title="Mysql表空间一级ibdata1文件过大问题">Mysql表空间一级ibdata1文件过大问题</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E4%B8%ADdatetime%E6%AF%94%E8%BE%83/"
+           data-tag="datetime"
+           data-author="" >
+            <span class="post-title" title="mysql中datetime比较">mysql中datetime比较</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE/"
+           data-tag="导入数据"
+           data-author="" >
+            <span class="post-title" title="Mysql导入数据">Mysql导入数据</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E7%A3%81%E7%9B%98%E5%AD%98%E5%82%A8%E6%B5%85%E6%9E%90/"
+           data-tag="存储"
+           data-author="" >
+            <span class="post-title" title="mysql磁盘存储">mysql磁盘存储</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E9%87%8D%E7%BD%AE%E5%AF%86%E7%A0%81/"
+           data-tag="重置密码"
+           data-author="" >
+            <span class="post-title" title="mysql重置密码">mysql重置密码</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/show%20processlist%E5%91%BD%E4%BB%A4%E8%A7%A3%E6%9E%90/"
+           data-tag="show processlist"
+           data-author="" >
+            <span class="post-title" title="Mysql show processlist 详解">Mysql show processlist 详解</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/show_slave_status%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/"
+           data-tag="show slave status"
+           data-author="" >
+            <span class="post-title" title="Mysql show slave status">Mysql show slave status</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 编程语言 "
+           href="/2021/03/07/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/c++%E8%AF%AD%E8%A8%80/string_%E4%B8%8Ememset_%E7%9A%84%E9%97%AE%E9%A2%98/"
+           data-tag="c++"
+           data-author="" >
+            <span class="post-title" title="string与memset的问题">string与memset的问题</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 编程语言 "
+           href="/2021/03/07/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/go%E8%AF%AD%E8%A8%80/go%E8%AF%AD%E8%A8%80%E8%A7%A3%E7%A0%81%E6%9C%AA%E7%9F%A5%E7%BB%93%E6%9E%84%E7%9A%84JSON%E6%95%B0%E6%8D%AE/"
+           data-tag="go"
+           data-author="" >
+            <span class="post-title" title="go语言解码未知结构的JSON数据">go语言解码未知结构的JSON数据</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 编程语言 "
+           href="/2021/03/07/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/go%E8%AF%AD%E8%A8%80/%E5%B7%A5%E4%BD%9C%E5%8C%BA%E5%92%8CGOPATH/"
+           data-tag="go"
+           data-author="" >
+            <span class="post-title" title="go语言工作区和GoPath以及命令源码文件">go语言工作区和GoPath以及命令源码文件</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 编程语言 "
+           href="/2021/03/07/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/go%E8%AF%AD%E8%A8%80/ini%E6%96%87%E4%BB%B6%E7%9A%84%E8%AF%BB%E5%8F%96/"
+           data-tag="go"
+           data-author="" >
+            <span class="post-title" title="go语言ini文件的操作">go语言ini文件的操作</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 编程语言 "
+           href="/2021/03/07/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/go%E8%AF%AD%E8%A8%80/%E6%93%8D%E4%BD%9Csql/"
+           data-tag="go"
+           data-author="" >
+            <span class="post-title" title="go语言操作数据库">go语言操作数据库</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 编程语言 "
+           href="/2021/03/07/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/go%E8%AF%AD%E8%A8%80/%E6%97%A5%E5%BF%97%E5%8C%85/"
+           data-tag="go"
+           data-author="" >
+            <span class="post-title" title="go语言日志">go语言日志</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 编程语言 "
+           href="/2021/03/07/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/go%E8%AF%AD%E8%A8%80/%E6%97%B6%E9%97%B4%E6%88%B3%E5%92%8C%E6%97%B6%E9%97%B4%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2/"
+           data-tag="go"
+           data-author="" >
+            <span class="post-title" title="go语言时间与时间戳之间的转换">go语言时间与时间戳之间的转换</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/my-cnf_%E6%96%87%E4%BB%B6/"
+           data-tag="配置文件"
+           data-author="" >
+            <span class="post-title" title="mysql配置文件解析">mysql配置文件解析</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/03/07/%E6%95%B0%E6%8D%AE%E5%BA%93/mysqldump_%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="mysqldump"
+           data-author="" >
+            <span class="post-title" title="mysqldump使用">mysqldump使用</span>
+            <span class="post-date" title="2021-03-07 20:19:17">2021/03/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/02/18/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="Mysql用户管理">Mysql用户管理</span>
+            <span class="post-date" title="2021-02-18 15:14:06">2021/02/18</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2021/02/18/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E7%9A%84%E6%A8%A1%E7%B3%8A%E5%8C%B9%E9%85%8D%E6%9F%A5%E6%89%BE/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="Mysql模糊匹配查找">Mysql模糊匹配查找</span>
+            <span class="post-date" title="2021-02-18 15:14:06">2021/02/18</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93/Mysql%E8%A1%A8%E7%A9%BA%E9%97%B4%E4%BB%A5%E5%8F%8Aibdata1%E6%96%87%E4%BB%B6%E8%A7%A3%E9%87%8A/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="Mysql表空间以及ibdata1文件解释">Mysql表空间以及ibdata1文件解释</span>
+            <span class="post-date" title="2020-12-27 19:14:06">2020/12/27</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/12/27/%E6%95%B0%E6%8D%AE%E5%BA%93/mysql%E5%AD%97%E7%AC%A6%E9%9B%86%E8%BD%AC%E6%8D%A2%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90%E5%8F%8A%E4%B9%B1%E7%A0%81%E5%8E%9F%E5%9B%A0/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="mysql字符集转换原理剖析及乱码原因">mysql字符集转换原理剖析及乱码原因</span>
+            <span class="post-date" title="2020-12-27 14:14:06">2020/12/27</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/20/linux/Linux%E7%B3%BB%E7%BB%9F%E8%BF%9B%E7%A8%8B%E7%8A%B6%E6%80%81%E8%A7%A3%E6%9E%90/"
+           data-tag="进程状态"
+           data-author="" >
+            <span class="post-title" title="Linux系统进程状态解析">Linux系统进程状态解析</span>
+            <span class="post-date" title="2020-12-20 14:19:17">2020/12/20</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/20/linux/Linux%E7%B3%BB%E7%BB%9Ftempfs%E5%92%8C:dev:shm%E8%A7%A3%E6%9E%90/"
+           data-tag="tempfs /dev/shm"
+           data-author="" >
+            <span class="post-title" title="Linux系统tempfs和/dev/shm解析">Linux系统tempfs和/dev/shm解析</span>
+            <span class="post-date" title="2020-12-20 13:19:17">2020/12/20</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/03/linux/Linux%E4%B9%8Bsyslog%E6%97%A5%E5%BF%97%E6%9C%8D%E5%8A%A1%E8%AF%A6%E8%A7%A3/"
+           data-tag="syslog日志服务"
+           data-author="" >
+            <span class="post-title" title="Linux之syslog日志服务详解">Linux之syslog日志服务详解</span>
+            <span class="post-date" title="2020-12-03 19:11:41">2020/12/03</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/12/02/linux/Linux%E4%B8%8B%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%90%AF%E5%8A%A8%E6%96%B9%E6%B3%95/"
+           data-tag="守护进程"
+           data-author="" >
+            <span class="post-title" title="Linux下守护进程的启动方法">Linux下守护进程的启动方法</span>
+            <span class="post-date" title="2020-12-02 16:19:17">2020/12/02</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/11/07/linux/tcpdump%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="tcpdump"
+           data-author="" >
+            <span class="post-title" title="tcpdump的使用">tcpdump的使用</span>
+            <span class="post-date" title="2020-11-07 14:11:41">2020/11/07</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/11/01/%E6%95%B0%E6%8D%AE%E5%BA%93/mysqldump%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="mysqldump"
+           data-author="" >
+            <span class="post-title" title="mysqldump的使用">mysqldump的使用</span>
+            <span class="post-date" title="2020-11-01 19:19:17">2020/11/01</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/11/01/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/curl%E5%91%BD%E4%BB%A4%E4%B8%8E%E5%85%B6API%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="curl"
+           data-author="" >
+            <span class="post-title" title="curl命令与其API的使用">curl命令与其API的使用</span>
+            <span class="post-date" title="2020-11-01 18:19:17">2020/11/01</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%8E%92%E6%9F%A5%E8%BF%9B%E7%A8%8B%E7%BB%88%E6%AD%A2%E7%9A%84%E5%8E%9F%E5%9B%A0/"
+           data-tag="进程丢失"
+           data-author="" >
+            <span class="post-title" title="排查进程终止的原因">排查进程终止的原因</span>
+            <span class="post-date" title="2020-10-25 19:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%9F%A5%E7%9C%8B%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E8%A2%AB%E5%93%AA%E4%BA%9B%E8%BF%9B%E7%A8%8Bnattch/"
+           data-tag="共享内存"
+           data-author="" >
+            <span class="post-title" title="查看共享内存被哪些进程nattch">查看共享内存被哪些进程nattch</span>
+            <span class="post-date" title="2020-10-25 19:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/linux%E4%B8%8B%E6%AE%B5%E9%94%99%E8%AF%AF%E7%9A%84%E4%BA%A7%E7%94%9F%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95/"
+           data-tag="段错误 core"
+           data-author="" >
+            <span class="post-title" title="linux下段错误的产生原因及调试方法">linux下段错误的产生原因及调试方法</span>
+            <span class="post-date" title="2020-10-25 17:11:41">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/%E6%9F%A5%E7%9C%8B%E6%89%A7%E8%A1%8C%E6%9F%90%E4%B8%AA%E8%BF%9B%E7%A8%8B%E4%B8%AD%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8--strace%E5%91%BD%E4%BB%A4/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="查看执行某个进程中系统调用--strace命令">查看执行某个进程中系统调用--strace命令</span>
+            <span class="post-date" title="2020-10-25 15:31:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/Linux%E4%B9%8Bproc%E4%B8%8Bkcore%E6%96%87%E4%BB%B6%E8%A7%A3%E9%87%8A/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="/proc/kcore文件解释">/proc/kcore文件解释</span>
+            <span class="post-date" title="2020-10-25 15:11:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/25/linux/linux%E7%B3%BB%E7%BB%9F%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90/"
+           data-tag="linux 日志"
+           data-author="" >
+            <span class="post-title" title="linux 系统日志分析">linux 系统日志分析</span>
+            <span class="post-date" title="2020-10-25 14:11:24">2020/10/25</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/22/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96(json%E5%92%8Cprotobuf)/"
+           data-tag="json protobuf"
+           data-author="" >
+            <span class="post-title" title="序列化和反序列化(json/protobuf)">序列化和反序列化(json/protobuf)</span>
+            <span class="post-date" title="2020-10-22 20:19:17">2020/10/22</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/gcc%E7%9A%84%E4%BD%BF%E7%94%A8/"
+           data-tag="gcc"
+           data-author="" >
+            <span class="post-title" title="gcc的使用">gcc的使用</span>
+            <span class="post-date" title="2020-10-18 19:54:54">2020/10/18</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/linux_%E5%88%A0%E9%99%A4n%E5%A4%A9%E5%89%8D%E7%9A%84%E6%97%A5%E5%BF%97/"
+           data-tag="删除日志"
+           data-author="" >
+            <span class="post-title" title="linux删除n天前的日志">linux删除n天前的日志</span>
+            <span class="post-date" title="2020-10-18 19:54:54">2020/10/18</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/makefile_%E5%AD%A6%E4%B9%A0/"
+           data-tag="makefile"
+           data-author="" >
+            <span class="post-title" title="makefile学习">makefile学习</span>
+            <span class="post-date" title="2020-10-18 19:54:54">2020/10/18</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/18/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/gdb%20%E8%B0%83%E8%AF%95%E5%B7%A5%E5%85%B7/"
+           data-tag="gdb linux"
+           data-author="" >
+            <span class="post-title" title="gdb调试工具">gdb调试工具</span>
+            <span class="post-date" title="2020-10-18 15:45:45">2020/10/18</span>
+        </a>
+        
+        <a  class="All 其他 "
+           href="/2020/10/16/%E5%85%B6%E4%BB%96/%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%96%87%E4%BB%B6%E6%89%A7%E8%A1%8Cload%E4%B8%8D%E5%88%B0%E5%85%B1%E4%BA%AB%E5%BA%93%E9%97%AE%E9%A2%98/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="二进制文件执行加载不到共享库问题">二进制文件执行加载不到共享库问题</span>
+            <span class="post-date" title="2020-10-16 11:41:41">2020/10/16</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/09/linux/%E6%9F%A5%E7%9C%8Blinux%20%E7%A1%AC%E4%BB%B6%E8%B5%84%E6%BA%90%E6%96%B9%E6%B3%95/"
+           data-tag="linux"
+           data-author="" >
+            <span class="post-title" title="查看linux硬件资源方法">查看linux硬件资源方法</span>
+            <span class="post-date" title="2020-10-09 13:11:24">2020/10/09</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/06/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/git%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/"
+           data-tag="git"
+           data-author="" >
+            <span class="post-title" title="git学习记录">git学习记录</span>
+            <span class="post-date" title="2020-10-06 16:22:14">2020/10/06</span>
+        </a>
+        
+        <a  class="All 组件学习 "
+           href="/2020/10/06/%E7%BB%84%E4%BB%B6%E5%AD%A6%E4%B9%A0/makefile%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/"
+           data-tag="makefile"
+           data-author="" >
+            <span class="post-title" title="makefile学习记录">makefile学习记录</span>
+            <span class="post-date" title="2020-10-06 16:22:14">2020/10/06</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/06/linux/cc++%E9%94%99%E8%AF%AF%E4%B9%8B%20Undefined%20reference%20%E6%9C%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E9%97%AE%E9%A2%98/"
+           data-tag="c++链接"
+           data-author="" >
+            <span class="post-title" title="c和c++链接未定义的问题">c和c++链接未定义的问题</span>
+            <span class="post-date" title="2020-10-06 16:19:17">2020/10/06</span>
+        </a>
+        
+        <a  class="All 编程语言 "
+           href="/2020/10/06/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/c++%E8%AF%AD%E8%A8%80/c++%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/"
+           data-tag="c++"
+           data-author="" >
+            <span class="post-title" title="c++初始化的问题记录">c++初始化的问题记录</span>
+            <span class="post-date" title="2020-10-06 16:19:17">2020/10/06</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/10/06/%E6%95%B0%E6%8D%AE%E5%BA%93/show-slave-status-G%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D/"
+           data-tag="mysql"
+           data-author="" >
+            <span class="post-title" title="show slave status\G参数介绍">show slave status\G参数介绍</span>
+            <span class="post-date" title="2020-10-06 16:14:06">2020/10/06</span>
+        </a>
+        
+        <a  class="All 其他 "
+           href="/2020/10/06/%E5%85%B6%E4%BB%96/%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86%E4%B8%8E%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"
+           data-tag="代理"
+           data-author="" >
+            <span class="post-title" title="正向代理与反向代理">正向代理与反向代理</span>
+            <span class="post-date" title="2020-10-06 16:11:29">2020/10/06</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/10/06/linux/%E9%80%9A%E8%BF%87free%E5%91%BD%E4%BB%A4%E7%90%86%E8%A7%A3linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/"
+           data-tag="内存管理"
+           data-author="" >
+            <span class="post-title" title="通过free命令理解linux内存管理">通过free命令理解linux内存管理</span>
+            <span class="post-date" title="2020-10-06 16:09:52">2020/10/06</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/03/07/linux/date%E5%91%BD%E4%BB%A4%E6%97%B6%E9%97%B4%E6%88%B3%E5%92%8C%E6%97%B6%E9%97%B4%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2/"
+           data-tag="时间戳 时间 转换"
+           data-author="" >
+            <span class="post-title" title="linux上时间和时间戳之间的转换">linux上时间和时间戳之间的转换</span>
+            <span class="post-date" title="2020-03-07 21:11:24">2020/03/07</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/03/07/linux/linux%E5%B7%A5%E5%85%B7%E4%B9%8Bcurl/"
+           data-tag="curl"
+           data-author="" >
+            <span class="post-title" title="linux工具之curl">linux工具之curl</span>
+            <span class="post-date" title="2020-03-07 21:11:24">2020/03/07</span>
+        </a>
+        
+        <div id="no-item-tips">
+
+        </div>
+    </nav>
+    <div id="outline-list">
+    </div>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle" data-title="切换全屏 快捷键 s">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div id="post">
+    <div class="pjax">
+        <article id="post-编程语言/go语言/goWeb学习" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">go语言Web学习</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            <i class="iconfont icon-category"></i>
+            
+            
+            <a  data-rel="编程语言">编程语言</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            <i class="iconfont icon-tag"></i>
+            
+            <a class="color3">go</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+            Created At : <time class="date" title='Updated At: 2021-03-14 21:13:33'>2021-03-12 21:19</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>Count:1.9k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            Views 👀 :<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+        <span class="top-comment" title="跳转至评论区">
+            <a href="#comments">
+                Comment:<span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </a>
+        </span>
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Go-Web"><span class="toc-text">Go Web</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-Go-http-%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-text">1. Go http 代码分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-JSON%E5%A4%84%E7%90%86"><span class="toc-text">2. JSON处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-Socket-%E7%BC%96%E7%A8%8B"><span class="toc-text">3. Socket 编程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-WebSocket"><span class="toc-text">4. WebSocket</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-REST"><span class="toc-text">5. REST</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-RPC"><span class="toc-text">6. RPC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-MVC"><span class="toc-text">7. MVC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-Web-%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%A1%86%E6%9E%B6"><span class="toc-text">8. Web 中间件框架</span></a></li></ol></li></ol></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Go-Web"><a href="#Go-Web" class="headerlink" title="Go Web"></a>Go Web</h2><h4 id="1-Go-http-代码分析"><a href="#1-Go-http-代码分析" class="headerlink" title="1. Go http 代码分析"></a>1. Go http 代码分析</h4><pre><code class="go">package main
+
+import (
+    &quot;fmt&quot;
+    &quot;net/http&quot;
+)
+
+type MyMux struct &#123;
+&#125;
+
+func (p *MyMux) ServeHTTP(w http.ResponseWriter, r *http.Request) &#123;
+    if r.URL.Path == &quot;/&quot; &#123;
+        sayhelloName(w, r)
+        return
+    &#125;
+    http.NotFound(w, r)
+    return
+&#125;
+
+func sayhelloName(w http.ResponseWriter, r *http.Request) &#123;
+    fmt.Fprintf(w, &quot;Hello myroute!&quot;)
+&#125;
+
+func main() &#123;
+    mux := &amp;MyMux&#123;&#125;
+    http.ListenAndServe(&quot;:9090&quot;, mux)
+&#125;</code></pre>
+<p>首先调用 Http.HandleFunc</p>
+<p>按顺序做了几件事：</p>
+<p>1 调用了 DefaultServeMux 的 HandleFunc</p>
+<p>2 调用了 DefaultServeMux 的 Handle</p>
+<p>3 往 DefaultServeMux 的 map [string] muxEntry 中增加对应的 handler 和路由规则</p>
+<p>其次调用 http.ListenAndServe (“:9090”, nil)</p>
+<p>按顺序做了几件事情：</p>
+<p>1 实例化 Server</p>
+<p>2 调用 Server 的 ListenAndServe ()</p>
+<p>3 调用 net.Listen (“tcp”, addr) 监听端口</p>
+<p>4 启动一个 for 循环，在循环体中 Accept 请求</p>
+<p>5 对每个请求实例化一个 Conn，并且开启一个 goroutine 为这个请求进行服务 go c.serve ()</p>
+<p>6 读取每个请求的内容 w, err := c.readRequest ()</p>
+<p>7 判断 handler 是否为空，如果没有设置 handler（这个例子就没有设置 handler），handler 就设置为 DefaultServeMux</p>
+<p>8 调用 handler 的 ServeHttp</p>
+<p>9 在这个例子中，下面就进入到 DefaultServeMux.ServeHttp</p>
+<p>10 根据 request 选择 handler，并且进入到这个 handler 的 ServeHTTP</p>
+<p>11 选择 handler：</p>
+<p>A 判断是否有路由能满足这个 request（循环遍历 ServeMux 的 muxEntry）</p>
+<p>B 如果有路由满足，调用这个路由 handler 的 ServeHTTP</p>
+<p>C 如果没有路由满足，调用 NotFoundHandler 的 ServeHTTP</p>
+<h4 id="2-JSON处理"><a href="#2-JSON处理" class="headerlink" title="2. JSON处理"></a>2. JSON处理</h4><p>在定义 struct tag 的时候需要注意：</p>
+<ul>
+<li>字段的 tag 是 “-“，那么这个字段不会输出到 JSON</li>
+<li>tag 中带有自定义名称，那么这个自定义名称会出现在 JSON 的字段名中，例如上面例子中 serverName</li>
+<li>tag 中如果带有 “omitempty” 选项，那么如果该字段值为空，就不会输出到 JSON 串中</li>
+<li>如果字段类型是 bool, string, int, int64 等，而 tag 中带有 “,string” 选项，那么这个字段在输出到 JSON 的时候会把该字段对应的值转换成 JSON 字符串</li>
+</ul>
+<p>Marshal 函数需要注意：</p>
+<ul>
+<li>JSON 对象只支持 string 作为 key，所以要编码一个 map，那么必须是 map [string] T 这种类型 (T 是 Go 语言中任意的类型)</li>
+<li>Channel, complex 和 function 是不能被编码成 JSON 的</li>
+<li>嵌套的数据是不能编码的，不然会让 JSON 编码进入死循环</li>
+<li>指针在编码的时候会输出指针指向的内容，而空指针会输出 null</li>
+</ul>
+<h4 id="3-Socket-编程"><a href="#3-Socket-编程" class="headerlink" title="3. Socket 编程"></a>3. Socket 编程</h4><pre><code class="go">// server
+
+func checkError(err error) &#123;
+    if err != nil &#123;
+        fmt.Fprintf(os.Stderr, &quot;Fatal error: %s&quot;, err.Error())
+        os.Exit(1)
+    &#125;
+&#125;
+
+func handleClient(conn net.Conn) &#123;
+    conn.SetDeadline(time.Now().Add(2*time.Second))
+    request := make([]byte, 128)
+    defer conn.Close()
+    for &#123;
+        read_len, err := conn.Read(request)
+        if err != nil &#123;
+            fmt.Println(err)
+            break
+        &#125;
+        if read_len == 0 &#123;
+            break
+        &#125;else if strings.TrimSpace(string(request[:read_len])) == &quot;timestamp&quot; &#123;
+            daytime := strconv.FormatInt(time.Now().Unix(), 10)
+            conn.Write([]byte(daytime))
+            //break
+        &#125;else &#123;
+            daytime := time.Now().String()
+            conn.Write([]byte(daytime))
+            //break
+        &#125;
+        request = make([]byte, 128)
+    &#125;
+&#125;
+
+func main() &#123;
+    service := &quot;:7777&quot;
+    tcpAddr, err := net.ResolveTCPAddr(&quot;tcp4&quot;, service)
+    checkError(err)
+    listener, err := net.ListenTCP(&quot;tcp&quot;, tcpAddr)
+    checkError(err)
+    for &#123;
+        conn, err := listener.Accept()
+        if err != nil &#123;
+            continue
+        &#125;
+        go handleClient(conn)
+    &#125;
+&#125;</code></pre>
+<pre><code class="go">func checkError(err error)&#123;
+    if err != nil &#123;
+        fmt.Fprintf(os.Stderr,&quot;Fatal error: %s&quot;,err.Error())
+        os.Exit(1)
+    &#125;
+&#125;
+
+func main()&#123;
+    if len(os.Args) != 2 &#123;
+        fmt.Fprintf(os.Stderr,&quot;Usage: %s host:port&quot;, os.Args[0])
+        os.Exit(1)
+    &#125;
+    service := os.Args[1]
+    tcpAddr,err := net.ResolveTCPAddr(&quot;tcp4&quot;,service)
+    checkError(err)
+    conn,err := net.DialTCP(&quot;tcp&quot;,nil,tcpAddr)
+    checkError(err)
+    _,err = conn.Write([]byte(&quot;HEAD / HTTP/1.0\r\n\r\n&quot;))
+    checkError(err)
+    //result,err := ioutil.ReadAll(conn)
+    for &#123;
+        data := make([]byte, 128)
+        read_len, err := conn.Read(data)
+        checkError(err)
+        if read_len == 0 &#123;
+            break
+        &#125;
+        fmt.Println(string(data))
+    &#125;
+    conn.Close()
+    os.Exit(0)
+&#125;</code></pre>
+<h4 id="4-WebSocket"><a href="#4-WebSocket" class="headerlink" title="4. WebSocket"></a>4. WebSocket</h4><p>WebSocket 是 HTML5 的重要特性，它实现了基于浏览器的远程 socket，它使浏览器和服务器可以进行全双工通信，许多浏览器（Firefox、Google Chrom e 和 Safari）都已对此做了支持。</p>
+<h4 id="5-REST"><a href="#5-REST" class="headerlink" title="5. REST"></a>5. REST</h4><p>REST 就是根据不同的 method 访问同一个资源的时候实现不同的逻辑处理</p>
+<p>REST 是一种架构风格，汲取了 WWW 的成功经验：无状态，以资源为中心，充分利用 HTTP 协议和 URI 协议，提供统一的接口定义，使得它作为一种设计 Web 服务的方法而变得流行。在某种意义上，通过强调 URI 和 HTTP 等早期 Internet 标准，REST 是对大型应用程序服务器时代之前的 Web 方式的回归。目前 Go 对于 REST 的支持还是很简单的，通过实现自定义的路由规则，我们就可以为不同的 method 实现不同的 handle，这样就实现了 REST 的架构。</p>
+<h4 id="6-RPC"><a href="#6-RPC" class="headerlink" title="6. RPC"></a>6. RPC</h4><p>RPC（Remote Procedure Call Protocol）—— 远程过程调用协议，是一种通过网络从远程计算机程序上请求服务，而不需要了解底层网络技术的协议。它假定某些传输协议的存在，如 TCP 或 UDP，以便为通信程序之间携带信息数据。通过它可以使函数调用模式网络化。在 OSI 网络通信模型中，RPC 跨越了传输层和应用层。RPC 使得开发包括网络分布式多程序在内的应用程序更加容易。</p>
+<pre><code class="go">// server 
+type Args struct &#123;
+    A,B int
+&#125;
+type Quotient struct &#123;
+    Quo, Rem int
+&#125;
+
+type Arith int
+
+func (t *Arith) Multiply(args *Args, reply *int ) error &#123;
+    *reply = args.A * args.B
+    return nil
+&#125;
+func (t *Arith) Divide (args *Args, quo *Quotient) error &#123;
+    if args.B == 0 &#123;
+        return errors.New(&quot;divide by zero&quot;)
+    &#125;
+    quo.Quo = args.A / args.B
+    quo.Rem = args.A % args.B
+    return nil
+&#125;
+
+func main()&#123;
+    arith := new(Arith)
+    rpc.Register(arith)
+    rpc.HandleHTTP()
+
+    err := http.ListenAndServe(&quot;:1234&quot;,nil)
+    if err != nil &#123;
+        fmt.Println(err.Error())
+    &#125;
+&#125;</code></pre>
+<pre><code class="go">// client
+type Args struct &#123;
+    A,B int
+&#125;
+type Quotient struct &#123;
+    Quo,Rem int
+&#125;
+
+func main()&#123;
+    if len(os.Args) != 2 &#123;
+        fmt.Println(&quot;Usage: &quot;, os.Args[0], &quot;server&quot;)
+        os.Exit(1)
+    &#125;
+    serverAddress := os.Args[1]
+    client,err := rpc.DialHTTP(&quot;tcp&quot;,serverAddress+&quot;:1234&quot;)
+    if err != nil &#123;
+        log.Fatalln(&quot;dialing:&quot;,err )
+    &#125;
+    args := Args&#123;17,8&#125;
+    var reply int
+    err = client.Call(&quot;Arith.Multiply&quot;, args, &amp;reply)
+    if err != nil &#123;
+        log.Fatal(&quot;arith error:&quot;, err)
+    &#125;
+    fmt.Println(&quot;Arith: %d*%d=%d\n&quot;,args.A, args.B, reply)
+
+    var quot Quotient
+    err = client.Call(&quot;Arith.Divide&quot;,args,&amp;quot)
+    if err != nil &#123;
+        log.Fatal(&quot;arith error:&quot;,err)
+    &#125;
+    fmt.Println(&quot;Arith: %d/%d=%d remainder %d\n&quot;, args.A, args.B, quot.Quo, quot.Rem)
+&#125;</code></pre>
+<h4 id="7-MVC"><a href="#7-MVC" class="headerlink" title="7. MVC"></a>7. MVC</h4><p>MVC 是一种将应用程序的逻辑层和表现层进行分离的结构方式</p>
+<ul>
+<li>模型 (Model) 代表数据结构。通常来说，模型类将包含取出、插入、更新数据库资料等这些功能。</li>
+<li>视图 (View) 是展示给用户的信息的结构及样式。一个视图通常是一个网页，但是在 Go 中，一个视图也可以是一个页面片段，如页头、页尾。它还可以是一个 RSS 页面，或其它类型的 “页面”，Go 实现的 template 包已经很好的实现了 View 层中的部分功能。</li>
+<li>控制器 (Controller) 是模型、视图以及其他任何处理 HTTP 请求所必须的资源之间的中介，并生成网页。</li>
+</ul>
+<h4 id="8-Web-中间件框架"><a href="#8-Web-中间件框架" class="headerlink" title="8. Web 中间件框架"></a>8. Web 中间件框架</h4><pre><code class="go">type middleware func( http.Handler ) http.Handler
+
+type MiddleWare struct &#123;
+    middlewareChain []middleware
+    m map[string]http.Handler
+&#125;
+
+func (m *MiddleWare) NewMiddleWare() *MiddleWare &#123;
+    return &amp;MiddleWare&#123;&#125;
+&#125;
+
+func (m *MiddleWare) Use(u middleware) &#123;
+    m.middlewareChain = append(m.middlewareChain, u)
+&#125;
+
+func (m *MiddleWare) Add(route string, h http.Handler) &#123;
+    var mergeHandler = h
+    for i := len(m.middlewareChain)-1;i &gt;= 0;i-- &#123;
+        mergeHandler = m.middlewareChain[i](mergeHandler)
+    &#125;
+    m.m[route] = mergeHandler
+&#125;
+
+type muxHandle interface &#123;
+    handler(pattern string, handler http.Handler)
+&#125;
+
+func (m *MiddleWare) Reg(mux muxHandle) &#123;
+    for k,v := range m.m &#123;
+        mux.handler(k,v)    
+    &#125;
+&#125;</code></pre>
+
+      
+       
+    </div>
+</article>
+
+
+<p>
+    <a  class="dashang" onclick="dashangToggle()">💰</a>
+</p>
+
+
+
+
+    <div id="comments"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+<script type="text/javascript">
+    $.getScript('/js/gitalk.js', function () {
+        var gitalk = new Gitalk({
+            clientID: '0dad8455e8835477a625',
+            clientSecret: 'e736f5ff204f7b5f20321e3c558be7b8001efef5',
+            repo: 'noahyzhang.github.io',
+            owner: 'noahyzhang',
+            admin: ['noahyzhang'],
+            id: decodeURI(location.pathname),
+            distractionFreeMode: 'true',
+            language: 'zh-CN',
+            perPage: parseInt('10',10)
+        })
+        gitalk.render('comments')
+    })
+</script>
+
+
+
+
+    
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">
+    ©2016-2020 noahyzhang
+</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+<a class="" id="rocket" ></a>
+
+    </div>
+</div>
+
+<div class="hide_box" onclick="dashangToggle()"></div>
+<div class="shang_box">
+    <a class="shang_close"  onclick="dashangToggle()">×</a>
+    <div class="shang_tit">
+        <p>Help us with donation</p>
+    </div>
+    <div class="shang_payimg">
+        <div class="pay_img">
+            <img src="/img/alipay.jpg" class="alipay" title="扫码支持">
+            <img src="/img/weixin.jpg" class="weixin" title="扫码支持">
+        </div>
+    </div>
+    <div class="shang_payselect">
+        <span><label><input type="radio" name="pay" checked value="alipay">alipay</label></span><span><label><input type="radio" name="pay" value="weixin">weixin</label></span>
+    </div>
+</div>
+
+
+</body>
+<script src="/js/jquery.pjax.js?v=1.1.0" ></script>
+
+<script src="/js/script.js?v=1.1.0" ></script>
+<script>
+    var img_resize = 'default';
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $("#post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+        $("input[name=pay]").on("click", function () {
+            if($("input[name=pay]:checked").val()=="weixin"){
+                $(".shang_box .shang_payimg .pay_img").addClass("weixin_img");
+            } else {
+                $(".shang_box .shang_payimg .pay_img").removeClass("weixin_img");
+            }
+        })
+        
+
+        /*高亮代码块行号*/
+        
+        $('pre code').each(function(){
+            var lines = $(this).text().trim().split('\n').length, widther='';
+            if (lines>99) {
+                widther = 'widther'
+            }
+            var $numbering = $('<ul/>').addClass('pre-numbering ' + widther).attr("unselectable","on");
+            $(this).addClass('has-numbering ' + widther)
+                    .parent()
+                    .append($numbering);
+            for(var i=1;i<=lines;i++){
+                $numbering.append($('<li/>').text(i));
+            }
+        });
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+    function dashangToggle() {
+        $(".shang_box").fadeToggle();
+        $(".hide_box").fadeToggle();
+    }
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<style>
+    pre{
+        position: relative;
+        margin-bottom: 24px;
+        border-radius: 10px;
+        border: 1px solid #e2dede;
+        background: #FFF;
+        overflow: hidden;
+    }
+    code.has-numbering{
+        margin-left: 30px;
+    }
+    code.has-numbering.widther{
+        margin-left: 35px;
+    }
+    .pre-numbering{
+        margin: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        padding: 0.5em 3px 0.7em 5px;
+        border-right: 1px solid #C3CCD0;
+        text-align: right;
+        color: #AAA;
+        background-color: #fafafa;
+    }
+    .pre-numbering.widther {
+        width: 35px;
+    }
+</style>
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+
+    
+</style>
+
+
+
+
+
+
+
+<div id="musicMouseDrag" style="position:fixed; z-index: 9999; bottom: 0; right: 0;">
+    <div id="musicDragArea" style="position: absolute; top: 0; left: 0; width: 100%;height: 10px;cursor: move; z-index: 10;"></div>
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1293886117&auto=1&height=66"></iframe>
+<script>
+    var $DOC = $(document)
+    $('#musicMouseDrag').on ('mousedown', function (e) {
+      // 阻止文本选中
+      $DOC.bind ("selectstart", function () {
+        return false;
+      });
+      $('#musicDragArea').css ('height', '100%');
+      var $moveTarget = $('#musicMouseDrag');
+      $moveTarget.css ('border', '1px dashed grey')
+      var div_x = e.pageX - $moveTarget.offset ().left;
+      var div_y = e.pageY - $moveTarget.offset ().top;
+      $DOC.on ('mousemove', function (e) {
+        var targetX = e.pageX - div_x;
+        var targetY = e.pageY - div_y;
+        targetX = targetX < 0 ? 0 : (targetX + $moveTarget.outerWidth () >= window.innerWidth) ? window.innerWidth - $moveTarget.outerWidth () : targetX;
+        targetY = targetY < 0 ? 0 : (targetY + $moveTarget.outerHeight () >= window.innerHeight) ? window.innerHeight - $moveTarget.outerHeight () : targetY;
+        $moveTarget.css ({'left': targetX + 'px', 'top': targetY + 'px', 'bottom': 'inherit', 'right': 'inherit'})
+      }).on ('mouseup', function () {
+        $DOC.unbind ("selectstart");
+        $DOC.off ('mousemove')
+        $DOC.off ('mouseup')
+        $moveTarget.css ('border', 'none')
+        $('#musicDragArea').css ('height', '10px');
+      })
+    })
+</script>
+</div>
+
+</html>
