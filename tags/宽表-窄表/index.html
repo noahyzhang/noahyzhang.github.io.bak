@@ -56,7 +56,7 @@
 
 
 <body>
-<aside class="nav">
+<aside class="nav mobile">
     <div class="nav-left">
         <a href="/" class="avatar_target">
     <img class="avatar" src="/img/avatar2.jpg" />
@@ -143,7 +143,7 @@
     
         
             
-            <li><div data-rel="linux">linux<small>(22)</small></div>
+            <li><div data-rel="linux">linux<small>(24)</small></div>
                 
             </li>
             
@@ -159,7 +159,7 @@
     
         
             
-            <li><div data-rel="数据库">数据库<small>(16)</small></div>
+            <li><div data-rel="数据库">数据库<small>(17)</small></div>
                 
             </li>
             
@@ -278,6 +278,10 @@
             </li>
         
             <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>iptables</a>
+            </li>
+        
+            <li class="article-tag-list-item">
                 <i class="iconfont icon-tag"></i><a>json protobuf</a>
             </li>
         
@@ -330,6 +334,10 @@
             </li>
         
             <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>umask</a>
+            </li>
+        
+            <li class="article-tag-list-item">
                 <i class="iconfont icon-tag"></i><a>vim</a>
             </li>
         
@@ -355,6 +363,10 @@
         
             <li class="article-tag-list-item">
                 <i class="iconfont icon-tag"></i><a>守护进程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>宽表 窄表</a>
             </li>
         
             <li class="article-tag-list-item">
@@ -457,31 +469,7 @@
         </a>
         
         <a  class="All "
-           href="/2021/03/10/linux/linux%E6%9D%83%E9%99%90%E5%92%8Cumask%E5%80%BC/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title=""></span>
-            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/03/10/linux/iptables%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title=""></span>
-            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
-        </a>
-        
-        <a  class="All "
            href="/2021/03/10/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%9C%AA%E6%80%BB%E7%BB%93Mysql_on_duplicate_key_update/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title=""></span>
-            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/03/10/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%AE%BD%E8%A1%A8%E5%92%8C%E7%AA%84%E8%A1%A8/"
            data-tag=""
            data-author="" >
             <span class="post-title" title=""></span>
@@ -905,6 +893,30 @@
         </a>
         
         <a  class="All linux "
+           href="/2020/03/14/linux/iptables%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/"
+           data-tag="iptables"
+           data-author="" >
+            <span class="post-title" title="linux上iptables的原理及使用">linux上iptables的原理及使用</span>
+            <span class="post-date" title="2020-03-14 21:11:24">2020/03/14</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/03/14/linux/linux%E6%9D%83%E9%99%90%E5%92%8Cumask%E5%80%BC/"
+           data-tag="umask"
+           data-author="" >
+            <span class="post-title" title="linux权限和umask值">linux权限和umask值</span>
+            <span class="post-date" title="2020-03-14 21:11:24">2020/03/14</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/03/14/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%AE%BD%E8%A1%A8%E5%92%8C%E7%AA%84%E8%A1%A8/"
+           data-tag="宽表 窄表"
+           data-author="" >
+            <span class="post-title" title="数据库宽表与窄表">数据库宽表与窄表</span>
+            <span class="post-date" title="2020-03-14 21:11:24">2020/03/14</span>
+        </a>
+        
+        <a  class="All linux "
            href="/2020/03/07/linux/date%E5%91%BD%E4%BB%A4%E6%97%B6%E9%97%B4%E6%88%B3%E5%92%8C%E6%97%B6%E9%97%B4%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2/"
            data-tag="时间戳 时间 转换"
            data-author="" >
@@ -935,54 +947,12 @@
         </div>
     </div>
 </aside>
-<div id="post">
+<div id="post" class="index">
     <div class="pjax">
-        <article id="post-linux/linux权限和umask值" class="article article-type-post" itemscope itemprop="blogPost">
+        <article class="index">
+            <div class="toc-ref">
     
-    <div class="article-meta">
-        
-        
-        
-        
-    </div>
-    <div class="article-meta">
-        
-            Created At : <time class="date" title='Updated At: 2021-03-14 21:13:33'>2021-03-10 23:08</time>
-        
-    </div>
-    <div class="article-meta">
-        
-        <span>Count:696</span>
-        
-        
-        <span id="busuanzi_container_page_pv">
-            Views 👀 :<span id="busuanzi_value_page_pv">
-                <span class="count-comment">
-                    <span class="spinner">
-                      <div class="cube1"></div>
-                      <div class="cube2"></div>
-                    </span>
-                </span>
-            </span>
-        </span>
-        
-        
-        <span class="top-comment" title="跳转至评论区">
-            <a href="#comments">
-                Comment:<span class="count-comment">
-                    <span class="spinner">
-                      <div class="cube1"></div>
-                      <div class="cube2"></div>
-                    </span>
-                </span>
-            </a>
-        </span>
-        
-    </div>
-    
-    <div class="toc-ref">
-    
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#umask%E5%80%BC"><span class="toc-text">umask值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E7%9A%84%E6%9D%83%E9%99%90%E8%A7%A3%E9%87%8A"><span class="toc-text">目录的权限解释</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#linux-%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%AD%97%E7%AC%A6"><span class="toc-text">linux 文件权限的第一个字符</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#zhangxiaoyi%E7%9A%84%E7%A9%BA%E9%97%B4"><span class="toc-text">zhangxiaoyi的空间</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E8%87%AA%E5%B7%B1"><span class="toc-text">关于自己</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E6%9C%AC%E7%AB%99"><span class="toc-text">关于本站</span></a></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -995,43 +965,21 @@
     }
 </style>
 </div>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="umask值"><a href="#umask值" class="headerlink" title="umask值"></a>umask值</h3><p>umask值用于设置用户在创建文件时的默认权限，当我们在系统中创建目录或文件时，目录或文件所具有的默认权限就是由umask值决定的。</p>
-<p>对于root用户，系统默认的umask值是0022；对于普通用户，系统默认的umask值是0002。执行umask命令可以查看当前用户的umask值。</p>
-<p>umask值一共有4组数字，其中第1组数字用于定义特殊权限，我们一般不予考虑，与一般权限有关的是后3组数字。</p>
-<p>默认情况下，对于目录，用户所能拥有的最大权限是777；对于文件，用户所能拥有的最大权限是目录的最大权限去掉执行权限，即666。<br>因为x执行权限对于目录是必须的，没有执行权限就无法进入目录，而对于文件则不必默认赋予x执行权限。</p>
-<p>对于root用户，他的umask值是022。<br>当root用户创建目录时，默认的权限就是用最大权限777去掉相应位置的umask值权限，即对于所有者不必去掉任何权限，<br>对于所属组要去掉w权限，对于其他用户也要去掉w权限，所以目录的默认权限就是755；<br>当root用户创建文件时，默认的权限则是用最大权限666去掉相应位置的umask值，即文件的默认权限是644。</p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wish123/p/7073114.html">https://www.cnblogs.com/wish123/p/7073114.html</a></p>
-<h3 id="目录的权限解释"><a href="#目录的权限解释" class="headerlink" title="目录的权限解释"></a>目录的权限解释</h3><ul>
-<li>读权限（r）表示可以列出存储在该目录下的文件，即读目录内容列表。这一权限允许Shell使用文件扩展名列出相匹配的文件名。</li>
-<li>写权限（w）表示允许用户从目录中删除或添加新的文件，通常只有文件主才有写权限。</li>
-<li>执行权限（x）表示允许用户在目录中查找，并能用cd命令将工作目录改到该目录。如果一个目录只有读权限，那么只能读取该目录下面的所有文件，不能读取文件的详细信息。即不能用ls -l 查看该目录下的文件的详细信息，只能看到文件名。</li>
-</ul>
-<h3 id="linux-文件权限的第一个字符"><a href="#linux-文件权限的第一个字符" class="headerlink" title="linux 文件权限的第一个字符"></a>linux 文件权限的第一个字符</h3><ul>
-<li>d：表示是一个目录，事实上在ext2fs中，目录是一个特殊的文件。</li>
-<li>－：表示这是一个普通的文件。</li>
-<li>l: 表示这是一个符号链接文件，实际上它指向另一个文件。</li>
-<li>b：块设备文件，例如硬盘的存储设备等。</li>
-<li>c：字符设备文件，如键盘等。</li>
-<li>s：表示是套接字文件，此主要跟网络程序有关。</li>
-<li>p：表示是管道文件。</li>
-</ul>
+            <h1 id="zhangxiaoyi的空间"><a href="#zhangxiaoyi的空间" class="headerlink" title="zhangxiaoyi的空间"></a><center>zhangxiaoyi的空间</center></h1><h2 id="关于自己"><a href="#关于自己" class="headerlink" title="关于自己"></a>关于自己</h2><p>在上班2个月后的某一个日志，突然翻出自己在CSDN上写的第一篇博客，内心突然有股五味杂陈。看看当时幼稚、带着学生气的文字，但又充满着一腔斗志昂扬的热血。会想起当年……</p>
+<p>我是普通本科出身，大学专业通信工程，后转行与计算机，目前是一名后端研发工程师。现在回想，四年的大学时光让我彻彻底底的像变了一个人一样。其中充满了做好一件事时那种无语言表的喜悦、对自己达不到制定的目标的那种痛恨、以及站在以后的某个时间点看以前的自己，终于可以接受自己，容纳自己。</p>
+<p>还是将四年前自己的感触拿出来：当我对成功有清晰的目标、量化的标准的时候，我就能发挥我的最大潜力。比如，我想实现5分钟跑完一英里这个目标。好吧。这个路程很容易测量，成功的界限分明。我很容易知道跑一英里需要多久，网上也到处都是提高跑步速度的建议和训练计划。我可以选择一个计划并付诸努力，我深信我最终能够实现目标。这是一个神奇的可量化的计划，因此，每个星期我都可以检测到距离我的终极目标还有多远。</p>
+<p>生命不止，我亦跟随。</p>
+<h2 id="关于本站"><a href="#关于本站" class="headerlink" title="关于本站"></a>关于本站</h2><p><strong>张意</strong>的个人站。</p>
+<p>到目前为止已经写了<code class="article_number"></code>篇文章， 共<code class="site_word_count"></code>字。</p>
+<p>本站访问人数：<code class="site_uv"></code>人次 ， 访问量：<code class="site_pv"></code>次</p>
 
-      
-       
-    </div>
-</article>
-
-
-<p>
-    <a  class="dashang" onclick="dashangToggle()">💰</a>
-</p>
-
-
-
-
+        </article>
+        
+        <p>
+            <a  class="dashang" onclick="dashangToggle()">赏</a>
+        </p>
+        
+        
     <div id="comments"></div>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
 
@@ -1053,13 +1001,6 @@
 </script>
 
 
-
-
-    
-
-
-
-
     </div>
     <div class="copyright">
         <p class="footer-entry">
@@ -1068,11 +1009,11 @@
 <p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
 
     </div>
-    <div class="full-toc">
-        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+</div>
+<div class="full-toc">
+    <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
 <a class="" id="rocket" ></a>
 
-    </div>
 </div>
 
 <div class="hide_box" onclick="dashangToggle()"></div>

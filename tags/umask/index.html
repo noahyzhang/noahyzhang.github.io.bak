@@ -56,7 +56,7 @@
 
 
 <body>
-<aside class="nav">
+<aside class="nav mobile">
     <div class="nav-left">
         <a href="/" class="avatar_target">
     <img class="avatar" src="/img/avatar2.jpg" />
@@ -143,7 +143,7 @@
     
         
             
-            <li><div data-rel="linux">linux<small>(22)</small></div>
+            <li><div data-rel="linux">linux<small>(24)</small></div>
                 
             </li>
             
@@ -159,7 +159,7 @@
     
         
             
-            <li><div data-rel="数据库">数据库<small>(16)</small></div>
+            <li><div data-rel="数据库">数据库<small>(17)</small></div>
                 
             </li>
             
@@ -278,6 +278,10 @@
             </li>
         
             <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>iptables</a>
+            </li>
+        
+            <li class="article-tag-list-item">
                 <i class="iconfont icon-tag"></i><a>json protobuf</a>
             </li>
         
@@ -330,6 +334,10 @@
             </li>
         
             <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>umask</a>
+            </li>
+        
+            <li class="article-tag-list-item">
                 <i class="iconfont icon-tag"></i><a>vim</a>
             </li>
         
@@ -355,6 +363,10 @@
         
             <li class="article-tag-list-item">
                 <i class="iconfont icon-tag"></i><a>守护进程</a>
+            </li>
+        
+            <li class="article-tag-list-item">
+                <i class="iconfont icon-tag"></i><a>宽表 窄表</a>
             </li>
         
             <li class="article-tag-list-item">
@@ -457,31 +469,7 @@
         </a>
         
         <a  class="All "
-           href="/2021/03/10/linux/linux%E6%9D%83%E9%99%90%E5%92%8Cumask%E5%80%BC/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title=""></span>
-            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/03/10/linux/iptables%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title=""></span>
-            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
-        </a>
-        
-        <a  class="All "
            href="/2021/03/10/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%9C%AA%E6%80%BB%E7%BB%93Mysql_on_duplicate_key_update/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title=""></span>
-            <span class="post-date" title="2021-03-10 23:08:57">2021/03/10</span>
-        </a>
-        
-        <a  class="All "
-           href="/2021/03/10/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%AE%BD%E8%A1%A8%E5%92%8C%E7%AA%84%E8%A1%A8/"
            data-tag=""
            data-author="" >
             <span class="post-title" title=""></span>
@@ -905,6 +893,30 @@
         </a>
         
         <a  class="All linux "
+           href="/2020/03/14/linux/iptables%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3/"
+           data-tag="iptables"
+           data-author="" >
+            <span class="post-title" title="linux上iptables的原理及使用">linux上iptables的原理及使用</span>
+            <span class="post-date" title="2020-03-14 21:11:24">2020/03/14</span>
+        </a>
+        
+        <a  class="All linux "
+           href="/2020/03/14/linux/linux%E6%9D%83%E9%99%90%E5%92%8Cumask%E5%80%BC/"
+           data-tag="umask"
+           data-author="" >
+            <span class="post-title" title="linux权限和umask值">linux权限和umask值</span>
+            <span class="post-date" title="2020-03-14 21:11:24">2020/03/14</span>
+        </a>
+        
+        <a  class="All 数据库 "
+           href="/2020/03/14/%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%AE%BD%E8%A1%A8%E5%92%8C%E7%AA%84%E8%A1%A8/"
+           data-tag="宽表 窄表"
+           data-author="" >
+            <span class="post-title" title="数据库宽表与窄表">数据库宽表与窄表</span>
+            <span class="post-date" title="2020-03-14 21:11:24">2020/03/14</span>
+        </a>
+        
+        <a  class="All linux "
            href="/2020/03/07/linux/date%E5%91%BD%E4%BB%A4%E6%97%B6%E9%97%B4%E6%88%B3%E5%92%8C%E6%97%B6%E9%97%B4%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2/"
            data-tag="时间戳 时间 转换"
            data-author="" >
@@ -935,54 +947,12 @@
         </div>
     </div>
 </aside>
-<div id="post">
+<div id="post" class="index">
     <div class="pjax">
-        <article id="post-数据库/宽表和窄表" class="article article-type-post" itemscope itemprop="blogPost">
+        <article class="index">
+            <div class="toc-ref">
     
-    <div class="article-meta">
-        
-        
-        
-        
-    </div>
-    <div class="article-meta">
-        
-            Created At : <time class="date" title='Updated At: 2021-03-14 21:13:33'>2021-03-10 23:08</time>
-        
-    </div>
-    <div class="article-meta">
-        
-        <span>Count:359</span>
-        
-        
-        <span id="busuanzi_container_page_pv">
-            Views 👀 :<span id="busuanzi_value_page_pv">
-                <span class="count-comment">
-                    <span class="spinner">
-                      <div class="cube1"></div>
-                      <div class="cube2"></div>
-                    </span>
-                </span>
-            </span>
-        </span>
-        
-        
-        <span class="top-comment" title="跳转至评论区">
-            <a href="#comments">
-                Comment:<span class="count-comment">
-                    <span class="spinner">
-                      <div class="cube1"></div>
-                      <div class="cube2"></div>
-                    </span>
-                </span>
-            </a>
-        </span>
-        
-    </div>
-    
-    <div class="toc-ref">
-    
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%AE%BD%E8%A1%A8"><span class="toc-text">一、宽表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%AA%84%E8%A1%A8"><span class="toc-text">二、窄表</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#zhangxiaoyi%E7%9A%84%E7%A9%BA%E9%97%B4"><span class="toc-text">zhangxiaoyi的空间</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E8%87%AA%E5%B7%B1"><span class="toc-text">关于自己</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E6%9C%AC%E7%AB%99"><span class="toc-text">关于本站</span></a></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -995,27 +965,21 @@
     }
 </style>
 </div>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="一、宽表"><a href="#一、宽表" class="headerlink" title="一、宽表"></a>一、宽表</h3><p>（1）宽表：从字面意义上讲就是字段比较多的数据库表。通常是指业务主题相关的指标、维度、属性关联在一起的一张数据库表。由于把不同的内容都放在同一张表存储，宽表已经不符合三范式的模型设计规范，随之带来的主要坏处就是数据的大量冗余，与之相对应的好处就是查询性能的提高与便捷。这种宽表的设计广泛应用于数据挖掘模型训练前的数据准备，通过把相关字段放在同一张表中，可以大大提高数据挖掘模型训练过程中迭代计算时的效率问题。（一句话，空间换时间，便于训练迭代、减少表关联数量，修改少量数据时不需要该多张表）</p>
-<p>（2）“宽表”特点：一个表就是一个class，每个字段就是一个filed，操作简单。但不便扩展。</p>
-<h3 id="二、窄表"><a href="#二、窄表" class="headerlink" title="二、窄表"></a>二、窄表</h3><p>（1）窄表：严格按照数据库设计三范式。尽量减少数据冗余，但是缺点是修改一个数据可能需要修改多张表。</p>
-<p>（2）“窄表”特点：方便扩展，能适应各种复杂的数据结构（树形、继承等），无论有多少配置，都不用修改表结构。但代码逻辑可能需要包装一下。</p>
+            <h1 id="zhangxiaoyi的空间"><a href="#zhangxiaoyi的空间" class="headerlink" title="zhangxiaoyi的空间"></a><center>zhangxiaoyi的空间</center></h1><h2 id="关于自己"><a href="#关于自己" class="headerlink" title="关于自己"></a>关于自己</h2><p>在上班2个月后的某一个日志，突然翻出自己在CSDN上写的第一篇博客，内心突然有股五味杂陈。看看当时幼稚、带着学生气的文字，但又充满着一腔斗志昂扬的热血。会想起当年……</p>
+<p>我是普通本科出身，大学专业通信工程，后转行与计算机，目前是一名后端研发工程师。现在回想，四年的大学时光让我彻彻底底的像变了一个人一样。其中充满了做好一件事时那种无语言表的喜悦、对自己达不到制定的目标的那种痛恨、以及站在以后的某个时间点看以前的自己，终于可以接受自己，容纳自己。</p>
+<p>还是将四年前自己的感触拿出来：当我对成功有清晰的目标、量化的标准的时候，我就能发挥我的最大潜力。比如，我想实现5分钟跑完一英里这个目标。好吧。这个路程很容易测量，成功的界限分明。我很容易知道跑一英里需要多久，网上也到处都是提高跑步速度的建议和训练计划。我可以选择一个计划并付诸努力，我深信我最终能够实现目标。这是一个神奇的可量化的计划，因此，每个星期我都可以检测到距离我的终极目标还有多远。</p>
+<p>生命不止，我亦跟随。</p>
+<h2 id="关于本站"><a href="#关于本站" class="headerlink" title="关于本站"></a>关于本站</h2><p><strong>张意</strong>的个人站。</p>
+<p>到目前为止已经写了<code class="article_number"></code>篇文章， 共<code class="site_word_count"></code>字。</p>
+<p>本站访问人数：<code class="site_uv"></code>人次 ， 访问量：<code class="site_pv"></code>次</p>
 
-      
-       
-    </div>
-</article>
-
-
-<p>
-    <a  class="dashang" onclick="dashangToggle()">💰</a>
-</p>
-
-
-
-
+        </article>
+        
+        <p>
+            <a  class="dashang" onclick="dashangToggle()">赏</a>
+        </p>
+        
+        
     <div id="comments"></div>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
 
@@ -1037,13 +1001,6 @@
 </script>
 
 
-
-
-    
-
-
-
-
     </div>
     <div class="copyright">
         <p class="footer-entry">
@@ -1052,11 +1009,11 @@
 <p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
 
     </div>
-    <div class="full-toc">
-        <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
+</div>
+<div class="full-toc">
+    <button class="full" data-title="切换全屏 快捷键 s"><span class="min "></span></button>
 <a class="" id="rocket" ></a>
 
-    </div>
 </div>
 
 <div class="hide_box" onclick="dashangToggle()"></div>
